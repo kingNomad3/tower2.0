@@ -11,7 +11,7 @@ def creer_id():
 class Tour():
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         self.__id = creer_id()
-        self.__modele = parent
+        self.__partie = parent
         self.__rayon = rayon
         self.__champ_action = self.__rayon * 3.5 # Taille exacte du champ d'action à décider. On pourrait se passer paramètre le multiplicateur au besoin.
         self.__pos_x = pos_x
@@ -19,7 +19,7 @@ class Tour():
         self.__niveau_amelioration = niveau_amelioration
         self.__cout = cout
         self.__cout_amelioration = self.__cout * self.__niveau_amelioration # Manière de calculer à déterminer. Permettrait de faire en sorte que les améliorations en jeu coûtent moins cher si on réduit son coût.
-        self.__cible = None
+        self.__cible = None # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__combine = None
         #self.__vie = vie Si on peut faire perdre de la vie à nos tours
     
@@ -28,8 +28,8 @@ class Tour():
         return self.__id
     
     @property # À voir si on a besoin
-    def modele(self):
-        return self.__modele
+    def partie(self):
+        return self.__partie
     
     @property
     def rayon(self):
@@ -90,13 +90,43 @@ class Tour():
     @combine.setter
     def combine(self, combine):
         self.__combine = combine
+   
+    def ameliorer_tour(self):
+        if self.__cout_amelioration():
+            self.__niveau_amelioration += 1 
+
+            # self.est_upgrade = True
+    
+    def ameloriation_permanente(self):
+        pass
+    
+    def verif_tour_voisine(self):
+        pass
+    
+    def verif_champ_action(self, cible): # verification de ce qui se trouve dans le champ d'action de la tour
+    #    verification que la cible est encore là, FAIRE UNE FONCTION DIFFERENTE
+        dist = hp.calcDistance(cible.pos_x, cible.pos_y, self.__pos_x, self.__pos_y)
+        if dist > self.__champ_action or self.cible.vie == 0 or len(self.__partie.liste_creeps) == 0:
+            self.__cible = None
+    
+    def activer_combinaison_tour(self):
+        pass
+    
+    def definir_cible(self):
+        for creep in self.__partie.liste_creeps:
+            dist = hp.calcDistance(creep.pos_x, creep.pos_y, self.__pos_x, self.__pos_y)
+            if dist < self.__champ_action:
+                self.__cible = creep
+    
+            
 
 
 class TourAttaque(Tour):
-    def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout, temps_recharge):
+    def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         super().__init__(parent, rayon, pos_x, pos_y, niveau_amelioration, cout)
         self.__liste_projectiles = []
-        self.__temps_recharge = temps_recharge
+        self.__temps_recharge = 1/self.__niveau_amelioration * 100
+        self.attaquer()
     
     @property
     def liste_projectiles(self):
@@ -117,56 +147,42 @@ class TourAttaque(Tour):
     def temps_recharge(self):
         return self.__temps_recharge
     
+    @temps_recharge.setter
+    def temps_recharge(self, temps):
+        self.__temps_recharge = temps
+        
+        
+    def attaquer(self):
+        if self.__cible is None:
+            self.definir_cible()
+        elif self.__cible:
+            balle = Balle(self, self.__cible, self.__pos_x, self.__pos_y)
+            self.__liste_projectiles.append(balle)
 
-class TourProjectile(TourAttaque):
+        if self.__cible:
+            self.update_target(self.__cible)
+            
+            
+        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer) # Confirmer la chaine d'appel vers le root.
+            
+    def attaque_boost(self):
+        pass
+        
+        
+    
 
+class TourMitrailleuse(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         # p1 : parent, p2 : rayon (le même pour toutes les tours de ce type), p3 et p4 : positions, p5 : niveau 1 en partant (amélioration générale possible??)
-        # p6 : coût (amélioration générale possible??), p7 : temps de recharge, éventuel p8 : vie (si on fait perdre de la vie à nos tours)
-        super().__init__(parent, 25, pos_x, pos_y, 1, 300, 5)
+        # p6 : coût (amélioration générale possible??), éventuel p7 : vie (si on fait perdre de la vie à nos tours)
+        super().__init__(parent, 25, pos_x, pos_y, 1, 300)
+
+
+    
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def attaquer(self):
-        if self.target is None:
-            self.definir_cible()
-        elif self.target:
-            balle = Balle(self, self.niveau, self.target, self.pos_x, self.pos_y)
-            self.liste_projectiles.append(balle)
-
-        if self.target:
-            self.update_target(self.target)
-
-    def definir_cible(self):
-        for creep in self.modele.liste_creeps:
-            dist = hp.calcDistance(creep.pos_x * 25, creep.pos_y * 25, self.pos_x, self.pos_y)
-            if dist < self.rayon_action:
-                self.target = creep
-
-    def update_target(self, target):
-        dist = hp.calcDistance(target.pos_x * 25, target.pos_y * 25, self.pos_x, self.pos_y)
-        if dist > self.rayon_action or self.target.vie == 0 or len(self.modele.liste_creeps) == 0:
-            self.target = None
+  
 
     def augmenter_niveau(self):
         self.niveau += 1
@@ -175,18 +191,7 @@ class TourProjectile(TourAttaque):
         for projectile in self.liste_projectiles:
             projectile.update_position()
 
-    def upgrade_tour(self):
-        if self.verifCoutUpgrade():
-            self.augmenter_niveau()
-            #self.cout_upgrade = self.cout_upgrade * self.niveau
-
-            if self.niveau == 2:
-                self.recharge = 2.5
-
-            if self.niveau == 3:
-                self.recharge = 10
-
-            self.est_upgrade = True
+    
 
 
     def verifCoutUpgrade(self):
