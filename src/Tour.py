@@ -1,3 +1,6 @@
+
+
+from Exemple_code.Julien.src.Projectile import Poison
 from Projectile import *
 from helper import Helper as hp
 
@@ -9,6 +12,7 @@ def creer_id():
     return "id_" + str(no_id)
 
 class Tour():
+
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         self.__id = creer_id()
         self.__partie = parent
@@ -22,6 +26,9 @@ class Tour():
         self.__cible = None # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__combine = None
         #self.__vie = vie Si on peut faire perdre de la vie à nos tours
+        self.__base = 20 #TODO a verifier avec la VUE
+        self.__colonne = 16 #TODO a verifier avec la VUE
+
     
     @property
     def id(self):
@@ -90,43 +97,72 @@ class Tour():
     @combine.setter
     def combine(self, combine):
         self.__combine = combine
-   
-    def ameliorer_tour(self):
-        if self.__cout_amelioration():
-            self.__niveau_amelioration += 1 
 
-            # self.est_upgrade = True
-    
-    def ameloriation_permanente(self):
-        pass
-    
-    def verif_tour_voisine(self):
-        pass
-    
-    def verif_champ_action(self, cible): # verification de ce qui se trouve dans le champ d'action de la tour
-    #    verification que la cible est encore là, FAIRE UNE FONCTION DIFFERENTE
-        dist = hp.calcDistance(cible.pos_x, cible.pos_y, self.__pos_x, self.__pos_y)
-        if dist > self.__champ_action or self.cible.vie == 0 or len(self.__partie.liste_creeps) == 0:
-            self.__cible = None
-    
-    def activer_combinaison_tour(self):
-        pass
-    
-    def definir_cible(self):
-        for creep in self.__partie.liste_creeps:
-            dist = hp.calcDistance(creep.pos_x, creep.pos_y, self.__pos_x, self.__pos_y)
-            if dist < self.__champ_action:
-                self.__cible = creep
-    
+    @property
+    def base(self):
+        return self.__base
+
+    @base.setter #TODO voir avec vue si besoin de setter
+    def base(self,valeur):
+        self.__base = valeur
+
+    @property
+    def colonne(self):
+        return self.__colonne
+
+    @colonne.setter #TODO voir avec vue si besoin de setter
+    def colonne(self,valeur):
+        self.__colonne = valeur
+
+
+
+
+
+   
+    # def ameliorer_tour(self):
+    #     if self.__cout_amelioration():
+    #         self.__niveau_amelioration += 1
+    #
+    #         # self.est_upgrade = True
+    #
+    # def ameloriation_permanente(self):
+    #     pass
+    #
+    # def verif_tour_voisine(self):
+    #     pass
+    #
+    # def verif_cible_active(self, cible): # verification si la cible existe encore
+    #     dist = hp.calcDistance(cible.pos_x, cible.pos_y, self.__pos_x, self.__pos_y)
+    #     if dist > self.__champ_action or self.cible.vie == 0 or len(self.__partie.liste_creeps) == 0:
+    #         self.__cible = None
+    #
+    # def activer_combinaison_tour(self):
+    #     pass
+    #
+    # def definir_cible(self):
+    #     for creep in self.__partie.liste_creeps:
+    #         dist = hp.calcDistance(creep.pos_x, creep.pos_y, self.__pos_x, self.__pos_y)
+    #         if dist < self.__champ_action:
+    #             self.__cible = creep
+    #
             
 
 
 class TourAttaque(Tour):
-    def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
+    def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout,dommage):
         super().__init__(parent, rayon, pos_x, pos_y, niveau_amelioration, cout)
         self.__liste_projectiles = []
-        self.__temps_recharge = 1/self.__niveau_amelioration * 100
-        self.attaquer()
+        self.__temps_recharge = 1/self.__niveau_amelioration * 100 #TODO reviser car toutes les tours ont le meme temps de recharge
+        self.__dommage = dommage
+
+        self.__canon = 6 #TODO a verifier avec la VUE
+        self.__longueur_canon = 5 #TODO a verifier avec la VUE
+        self.__gueule_canon =  (self.__pos_x+self.__longueur_canon,self.__pos_y) #TODO a verifier avec la VUE
+
+
+
+        # self.attaquer()
+
     
     @property
     def liste_projectiles(self):
@@ -150,23 +186,55 @@ class TourAttaque(Tour):
     @temps_recharge.setter
     def temps_recharge(self, temps):
         self.__temps_recharge = temps
-        
-        
-    def attaquer(self):
-        if self.__cible is None:
-            self.definir_cible()
-        elif self.__cible:
-            balle = Balle(self, self.__cible, self.__pos_x, self.__pos_y)
-            self.__liste_projectiles.append(balle)
 
-        if self.__cible:
-            self.update_target(self.__cible)
-            
-            
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer) # Confirmer la chaine d'appel vers le root.
-            
-    def attaque_boost(self):
-        pass
+    @property
+    def canon(self):
+        return self.__canon
+
+    @canon.setter #TODO a voir avec la VUE
+    def canon(self,valeur):
+        self.__canon = valeur
+
+    @property
+    def dommage(self):
+        return self.__dommage
+
+    @dommage.setter
+    def dommage(self,valeur):
+        self.__dommage = valeur
+
+    @property
+    def longueur_canon(self):
+        return self.__longueur_canon
+
+    @longueur_canon.setter
+    def longueur_canon(self,valeur):
+        self.__longueur_canon = valeur\
+
+    @property
+    def gueule_canon(self):
+        return self.__gueule_canon
+
+    @gueule_canon.setter
+    def gueule_canon(self,valeur):
+        self.__gueule_canon = valeur
+        
+        
+    # def attaquer(self):
+    #     if self.__cible is None:
+    #         self.definir_cible()
+    #     elif self.__cible:
+    #         balle = Balle(self, self.__cible, self.__pos_x, self.__pos_y)
+    #         self.__liste_projectiles.append(balle)
+    #
+    #     if self.__cible:
+    #         self.update_target(self.__cible)
+    #
+    #
+    #     self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer) # Confirmer la chaine d'appel vers le root.
+    #
+    # def attaque_boost(self):
+    #     pass
         
         
     
@@ -175,7 +243,7 @@ class TourMitrailleuse(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         # p1 : parent, p2 : rayon (le même pour toutes les tours de ce type), p3 et p4 : positions, p5 : niveau 1 en partant (amélioration générale possible??)
         # p6 : coût (amélioration générale possible??), éventuel p7 : vie (si on fait perdre de la vie à nos tours)
-        super().__init__(parent, 25, pos_x, pos_y, 1, 300)
+        super().__init__(parent, 25, pos_x, pos_y, 1, 300, 15) #TODO a confirmer le rayon et le cout, dommage
 
 
     
@@ -184,142 +252,153 @@ class TourMitrailleuse(TourAttaque):
 
   
 
-    def augmenter_niveau(self):
-        self.niveau += 1
+    # def augmenter_niveau(self):
+    #     self.niveau += 1
+    #
+    # def update_position_balles(self):
+    #     for projectile in self.liste_projectiles:
+    #         projectile.update_position()
+    #
+    #
+    #
+    #
+    # def verifCoutUpgrade(self):
+    #     if self.modele.qte_gold - self.cout_upgrade >= 0:
+    #         return True
+    #     else:
+    #         return False
 
-    def update_position_balles(self):
-        for projectile in self.liste_projectiles:
-            projectile.update_position()
 
-    
-
-
-    def verifCoutUpgrade(self):
-        if self.modele.qte_gold - self.cout_upgrade >= 0:
-            return True
-        else:
-            return False
-
-
-class TourEclair(Tour):
-
+class TourEclair(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-        self.id = creer_id()
-        self.cout_upgrade = 250
-        self.target = None
-        self.modele = parent
-        self.rayon = 25
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.rayon_action = self.rayon * 3
-        self.niveau = 1
-        self.cout = 80  # A revisiter
-        self.recharge = 5  # A revisiter
-        self.liste_projectiles = []
-        self.est_upgrade = False
+       super().__init__(parent, 25, pos_x, pos_y, 1, 80,10)#TODO a confirmer le rayon et le cout, dommage
 
 
-    def attaquer(self):
-        if self.target is None:
-            self.definir_cible()
-        elif not self.target.est_electrocute:
-            eclair = Eclair(self, self.niveau, self.target, self.pos_x, self.pos_y)
-            self.liste_projectiles.append(eclair)
 
-        if self.target:
-            self.update_target(self.target)
+    # def attaquer(self):
+    #     if self.target is None:
+    #         self.definir_cible()
+    #     elif not self.target.est_electrocute:
+    #         eclair = Eclair(self, self.niveau, self.target, self.pos_x, self.pos_y)
+    #         self.liste_projectiles.append(eclair)
+    #
+    #     if self.target:
+    #         self.update_target(self.target)
+    #
+    # def definir_cible(self):
+    #     for creep in self.modele.liste_creeps:
+    #         dist = hp.calcDistance(creep.pos_x * 25, creep.pos_y * 25, self.pos_x, self.pos_y)
+    #         if dist < self.rayon_action:
+    #             self.target = creep
+    #
+    # def update_target(self, target):
+    #     dist = hp.calcDistance(target.pos_x * 25, target.pos_y * 25, self.pos_x, self.pos_y)
+    #     if dist > self.rayon_action or self.target.vie == 0 or len(self.modele.liste_creeps) == 0:
+    #         self.target = None
+    #
+    # def augmenter_niveau(self):
+    #     self.niveau += 1
+    #
+    # def update_position_balles(self):
+    #     for projectile in self.liste_projectiles:
+    #         projectile.update_position()
+    #
+    # def upgrade_tour(self):
+    #     if self.verifCoutUpgrade():
+    #         self.augmenter_niveau()
+    #
+    #         self.recharge = 0  # si le niveau est 2 ou 3, laser continu
+    #         self.est_upgrade = True
+    #
+    # def verifCoutUpgrade(self):
+    #     if self.modele.qte_gold - self.cout_upgrade >= 0:
+    #         return True
+    #     else:
+    #         return False
 
-    def definir_cible(self):
-        for creep in self.modele.liste_creeps:
-            dist = hp.calcDistance(creep.pos_x * 25, creep.pos_y * 25, self.pos_x, self.pos_y)
-            if dist < self.rayon_action:
-                self.target = creep
 
-    def update_target(self, target):
-        dist = hp.calcDistance(target.pos_x * 25, target.pos_y * 25, self.pos_x, self.pos_y)
-        if dist > self.rayon_action or self.target.vie == 0 or len(self.modele.liste_creeps) == 0:
-            self.target = None
-
-    def augmenter_niveau(self):
-        self.niveau += 1
-
-    def update_position_balles(self):
-        for projectile in self.liste_projectiles:
-            projectile.update_position()
-
-    def upgrade_tour(self):
-        if self.verifCoutUpgrade():
-            self.augmenter_niveau()
-
-            self.recharge = 0  # si le niveau est 2 ou 3, laser continu
-            self.est_upgrade = True
-
-    def verifCoutUpgrade(self):
-        if self.modele.qte_gold - self.cout_upgrade >= 0:
-            return True
-        else:
-            return False
-
-
-class TourPoison(Tour):
-
+class TourPoison(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-        self.id = creer_id()
-        self.cout_upgrade = 200
-        self.target = None
-        self.modele = parent
-        self.rayon = 25
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.rayon_action = self.rayon * 3
-        self.niveau = 1
-        self.cout = 80  # A revisiter
-        self.recharge = 10  # A revisiter
-        self.liste_projectiles = []
-        self.est_upgrade = False
+        super().__init__(parent, 25, pos_x, pos_y, 1, 80,80)#TODO a confirmer le rayon et le cout, dommage
 
 
-    def attaquer(self):
-        if self.target is None:
-            self.definir_cible()
-        elif not self.target.est_empoisone:
-            poison = Poison(self, self.niveau, self.target, self.pos_x, self.pos_y)
-            self.liste_projectiles.append(poison)
+    # def attaquer(self):
+    #     if self.target is None:
+    #         self.definir_cible()
+    #     elif not self.target.est_empoisone:
+    #         poison = Poison(self, self.niveau, self.target, self.pos_x, self.pos_y)
+    #         self.liste_projectiles.append(poison)
+    #
+    #     if self.target:
+    #         self.update_target(self.target)
+    #
+    # def definir_cible(self):
+    #     for creep in self.modele.liste_creeps:
+    #         dist = hp.calcDistance(creep.pos_x * 25, creep.pos_y * 25, self.pos_x, self.pos_y)
+    #         if dist < self.rayon_action:
+    #             self.target = creep
+    #
+    # def update_target(self, target):
+    #     dist = hp.calcDistance(target.pos_x * 25, target.pos_y * 25, self.pos_x, self.pos_y)
+    #     if dist > self.rayon_action or self.target.vie == 0 or len(self.modele.liste_creeps) == 0:
+    #         self.target = None
+    #
+    # def augmenter_niveau(self):
+    #     self.niveau += 1
+    #
+    # def update_position_balles(self):
+    #     for projectile in self.liste_projectiles:
+    #         projectile.update_position()
+    #
+    # def upgrade_tour(self):
+    #     if self.verifCoutUpgrade():
+    #         self.augmenter_niveau()
+    #
+    #         if self.niveau == 2:
+    #             self.recharge = self.recharge / 1.5  # temps de recharge plus rapide dans niveaux 2 et 3
+    #
+    #         self.est_upgrade = True
+    #
+    #
+    #
+    # def verifCoutUpgrade(self):
+    #     if self.modele.qte_gold - self.cout_upgrade >= 0:
+    #         return True
+    #     else:
+    #         return False
 
-        if self.target:
-            self.update_target(self.target)
+class TourGrenade(TourAttaque):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 35, pos_x, pos_y, 1, 160,80) #TODO a confirmer le rayon et le cout, dommage
 
-    def definir_cible(self):
-        for creep in self.modele.liste_creeps:
-            dist = hp.calcDistance(creep.pos_x * 25, creep.pos_y * 25, self.pos_x, self.pos_y)
-            if dist < self.rayon_action:
-                self.target = creep
-
-    def update_target(self, target):
-        dist = hp.calcDistance(target.pos_x * 25, target.pos_y * 25, self.pos_x, self.pos_y)
-        if dist > self.rayon_action or self.target.vie == 0 or len(self.modele.liste_creeps) == 0:
-            self.target = None
-
-    def augmenter_niveau(self):
-        self.niveau += 1
-
-    def update_position_balles(self):
-        for projectile in self.liste_projectiles:
-            projectile.update_position()
-
-    def upgrade_tour(self):
-        if self.verifCoutUpgrade():
-            self.augmenter_niveau()
-
-            if self.niveau == 2:
-                self.recharge = self.recharge / 1.5  # temps de recharge plus rapide dans niveaux 2 et 3
-
-            self.est_upgrade = True
+class TourMine(TourAttaque):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 42, pos_x, pos_y, 1, 100,100)#TODO a confirmer le rayon et le cout, dommage
 
 
+class TourCanon(TourAttaque):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 100, pos_x, pos_y, 1, 150,800)#TODO a confirmer le rayon et le cout, dommage
 
-    def verifCoutUpgrade(self):
-        if self.modele.qte_gold - self.cout_upgrade >= 0:
-            return True
-        else:
-            return False
+
+class TourArgent(Tour):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 35, pos_x, pos_y, 1, 160)  # TODO a confirmer le rayon et le cout
+
+
+class TourRalentissement(Tour):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 35, pos_x, pos_y, 1, 160)  # TODO a confirmer le rayon et le cout
+
+
+class TourBoost(Tour):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 35, pos_x, pos_y, 1, 160)  # TODO a confirmer le rayon et le cout
+
+
+class TourRepoussante(Tour):
+    def __init__(self, parent, pos_x, pos_y):
+        super().__init__(parent, 35, pos_x, pos_y, 1, 160)  # TODO a confirmer le rayon et le cout
+
+
+
