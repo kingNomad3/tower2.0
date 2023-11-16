@@ -29,7 +29,7 @@ class Projectile:
             self.__cible.est_electrocute = True
             self.__cible.counter_electrocute = 0
             self.__cible.dmg_electrocute = self.__dommage
-        elif isinstance(self, Poison):
+        elif isinstance(self, Poison):            
             self.__cible.est_empoisone = True
             self.__cible.dmg_poison = self.__dommage
         elif isinstance(self, Grenade):
