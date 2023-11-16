@@ -96,18 +96,18 @@ class TourEclair:
     def attaquer(self):
         if self.target is None:
             self.definir_cible()
-        elif not self.target.est_electrocute:
+        else:
             eclair = Eclair(self, self.niveau, self.target, self.pos_x, self.pos_y)
             self.liste_projectiles.append(eclair)
-
-        if self.target:
             self.update_target(self.target)
+
 
     def definir_cible(self):
         for creep in self.modele.liste_creeps:
             dist = hp.calcDistance(creep.pos_x * 25, creep.pos_y * 25, self.pos_x, self.pos_y)
             if dist < self.rayon_action:
                 self.target = creep
+                # break
 
     def update_target(self, target):
         dist = hp.calcDistance(target.pos_x * 25, target.pos_y * 25, self.pos_x, self.pos_y)
