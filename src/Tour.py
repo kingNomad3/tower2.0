@@ -213,7 +213,7 @@ class TourMitrailleuse(TourAttaque):
         if self.__cible is None:
             self.definir_cible()
         if self.__cible:
-            balle = Balle(self, self.__cible, self.__pos_x, self.__pos_y)#TODO verifier si les bonnes variables sont passes
+            balle = Balle(self, self.__pos_x, self.__pos_y,self.__cible,self.__niveau_amelioration)#TODO verifier si les bonnes variables sont passes
             self.__liste_projectiles.append(balle)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
@@ -228,7 +228,7 @@ class TourEclair(TourAttaque):
         if self.__cible is None:
             self.definir_cible()
         if self.__cible:
-            eclair = Eclair(self, self.__cible, self.__pos_x, self.__pos_y)#TODO verifier si les bonnes variables sont passes
+            eclair = Eclair(self, self.__pos_x, self.__pos_y, self.__cible,self.__niveau_amelioration)#TODO verifier si les bonnes variables sont passes
             self.__liste_projectiles.append(eclair)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
@@ -243,7 +243,7 @@ class TourPoison(TourAttaque):
         if self.__cible is None:
             self.definir_cible()
         if self.__cible:
-            poison = Poison(self, self.__cible, self.__pos_x,self.__pos_y)  # TODO verifier si les bonnes variables sont passes
+            poison = Poison(self, self.__pos_x,self.__pos_y,self.__cible,self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.__liste_projectiles.append(poison)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
@@ -258,7 +258,7 @@ class TourGrenade(TourAttaque):
         if self.__cible is None:
             self.definir_cible()
         if self.__cible:
-            grenade = Grenade(self, self.__cible, self.__pos_x,self.__pos_y)  # TODO verifier si les bonnes variables sont passes
+            grenade = Grenade(self,  self.__pos_x,self.__pos_y, self.__cible, self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.__liste_projectiles.append(grenade)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
@@ -273,7 +273,7 @@ class TourMine(TourAttaque):
         if self.__cible is None:
             self.definir_cible()
         if self.__cible:
-            mine = Mine(self, self.__cible, self.__pos_x,self.__pos_y)  # TODO verifier si les bonnes variables sont passes
+            mine = Mine(self, self.__pos_x,self.__pos_y,self.__cible,self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.__liste_projectiles.append(mine)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
@@ -288,7 +288,7 @@ class TourCanon(TourAttaque):
         if self.__cible is None:
             self.definir_cible()
         if self.__cible:
-            obus = Obus(self, self.__cible, self.__pos_x,self.__pos_y)  # TODO verifier si les bonnes variables sont passes
+            obus = Obus(self, self.__pos_x,self.__pos_y,self.__cible,self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.__liste_projectiles.append(obus)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
