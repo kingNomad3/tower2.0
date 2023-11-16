@@ -7,8 +7,8 @@ class Vue:
         self.modele = modele
         self.root = Tk()
 
-        self.largeur = 960
-        self.hauteur = 720
+        self.largeur = 1152
+        self.hauteur = 648
         self.largeur_chemin = 45
 
         self.ratio_x = 1
@@ -18,13 +18,14 @@ class Vue:
         self.font_2 = "Arial " + str(int(10 * ((self.ratio_y + self.ratio_x) / 2)))
 
         # frame interne
+        self.interface_panel = None
+        self.toggle_menu_tour = None
         self.frame = Frame(self.root)
         self.frame.pack(fill=BOTH, expand=YES)
 
         # canvas
         self.canvas = Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="lightgreen", highlightthickness=0)
         self.canvas.bind("<Configure>", self.resize)
-        self.canvas.pack(fill=BOTH, expand=YES)
         self.canvas.pack(fill=BOTH, expand=YES)
 
         self.dessiner_segments()
@@ -38,33 +39,29 @@ class Vue:
         self.dessiner_information()
 
         
-
-    def dessiner_interface_info(self):
-        # chrono
-        self.canvas.create_rectangle(90 - 60, 600 - 30, 90 + 60,
-                                     600 + 30,
-                                     fill="WHITE", tags=('interface',), )
-
-        # vague
-        self.canvas.create_rectangle(90 - 60, 660 - 30, 90 + 60,
-                                     660 + 30,
-                                     fill="WHITE", tags=('interface',), )
-        #choix
-        self.canvas.create_rectangle(350-175, 630 - 60, 350+175,
-                                     630 + 60,
-                                     fill="WHITE", tags=('interface',), )
-        self.afficher_choix_tours()
-
-        #vies
-        self.canvas.create_rectangle(760 - 60, 600 - 30, 760 + 60,
-                                     600 + 30,
-                                     fill="WHITE", tags=('interface',), )
-        #argent
-        self.canvas.create_rectangle(760 - 60, 660 - 30, 760 + 60,
-                                     660 + 30,
-                                     fill="WHITE", tags=('interface',), )
-
-
+    # Dessine InterfacePannel et le Bouton ChoixTour
+    def dessiner_interface_info(self):        
+        if self.interface_panel and self.toggle_menu_tour:
+            self.interface_panel.destroy()
+            self.toggle_menu_tour.destroy()
+            
+        self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
+        self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
+        
+        # fuck le scalling???
+        self.toggle_menu_tour = PacManButton(50 * self.ratio_x, 10 * self.ratio_y, "tours")
+        self.toggle_menu_tour.place(anchor="ne", x=250, y=40)
+        
+        
+    # Caller dans le controleur a chaque tick de boucle
+    # Update les valeurs dynamique du InterfacePannel    
+    def update_text_interface(self):
+        self.interface_panel.chrono_info['text'] = str(self.modele.partie.chrono)
+        self.interface_panel.vague_info['text'] = str(self.modele.partie.vague)
+        self.interface_panel.vie_info['text'] = str(self.modele.partie.chateau.chatelains)
+        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant)
+        
+        
     def afficher_choix_tours(self):
         self.canvas.create_rectangle(250 - 40, 640 - 40, 250 + 40,
                                      640 + 40,
@@ -257,14 +254,15 @@ class Vue:
         self.hauteur = evt.height
         self.ratio_x *= w
         self.ratio_y *= h
-
-
+        
+        self.dessiner_interface_info()
+        
         # reconfig
         self.canvas.config(width=self.largeur, height=self.hauteur)
         self.canvas.scale("all", 0, 0, w, h)
         self.canvas.itemconfig("chemin", width=self.largeur_chemin * (self.ratio_x + self.ratio_y) / 2)
         self.canvas.itemconfig("tour_radius", width=5 * (self.ratio_y + self.ratio_x) / 2)
-
+        
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
 
@@ -326,3 +324,39 @@ class Vue:
             except IndexError:
                 break
 
+class InterfacePannel(Frame):
+    
+    def __init__(self, width, height):
+        super().__init__()
+        self['bg'] = 'black'
+        self['width'] = width
+        self['height'] = height
+        self['highlightthickness'] = 3
+        self['highlightbackground'] = 'blue'
+        
+        self.chrono_info = Label(self, text="$ 00:00", font=("arial", 11), fg="blue", bg="black")
+        self.vague_info = Label(self, text="$ 100", font=("arial", 11), fg="blue",  bg="black")
+        self.vie_info = Label(self, text="$ 20", font=("arial", 11), fg="blue",  bg="black")
+        self.argent_info = Label(self, text="$ 10,000", font=("arial", 11), fg="blue", bg="black")
+        
+        self.chrono_info.place(anchor="center", relx= 0.15, rely=0.5)
+        self.vague_info.place(anchor="center", relx= 0.4, rely=0.5)
+        self.vie_info.place(anchor="center", relx= 0.6, rely=0.5)
+        self.argent_info.place(anchor="center", relx= 0.85, rely=0.5)
+    
+    
+        # #choix button qui trigger le menu placer tour
+        
+class PacManButton(Frame):
+    def __init__(self, width, height, text):
+        super().__init__()
+        self['bg'] = 'black'
+        self['width'] = width
+        self['height'] = height
+        self['highlightthickness'] = 2
+        self['highlightbackground'] = 'goldenrod3'
+        
+        button = Button(self, bg='black', fg='goldenrod3', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text)
+        button.pack()
+    
+    

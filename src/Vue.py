@@ -7,8 +7,8 @@ class Vue:
         self.modele = modele
         self.root = Tk()
 
-        self.largeur = 960
-        self.hauteur = 720
+        self.largeur = 1152
+        self.hauteur = 648
         self.largeur_chemin = 45
 
         self.ratio_x = 1

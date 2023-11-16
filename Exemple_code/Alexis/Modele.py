@@ -22,7 +22,7 @@ class Modele:
 class Chemin():
     def __init__(self, parent):
         self.parent = parent
-        self.pivots = [[150, 0], [150, 450], [330, 450], [330, 120], [840, 120], [840, 240], [570, 240], [570, 450], [860, 450]]
+        self.pivots = [[150, 0], [150, 550], [330, 550], [330, 220], [840, 220], [840, 340], [570, 340], [570, 550], [860, 550]]
         self.segments = []
         self.temp = self.pivots[0]
         self.creer_segments(self.pivots)
