@@ -9,6 +9,7 @@ class Vue:
 
         self.largeur = 960
         self.hauteur = 720
+        self.largeur_chemin = 45
 
         self.ratio_x = 1
         self.ratio_y = 1
@@ -24,6 +25,7 @@ class Vue:
         self.canvas = Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="lightgreen", highlightthickness=0)
         self.canvas.bind("<Configure>", self.resize)
         self.canvas.pack(fill=BOTH, expand=YES)
+        self.canvas.pack(fill=BOTH, expand=YES)
 
         self.dessiner_segments()
 
@@ -35,6 +37,7 @@ class Vue:
         self.dessiner_chateau()
         self.dessiner_information()
 
+        
 
     def dessiner_interface_info(self):
         # chrono
@@ -259,7 +262,7 @@ class Vue:
         # reconfig
         self.canvas.config(width=self.largeur, height=self.hauteur)
         self.canvas.scale("all", 0, 0, w, h)
-        self.canvas.itemconfig("chemin", width=45 * (self.ratio_x + self.ratio_y) / 2)
+        self.canvas.itemconfig("chemin", width=self.largeur_chemin * (self.ratio_x + self.ratio_y) / 2)
         self.canvas.itemconfig("tour_radius", width=5 * (self.ratio_y + self.ratio_x) / 2)
 
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
@@ -310,9 +313,7 @@ class Vue:
 
     def dessiner_segments(self):
         segments = self.modele.partie.chemin.segments #self.chemin.segments
-        largeur_chemin = 45 * (self.ratio_x + self.ratio_y) / 2
 
-        grandeur_tableau = len(segments)
         for i, segment in enumerate(segments):
             try:
                 x0 = segment[0]
@@ -321,7 +322,7 @@ class Vue:
                 y1 = segments[i + 1][1]
 
                 self.canvas.create_line(x0, y0, x1, y1,
-                                        width=largeur_chemin, tags=("chemin",), joinstyle=MITER)
+                                        tags=("chemin",), joinstyle=MITER)
             except IndexError:
                 break
 
