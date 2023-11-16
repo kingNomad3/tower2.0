@@ -2,16 +2,16 @@ from helper import Helper as hp
 
 class Projectile:
 
-    def __init__(self, parent, pos_x, pos_y, creep, niveau):
+    def __init__(self, parent, pos_x, pos_y, creep, niveau_tour):
         self.__tour = parent
         self.__cible = creep  # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__pos_x = pos_x
         self.__pos_y = pos_y
-        self.__niveau = niveau
-        self.__rayon_attaque = None
+        self.__niveau = niveau_tour
+        self.__rayon_attaque = 4
         self.__vitesse = None
         self.__dommage = None
-        #self.__angle = hp.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
+        self.__angle = hp.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
 
     def deplacer(self):
         dist = hp.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
@@ -19,8 +19,21 @@ class Projectile:
             self.__pos_x, self.__pos_y = hp.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
         else:
             # frappe le creep vise
-            self.__cible.recoit_coup(self.__tour.force)
+            self.attaque_special()
+            self.__cible.recoit_coup(self.__dommage)
             self.__tour.liste_projectiles.remove(self)
+            
+    def attaque_special(self):
+        #niveau_tour affectera les effets
+        if isinstance(self, Eclair):
+            self.__cible.est_electrocute = True
+            self.__cible.counter_electrocute = 0
+            self.__cible.dmg_electrocute = self.__dommage
+        elif isinstance(self, Poison):
+            self.__cible.est_empoisone = True
+            self.__cible.dmg_poison = self.__dommage
+        elif isinstance(self, Grenade):
+            pass
 
     @property
     def niveau(self):
@@ -69,19 +82,46 @@ class Projectile:
 
 class Obus(Projectile):
 
-    def __init__(self, parent, pos_x, pos_y, cible, dommage, vitesse):
-        super().__init__(parent, pos_x, pos_y, cible)
-        self.vitesse = vitesse
-        self.dommage = dommage
+    def __init__(self, parent, pos_x, pos_y, cible, niveau_tour):
+        super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
+        self.vitesse = 10
+        self.dommage = 4 * niveau_tour
 
 
 class Eclair(Projectile):
 
-    def __init__(self, parent, pos_x, pos_y, cible, dommage, vitesse, niveau ):
-        super().__init__(parent, pos_x, pos_y, cible, niveau)
-        self.vitesse = vitesse
-        self.dommage = dommage
-
+    def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
+        super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
+        self.vitesse = 18
+        self.dommage = 5 * niveau_tour
+        # niveau 3 a determiner
+            
+class Poison(Projectile):
+ def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
+        super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
+        self.vitesse = 8  
+        self.dommage = 0.3 * niveau_tour
+        
+class Balle(Projectile):
+ def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
+        super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
+        self.vitesse = 15
+        self.dommage = 2 
+        
+class Grenade(Projectile):
+ def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
+        super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
+        self.vitesse = 7 
+        self.dommage = 8
+        
+class Mine(Projectile):
+ def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
+        super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
+        self.vitesse = 5 
+        self.dommage = 8
+        
+        
+ 
 
 
 
