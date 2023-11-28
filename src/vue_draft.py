@@ -383,25 +383,25 @@ class Vue():
         
 ########################### RESIZE ############################################
 
-# def resize(self, evt):
-#     w = evt.width / self.largeur
-#     h = evt.height / self.hauteur
-#     self.largeur = evt.width
-#     self.hauteur = evt.height
-#     self.ratio_x *= w
-#     self.ratio_y *= h
+def resize(self, evt):
+    w = evt.width / self.largeur
+    h = evt.height / self.hauteur
+    self.largeur = evt.width
+    self.hauteur = evt.height
+    self.ratio_x *= w
+    self.ratio_y *= h
 
-#     # reconfig
-#     self.canvas.config(width=self.largeur, height=self.hauteur)
-#     self.canvas.scale("all", 0, 0, w, h)
-#     self.canvas.itemconfig("chemin", width=45 * (self.ratio_x + self.ratio_y) / 2)
-#     self.canvas.itemconfig("tour_radius", width=5 * (self.ratio_y + self.ratio_x) / 2)
+    # reconfig
+    self.canvas.config(width=self.largeur, height=self.hauteur)
+    self.canvas.scale("all", 0, 0, w, h)
+    self.canvas.itemconfig("chemin", width=45 * (self.ratio_x + self.ratio_y) / 2)
+    self.canvas.itemconfig("tour_radius", width=5 * (self.ratio_y + self.ratio_x) / 2)
 
-#     self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
-#     self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
+    self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
+    self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
 
-#     self.canvas.itemconfig("info", font=self.font)
-#     self.canvas.itemconfig("info_tour", font=self.font_2)
+    self.canvas.itemconfig("info", font=self.font)
+    self.canvas.itemconfig("info_tour", font=self.font_2)
         
 #################################################################################
 

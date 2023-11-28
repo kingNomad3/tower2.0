@@ -139,6 +139,7 @@ class Tour():
     rayon = 150
     largeur = 30
     cout = 10
+    
     def __init__(self, x, y, parent):
         self.parent = parent
         self.niveau = 1
