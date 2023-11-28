@@ -59,6 +59,10 @@ class Partie:
     @property
     def argent_courant(self):
         return self.__argent_courant
+
+    @argent_courant.setter  # TODO Pour les améliorations, si les tours deviennent plus grosses
+    def argent_courant(self, montant):
+        self.__argent_courant += montant
     
     @property
     def fin_partie(self):

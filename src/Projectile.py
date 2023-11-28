@@ -4,7 +4,6 @@ class Projectile:
     largeur = 10
     
     def __init__(self, parent, pos_x, pos_y, creep, niveau_tour):
-        self.__id = hp.creer_id
         self.__tour = parent
         self.__id = hp.Helper.creer_id()
         self.__cible = creep  # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
@@ -17,11 +16,13 @@ class Projectile:
         self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
 
     def deplacer(self):
+        self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
         dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
         if self.__vitesse < dist:
             self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
         else:
             # frappe le creep vise
+            print("hi")
             self.attaque_special()
             self.__cible.recoit_coup(self.__dommage)
             self.__tour.liste_projectiles.remove(self)
@@ -91,7 +92,7 @@ class Obus(Projectile):
 
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 10
+        self.vitesse = 5
         self.dommage = 4 * niveau_tour
 
 
@@ -112,7 +113,7 @@ class Poison(Projectile):
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 15
+        self.vitesse = 10
         self.dommage = 2 
         
 class Grenade(Projectile):

@@ -10,7 +10,7 @@ class Creep:
         self.__cible = None
         self.__angle_target = None
         self.__partie = parent
-        self.__valeur_argent = None
+        self.__valeur_argent = 2
         self.__est_empoisone = False
         self.__est_electrocute = False
         self.__compteur_electrocute = None
@@ -47,14 +47,14 @@ class Creep:
 
             # arrive au chateau
             elif self.__segment_actuel == 8:
-                self.parent.perte_vie()
+                self.partie.perte_vie()
                 self.__vivant = False
                 
     def recoit_coup(self, dommage):
         self.__vie -= dommage
         if self.__vie <= 0:
             self.__vivant = False
-            self.__partie.argent += Creep.valeur
+            self.__partie.argent_courant += self.valeur_argent
 
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
