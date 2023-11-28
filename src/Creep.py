@@ -1,4 +1,4 @@
-from helper import Helper as hp
+import helper as hp
 import random
 
 
@@ -6,7 +6,7 @@ class Creep:
     largeur = 20
     
     def __init__(self, parent, pos_x, pos_y, niveau):
-        self.__id = hp.creer_id()
+        self.__id = hp.Helper.creer_id()
         self.__cible = None
         self.__angle_target = None
         self.__partie = parent
@@ -22,7 +22,7 @@ class Creep:
         self.valeur_gold = 20 * niveau
         self.__pos_x = pos_x
         self.__pos_y = pos_y
-        self.__vitesse = 0.15
+        self.__vitesse = 5
         self.__taille = 1
         self.__segment_actuel = 0
         self.definir_attribut()
@@ -34,11 +34,11 @@ class Creep:
         self.__attribut = attributs[random.randint(0,len(attributs)-1)] if random.random() < 0.05 else None
 
     def bouger(self):
-        self.x, self.y = hp.Helper.getAngledPoint(self.angle, self.vitesse, self.x, self.y)
-
+        self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle_target, self.__vitesse, self.__pos_x, self.__pos_y)
+        
         dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible[0], self.__cible[1])
 
-        if dist < self.vitesse:
+        if dist < self.__vitesse:
             self.__pos_x = self.__cible[0]
             self.__pos_y = self.__cible[1]
             self.__segment_actuel += 1
@@ -60,23 +60,24 @@ class Creep:
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
         y = self.__partie.chemin.segments[self.segment_actuel][1][1]
 
-        self.angle = hp.Helper.calcAngle(self.x, self.y, x, y)
-        self.cible = [x, y]
+        self.__angle_target = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, x, y)
+        self.__cible = [x, y]
 
     def maj_vie(self):
-        if self.__est_empoisone:
-            if self.__cible.attribut is "poison": 
-                self.dmg_poison /= 2
-            self.vie -= self.dmg_poison
+        # if self.__est_empoisone:
+        #     if self.__cible.attribut is "poison": 
+        #         self.dmg_poison /= 2
+        #     self.vie -= self.dmg_poison
             
-        if self.__est_electrocute:
-            self.__compteur_electrocute += 1
-            if self.__cible.attribut is "electrocution":
-                self.__compteur_electrocute +=1 
-            self.__vie -= self.dmg_electrocute
+        # if self.__est_electrocute:
+        #     self.__compteur_electrocute += 1
+        #     if self.__cible.attribut is "electrocution":
+        #         self.__compteur_electrocute +=1 
+        #     self.__vie -= self.dmg_electrocute
 
-        if self.__compteur_electrocute == 3:
-            self.est_electrocute = False
+        # if self.__compteur_electrocute == 3:
+        #     self.est_electrocute = False
+        pass
             
     @property
     def cible(self):
@@ -146,6 +147,10 @@ class Creep:
     @property
     def pos_y(self):
         return self.__pos_y
+    
+    @property
+    def id(self):
+        return self.__id
 
     @est_electrocute.setter
     def vitesse(self, est_electrocute):

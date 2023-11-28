@@ -7,7 +7,6 @@ from helper import Helper as hp
 class Tour:
     rayon = 150
     largeur = 30
-    cout = {"TourMitrailleuse":20, "niveau 2":30, "niveau 3":40}
     
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         self.__id = hp.creer_id()
@@ -16,7 +15,7 @@ class Tour:
         self.__champ_action = self.__rayon * 3.5 #TODO Taille exacte du champ d'action à décider. On pourrait se passer en paramètre le multiplicateur au besoin.
         self.__pos_x = pos_x
         self.__pos_y = pos_y
-        self.__niveau_amelioration = niveau_amelioration
+        self.__niveau_amelioration = 1
         self.__cout = cout
         self.__cout_amelioration = self.__cout * self.__niveau_amelioration #TODO Manière de calculer à déterminer. Permettrait de faire en sorte que les améliorations en jeu coûtent moins cher si on réduit son coût.
         self.__cible = None # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
@@ -38,7 +37,7 @@ class Tour:
     def rayon(self):
         return self.__rayon
     
-    @rayon.setter() #TODO Pour les améliorations, si les tours deviennent plus grosses
+    @rayon.setter #TODO Pour les améliorations, si les tours deviennent plus grosses
     def rayon(self, rayon):
         self.__rayon = rayon
     
@@ -142,10 +141,10 @@ class TourAttaque(Tour):
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         super().__init__(parent, rayon, pos_x, pos_y, niveau_amelioration, cout)
         self.__liste_projectiles = []
-        self.__temps_recharge = 1/self.__niveau_amelioration * 100 #TODO reviser car toutes les tours ont le meme temps de recharge
+        self.__temps_recharge = 1/self.niveau_amelioration * 100 #TODO reviser car toutes les tours ont le meme temps de recharge
         self.__canon = 6 #TODO a verifier avec la VUE
         self.__longueur_canon = 5 #TODO a verifier avec la VUE
-        self.__gueule_canon =  (self.__pos_x+self.__longueur_canon,self.__pos_y) #TODO a verifier avec la VUE
+        self.__gueule_canon =  (self.pos_x+self.__longueur_canon,self.pos_y) #TODO a verifier avec la VUE
         self.attaquer()
 
     @property
@@ -206,14 +205,14 @@ class TourMitrailleuse(TourAttaque):
         super().__init__(parent, 25, pos_x, pos_y, 1, 300) #TODO a confirmer le rayon et le cout
 
     def attaquer(self):
-        if self.__cible:
-            self.verif_cible_active(self.__cible)
-        if self.__cible is None:
+        if self.cible:
+            self.verif_cible_active(self.cible)
+        if self.cible is None:
             self.definir_cible()
-        if self.__cible:
-            balle = Balle(self, self.__pos_x, self.__pos_y,self.__cible,self.__niveau_amelioration)#TODO verifier si les bonnes variables sont passes
-            self.__liste_projectiles.append(balle)
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
+        if self.cible:
+            balle = Balle(self, self.pos_x, self.pos_y,self.cible,self.niveau_amelioration)#TODO verifier si les bonnes variables sont passes
+            self.liste_projectiles.append(balle)
+        self.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
 
 class TourEclair(TourAttaque):
@@ -221,13 +220,13 @@ class TourEclair(TourAttaque):
        super().__init__(parent, 25, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
 
     def attaquer(self):
-        if self.__cible:
-            self.verif_cible_active(self.__cible)
-        if self.__cible is None:
+        if self.cible:
+            self.verif_cible_active(self.cible)
+        if self.cible is None:
             self.definir_cible()
-        if self.__cible:
-            eclair = Eclair(self, self.__pos_x, self.__pos_y, self.__cible,self.__niveau_amelioration)#TODO verifier si les bonnes variables sont passes
-            self.__liste_projectiles.append(eclair)
+        if self.cible:
+            eclair = Eclair(self, self.pos_x, self.pos_y, self.cible,self.niveau_amelioration)#TODO verifier si les bonnes variables sont passes
+            self.liste_projectiles.append(eclair)
         self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
 
 

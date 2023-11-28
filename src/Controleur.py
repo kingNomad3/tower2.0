@@ -3,66 +3,37 @@ from Modele import *
 from Tour import *
 
 class Controleur:
-
     def __init__(self):
-        self.timer_counter = 0
-        self.creep_counter = 0
         self.modele = Modele(self)
-        self.vue = Vue(self)
-        self.vue.root.after(500, self.game_loop)
+        self.timer = 0
+        self.vue = Vue(self, self.modele)
+        self.vue.root.after(300, self.boucler_jeu)
         self.vue.root.mainloop()
 
-    def game_loop(self):
-        if not self.modele.gameover:
-            if self.modele.timer == 0:  # va dans le modele
-                self.creep_counter = 0
-                self.modele.initialiser_niveau()
+    def boucler_jeu(self):
+        if not self.modele.partie.fin_partie:
+            self.incrementer_timer()
+            self.modele.jouer()
+            self.vue.dessiner_jeu()
+            self.vue.root.after(50, self.boucler_jeu)
+        else:
+           self.traiter_gameover()
 
-            if self.timer_counter % 10 == 0:
-                if self.creep_counter != 20:
-                    self.modele.ajouter_creep()
-                    self.creep_counter += 1
 
-            if self.timer_counter == 20:
-                self.modele.game_timer()
-                self.timer_counter = 0
+    # pour du visuel et le modèle (en cas de besoin)
+    def incrementer_timer(self):
+        self.timer += 0.5 
 
-            self.modele.bouger_creep()
-            self.modele.update_vie_creep()
-            self.vue.afficher_creeps()
+    def get_timer_str(self):
+        return f"{int(self.timer//10)}s"
 
-            self.vue.canvas.delete("projectile")
-            for tour in self.modele.liste_tours:
-                if self.timer_counter % 15 == 0:
-                    tour.attaquer()
-                tour.update_position_balles()
-                self.vue.afficher_projectile(tour)
+    # Lié à l'intéraction usager...
+    def traiter_gameover(self):
+        self.vue.root.destroy()
 
-            self.timer_counter += 1
+    def creer_tour(self, x, y):
+        self.modele.partie.creer_tour(x, y, "TourMitrailleuse")
+            
 
-            self.vue.root.after(50, self.game_loop)
-
-    def creer_tour(self, x, y, type_tour):
-        tour = self.modele.creer_tour(x, y, type_tour)
-
-        if tour is not None:
-            if isinstance(tour, TourMitrailleuse):
-                self.vue.afficher_tour(tour)
-            elif isinstance(tour, TourEclair):
-                self.vue.afficher_tour_eclair(tour)
-            elif isinstance(tour, TourPoison):
-                self.vue.afficher_tour_poison(tour)
-
-    def upgrader_tour(self):
-        self.modele.upgrader_tour()
-
-        if self.modele.tour_selectionne.est_upgrade:
-            if isinstance(self.modele.tour_selectionne, TourMitrailleuse):
-                self.vue.afficher_upgrade_tour(self.modele.tour_selectionne)
-            elif isinstance(self.modele.tour_selectionne, TourEclair):
-                self.vue.afficher_upgrade_tour_eclair(self.modele.tour_selectionne)
-            elif isinstance(self.modele.tour_selectionne, TourPoison):
-                self.vue.afficher_upgrade_tour_poison(self.modele.tour_selectionne)
-
-            self.modele.tour_selectionne.est_upgrade = False
-            self.modele.tour_selectionne = None
+if __name__ == "__main__":
+    c = Controleur()

@@ -219,7 +219,7 @@ class Vue:
     def update_info_partie(self):
         self.interface_panel.chrono_info['text'] = str(self.modele.partie.chrono)
         self.interface_panel.vague_info['text'] = str(self.modele.partie.vague)
-        self.interface_panel.vie_info['text'] = str(self.modele.partie.chateau.chatelains)
+        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie)
         self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant)
         
     # Dessine InterfacePannel et le Bouton ChoixTour
@@ -231,9 +231,9 @@ class Vue:
         self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
         self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
         
-        # fuck le scalling???
-        self.toggle_menu_tour = PacManButton(50 * self.ratio_x, 10 * self.ratio_y, "tours")
-        self.toggle_menu_tour.place(anchor="ne", x=250, y=40)
+        # # fuck le scalling???
+        # self.toggle_menu_tour = PacManButton(50 * self.ratio_x, 10 * self.ratio_y, "tours")
+        # self.toggle_menu_tour.place(anchor="ne", x=250, y=40)
     
 
     # def update_info_partie(self):
@@ -271,7 +271,7 @@ class Vue:
         self.canvas.delete('info_tour', 'btn_x')
 
         self.canvas.create_text(90 * self.ratio_x, 585 * self.ratio_y, text="Chrono", font=self.font, tags=("info",))
-        self.canvas.create_text(90 * self.ratio_x, 615 * self.ratio_y, text=self.controleur.get_timer_str(), tags=("info",'timer', ), font=self.font)
+        # self.canvas.create_text(90 * self.ratio_x, 615 * self.ratio_y, text=self.controleur.get_timer_str(), tags=("info",'timer', ), font=self.font)
         self.canvas.create_text(90 * self.ratio_x, 645 * self.ratio_y, text="Vague", font=self.font, tags=("info", ))
         self.canvas.create_text(90 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.vague, tags=("info",'vague', ), font=self.font)
         self.canvas.create_text(260 * self.ratio_x, 585 * self.ratio_y, text="Choix de tours", font=self.font, tags=("info", "choix_tour", ))
@@ -281,7 +281,7 @@ class Vue:
         self.canvas.create_text(760 * self.ratio_x, 585 * self.ratio_y, text="Vies", font=self.font, tags=("info", ))
         self.canvas.create_text(760 * self.ratio_x, 615 * self.ratio_y, text=self.modele.partie.vie, tags=("info",'vie', ), font=self.font, fill="RED")
         self.canvas.create_text(760 * self.ratio_x, 645 * self.ratio_y, text="Argent", font=self.font, tags=("info", ))
-        self.canvas.create_text(760 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.argent, tags=("info",'argent', ), font=self.font)
+        self.canvas.create_text(760 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.argent_courant, tags=("info",'argent', ), font=self.font)
 
 
         self.activation_to = self.canvas.tag_bind('TO', '<Button>', self.activer_creation_tour_to)
@@ -289,22 +289,22 @@ class Vue:
         self.activation_tp = self.canvas.tag_bind('TP', '<Button>', self.activer_creation_tour_tp)
 
     def activer_creation_tour_to(self, event):
-        if self.modele.partie.peut_acheter_tour():
-            self.reset_border()
-            self.canvas.itemconfig('TO_carre',outline="RED", width=10)
-            self.creation = self.canvas.bind("<Button>", self.creer_tour)
+        # if self.modele.partie.peut_acheter_tour():
+        self.reset_border()
+        self.canvas.itemconfig('TO_carre',outline="RED", width=10)
+        self.creation = self.canvas.bind("<Button>", self.creer_tour)
 
     def activer_creation_tour_te(self, event):
-        if self.modele.partie.peut_acheter_tour():
-            self.reset_border()
-            self.canvas.itemconfig('TE_carre',outline="RED", width=10)
-            self.creation = self.canvas.bind("<Button>", self.creer_tour)
+        # if self.modele.partie.peut_acheter_tour():
+        self.reset_border()
+        self.canvas.itemconfig('TE_carre',outline="RED", width=10)
+        self.creation = self.canvas.bind("<Button>", self.creer_tour)
 
     def activer_creation_tour_tp(self, event):
-        if self.modele.partie.peut_acheter_tour():
-            self.reset_border()
-            self.canvas.itemconfig('TP_carre',outline="RED", width=10)
-            self.creation = self.canvas.bind("<Button>", self.creer_tour)
+        # if self.modele.partie.peut_acheter_tour():
+        self.reset_border()
+        self.canvas.itemconfig('TP_carre',outline="RED", width=10)
+        self.creation = self.canvas.bind("<Button>", self.creer_tour)
 
     def dessiner_segments(self):
         segments = self.modele.partie.chemin.segments #self.chemin.segments

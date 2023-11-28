@@ -32,6 +32,5 @@ class Helper(object):
     
     @staticmethod
     def creer_id():
-        no_id
-        no_id += 1
-        return "id_" + str(no_id)
+        Helper.no_id += 1
+        return "id_" + str(Helper.no_id)

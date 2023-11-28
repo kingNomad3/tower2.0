@@ -1,11 +1,11 @@
-from helper import Helper as hp
+import helper as hp
 
 class Projectile:
     largeur = 10
     
     def __init__(self, parent, pos_x, pos_y, creep, niveau_tour):
         self.__tour = parent
-        self.__id = hp.creer_id()
+        self.__id = hp.Helper.creer_id()
         self.__cible = creep  # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__pos_x = pos_x
         self.__pos_y = pos_y
@@ -13,12 +13,12 @@ class Projectile:
         self.__rayon_attaque = 4
         self.__vitesse = None
         self.__dommage = None
-        self.__angle = hp.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
+        self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
 
     def deplacer(self):
-        dist = hp.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
+        dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
         if self.__vitesse < dist:
-            self.__pos_x, self.__pos_y = hp.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
+            self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
         else:
             # frappe le creep vise
             self.attaque_special()
@@ -72,6 +72,10 @@ class Projectile:
     @property
     def pos_y(self):
         return self.__pos_y
+    
+    @property
+    def id(self):
+        return self.__id
 
     @dommage.setter
     def dommage(self, dommage):
