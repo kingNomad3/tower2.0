@@ -5,6 +5,8 @@ import math
 
 
 class Helper(object):
+    no_id = 0
+    
     def getAngledPoint(angle, longueur, cx, cy):
         x = (math.cos(angle) * longueur) + cx
         y = (math.sin(angle) * longueur) + cy
@@ -27,3 +29,9 @@ class Helper(object):
         return distance
 
     calcDistance = staticmethod(calcDistance)
+    
+    @staticmethod
+    def creer_id():
+        no_id
+        no_id += 1
+        return "id_" + str(no_id)
