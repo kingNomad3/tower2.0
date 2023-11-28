@@ -1,9 +1,6 @@
 from Projectile import *
 from helper import Helper as hp
 
-
-
-
 class Tour:
     rayon = 150
     largeur = 30
@@ -227,7 +224,7 @@ class TourEclair(TourAttaque):
         if self.cible:
             eclair = Eclair(self, self.pos_x, self.pos_y, self.cible,self.niveau_amelioration)#TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(eclair)
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
+        self.partie.modele.controleur.vue.root.after(self.temps_recharge, self.attaquer)
 
 
 class TourPoison(TourAttaque):
@@ -235,14 +232,14 @@ class TourPoison(TourAttaque):
         super().__init__(parent, 25, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
 
     def attaquer(self):
-        if self.__cible:
-            self.verif_cible_active(self.__cible)
-        if self.__cible is None:
+        if self.cible:
+            self.verif_cible_active(self.cible)
+        if self.cible is None:
             self.definir_cible()
-        if self.__cible:
-            poison = Poison(self, self.__pos_x,self.__pos_y,self.__cible,self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
-            self.__liste_projectiles.append(poison)
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
+        if self.cible:
+            poison = Poison(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
+            self.liste_projectiles.append(poison)
+        self.partie.modele.controleur.vue.root.after(self.temps_recharge, self.attaquer)
 
 
 class TourGrenade(TourAttaque):
@@ -250,14 +247,14 @@ class TourGrenade(TourAttaque):
         super().__init__(parent, 35, pos_x, pos_y, 1, 160) #TODO a confirmer le rayon et le cout
 
     def attaquer(self):
-        if self.__cible:
-            self.verif_cible_active(self.__cible)
-        if self.__cible is None:
+        if self.cible:
+            self.verif_cible_active(self.cible)
+        if self.cible is None:
             self.definir_cible()
-        if self.__cible:
-            grenade = Grenade(self,  self.__pos_x,self.__pos_y, self.__cible, self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
-            self.__liste_projectiles.append(grenade)
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
+        if self.cible:
+            grenade = Grenade(self,  self.pos_x,self.pos_y, self.cible, self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
+            self.liste_projectiles.append(grenade)
+        self.partie.modele.controleur.vue.root.after(self.temps_recharge, self.attaquer)
 
 
 class TourMine(TourAttaque):
@@ -265,14 +262,14 @@ class TourMine(TourAttaque):
         super().__init__(parent, 42, pos_x, pos_y, 1, 100)#TODO a confirmer le rayon et le cout
 
     def attaquer(self):
-        if self.__cible:
-            self.verif_cible_active(self.__cible)
-        if self.__cible is None:
+        if self.cible:
+            self.verif_cible_active(self.cible)
+        if self.cible is None:
             self.definir_cible()
-        if self.__cible:
-            mine = Mine(self, self.__pos_x,self.__pos_y,self.__cible,self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
-            self.__liste_projectiles.append(mine)
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
+        if self.cible:
+            mine = Mine(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
+            self.liste_projectiles.append(mine)
+        self.partie.modele.controleur.vue.root.after(self.temps_recharge, self.attaquer)
 
 
 class TourCanon(TourAttaque):
@@ -280,14 +277,14 @@ class TourCanon(TourAttaque):
         super().__init__(parent, 100, pos_x, pos_y, 1, 150) #TODO a confirmer le rayon et le cout
 
     def attaquer(self):
-        if self.__cible:
-            self.verif_cible_active(self.__cible)
-        if self.__cible is None:
+        if self.cible:
+            self.verif_cible_active(self.cible)
+        if self.cible is None:
             self.definir_cible()
-        if self.__cible:
-            obus = Obus(self, self.__pos_x,self.__pos_y,self.__cible,self.__niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
-            self.__liste_projectiles.append(obus)
-        self.__partie.modele.controleur.vue.root.after(self.__temps_recharge, self.attaquer)
+        if self.cible:
+            obus = Obus(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
+            self.liste_projectiles.append(obus)
+        self.partie.modele.controleur.vue.root.after(self.temps_recharge, self.attaquer)
 
 
 class TourArgent(Tour):
