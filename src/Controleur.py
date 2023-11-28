@@ -1,5 +1,6 @@
 from Vue import *
 from Modele import *
+from Tour import *
 
 class Controleur:
 
@@ -45,7 +46,7 @@ class Controleur:
         tour = self.modele.creer_tour(x, y, type_tour)
 
         if tour is not None:
-            if isinstance(tour, TourProjectile):
+            if isinstance(tour, TourMitrailleuse):
                 self.vue.afficher_tour(tour)
             elif isinstance(tour, TourEclair):
                 self.vue.afficher_tour_eclair(tour)
@@ -56,7 +57,7 @@ class Controleur:
         self.modele.upgrader_tour()
 
         if self.modele.tour_selectionne.est_upgrade:
-            if isinstance(self.modele.tour_selectionne, TourProjectile):
+            if isinstance(self.modele.tour_selectionne, TourMitrailleuse):
                 self.vue.afficher_upgrade_tour(self.modele.tour_selectionne)
             elif isinstance(self.modele.tour_selectionne, TourEclair):
                 self.vue.afficher_upgrade_tour_eclair(self.modele.tour_selectionne)

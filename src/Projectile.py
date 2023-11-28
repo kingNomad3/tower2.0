@@ -1,10 +1,12 @@
 import helper as hp
 
 class Projectile:
-
+    largeur = 10
+    
     def __init__(self, parent, pos_x, pos_y, creep, niveau_tour):
         self.__id = hp.creer_id
         self.__tour = parent
+        self.__id = hp.creer_id()
         self.__cible = creep  # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__pos_x = pos_x
         self.__pos_y = pos_y

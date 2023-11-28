@@ -3,8 +3,10 @@ import random
 
 
 class Creep:
-
+    largeur = 20
+    
     def __init__(self, parent, pos_x, pos_y, niveau):
+        self.__id = hp.creer_id()
         self.__cible = None
         self.__angle_target = None
         self.__partie = parent

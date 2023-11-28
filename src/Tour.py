@@ -1,18 +1,16 @@
 from Projectile import *
 from helper import Helper as hp
 
-no_id = 0
 
-
-def creer_id():
-    global no_id
-    no_id += 1
-    return "id_" + str(no_id)
 
 
 class Tour:
+    rayon = 150
+    largeur = 30
+    cout = {"TourMitrailleuse":20, "niveau 2":30, "niveau 3":40}
+    
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
-        self.__id = creer_id()
+        self.__id = hp.creer_id()
         self.__partie = parent
         self.__rayon = rayon
         self.__champ_action = self.__rayon * 3.5 #TODO Taille exacte du champ d'action à décider. On pourrait se passer en paramètre le multiplicateur au besoin.
