@@ -47,7 +47,8 @@ class Creep:
 
             # arrive au chateau
             elif self.__segment_actuel == 8:
-                self.partie.perte_vie()
+                self.__partie.perte_vie()
+
                 self.__vivant = False
                 
     def recoit_coup(self, dommage):

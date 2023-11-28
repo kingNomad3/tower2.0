@@ -13,7 +13,9 @@ class Partie:
     ESPACE_CREEP = 1.5
     DUREE_VAGUE = 40
     NOMBRE_CREEPS_VAGUE = 20
-    choisir_tour = {"TourMitrailleuse":TourMitrailleuse}
+    CHOISIR_TOUR = {"TourMitrailleuse":TourMitrailleuse, "TourEclair": TourEclair, "TourPoison": TourPoison, "TourGrenade": TourGrenade, "TourMine":TourMine, "TourCanon": TourCanon, \
+        "TourRalentissement": TourRalentissement, "TourRepoussante": TourRepoussante, "TourArgent": TourArgent, "TourBoost": TourBoost }
+    
     def __init__(self, parent, tableau, difficulte, seed=id): #Le seed pour randomiser les Creeps de la même façon en réseau.
         self.__tableau = tableau
         self.__difficulte = difficulte
@@ -78,7 +80,7 @@ class Partie:
         
 
     def creer_tour(self, x, y, tag):
-        tour = Partie.choisir_tour[tag](self, x, y)
+        tour = Partie.CHOISIR_TOUR[tag](self, x, y)
         if self.peut_acheter_tour(tour): 
             self.__liste_tours.append(tour)
             self.__argent_courant -= tour.cout
@@ -127,11 +129,12 @@ class Partie:
     def perte_vie(self):
         # châtelains...
         self.vie -= 1
+        print(self.vie)
 
     def prochaine_vague(self):
         # pour chaque nouvelle vague
         self.__vague += 1
-        self.__liste_creeps = []
+       
         self.creer_creeps()
 
     def est_game_over(self) -> bool:
