@@ -2,8 +2,7 @@ from Projectile import *
 from helper import Helper as hp
 
 class Tour:
-    rayon = 150
-    largeur = 30
+    largeur = 20
     
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         self.__id = hp.creer_id()
@@ -17,6 +16,7 @@ class Tour:
         self.__cout_amelioration = self.__cout * self.__niveau_amelioration #TODO Manière de calculer à déterminer. Permettrait de faire en sorte que les améliorations en jeu coûtent moins cher si on réduit son coût.
         self.__cible = None # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__combine = None
+        self.__img_src = "./img/pacman.png"
         #self.__vie = vie Si on peut faire perdre de la vie à nos tours
         self.__base = 20 #TODO a verifier avec la VUE
         self.__colonne = 16 #TODO a verifier avec la VUE
@@ -25,6 +25,10 @@ class Tour:
     @property
     def id(self):
         return self.__id
+  
+    @property
+    def img_src(self):
+        return self.__img_src
     
     @property #TODO À voir si on a besoin
     def partie(self):

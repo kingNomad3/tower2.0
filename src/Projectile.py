@@ -1,7 +1,7 @@
 import helper as hp
 
 class Projectile:
-    largeur = 10
+    largeur = 3
     
     def __init__(self, parent, pos_x, pos_y, creep, niveau_tour):
         self.__tour = parent
@@ -15,6 +15,10 @@ class Projectile:
         self.__dommage = None
         self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
 
+    @property
+    def angle(self):
+        return self.__angle
+    
     def deplacer(self):
         self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
         dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)

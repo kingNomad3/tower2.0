@@ -1,6 +1,8 @@
 from tkinter import *
 from Modele import *
 
+from PIL import Image, ImageTk
+
 class Vue:
     def __init__(self, parent, modele):
         self.controleur = parent
@@ -10,11 +12,12 @@ class Vue:
         
         self.cadres = {}    # dictionnaire des Frame pour changer la fen root d'etat
         self.cadre_courant = None
+        self.images = {}
         # self.creer_cadres(self.nom_joueur_local)
 
         self.largeur = 1152
         self.hauteur = 648
-        self.largeur_chemin = 45
+        self.largeur_chemin = 55
 
         self.ratio_x = 1
         self.ratio_y = 1
@@ -31,7 +34,7 @@ class Vue:
         self.frame.pack(fill=BOTH, expand=YES)
 
         # canvas
-        self.canvas = Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="lightgreen", highlightthickness=0)
+        self.canvas = Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="black", highlightthickness=0)
         self.canvas.bind("<Configure>", self.resize)
         self.canvas.pack(fill=BOTH, expand=YES)
 
@@ -49,13 +52,13 @@ class Vue:
     def afficher_choix_tours(self):
         self.canvas.create_rectangle(250 - 40, 640 - 40, 250 + 40,
                                      640 + 40,
-                                     fill="BLACK", tags=('TO','TO_carre', ))
+                                     fill="white", tags=('TO','TO_carre', ))
         self.canvas.create_rectangle(350 - 40, 640 - 40, 350 + 40,
                                      640 + 40,
-                                     fill="BLACK", tags=('UP', 'TE', 'TE_carre', ))
+                                     fill="white", tags=('UP', 'TE', 'TE_carre', ))
         self.canvas.create_rectangle(450 - 40, 640 - 40, 450 + 40,
                                      640 + 40,
-                                     fill="BLACK",tags=('TP', 'TP_carre',) )
+                                     fill="white",tags=('TP', 'TP_carre',) )
 
 
     def skip(self, event):
@@ -75,13 +78,14 @@ class Vue:
         creep_hauteur = Creep.largeur * self.ratio_y
 
         for creep in self.modele.partie.liste_creeps:
-
-            self.canvas.create_oval(
-                creep.pos_x * self.ratio_x - creep_largeur,
-                creep.pos_y * self.ratio_y - creep_hauteur,
-                creep.pos_x * self.ratio_x + creep_largeur,
-                creep.pos_y * self.ratio_y + creep_hauteur,
-                fill="red", tags=("creep", creep.id,))
+            img = Image.open(creep.img_src)
+            img = img.resize((int(creep_largeur), int(creep_hauteur)), Image.Resampling.NEAREST)
+            tk_img = ImageTk.PhotoImage(img)
+            
+            # Store the image reference to prevent garbage collection
+            self.images[creep.id] = tk_img
+            
+            self.canvas.create_image((creep.pos_x * self.ratio_x, creep.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("creep", creep.id,))
 
 
     def creer_tour(self, event):
@@ -106,12 +110,8 @@ class Vue:
             
             self.dessiner_icone_tour(self.modele.partie.liste_tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
-            self.reset_border()
+            # self.reset_border()
 
-    def reset_border(self):
-        self.canvas.itemconfig('TO_carre', outline="")
-        self.canvas.itemconfig('TP_carre', outline="")
-        self.canvas.itemconfig('TE_carre', outline="")
 
     def dessiner_tours(self):
         # dessines les tours du modèle
@@ -119,28 +119,41 @@ class Vue:
             self.dessiner_icone_tour(tour)
 
     def dessiner_icone_tour(self, tour):
+        self.canvas.delete('dynamique')
+        size = 50
         # dessine une tour sur le canvas
         x = tour.pos_x * self.ratio_x
         y = tour.pos_y * self.ratio_y
-        tour_largeur = tour.rayon * self.ratio_x
-        tour_hauteur = tour.rayon * self.ratio_y
+        tour_largeur = size * self.ratio_x
+        tour_hauteur = size * self.ratio_y
         tour_radius_x = tour.champ_action * self.ratio_x
         tour_radius_y = tour.champ_action * self.ratio_y
-        radius_largeur = 5 * (self.ratio_y + self.ratio_x) / 2
+        radius_largeur = 1 * (self.ratio_y + self.ratio_x) / 2
+        
+        img = Image.open(tour.img_src)
+        img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
+        
+        if tour.cible:
+            angle = hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y)
+            img = img.rotate(angle)
+            
+        tk_img = ImageTk.PhotoImage(img)
+        
+        # Store the image reference to prevent garbage collection
+        self.images[tour.id] = tk_img
 
-        self.canvas.create_rectangle(x - tour_largeur, y - tour_hauteur, x + tour_largeur,
-                                    y + tour_hauteur,
-                                    fill="WHITE", tags=('tour',tour.id, ))
+        self.canvas.create_image((x, y), anchor='center',
+                                    image=tk_img, tags=('tour','dynamique',tour.id, ))
 
         self.canvas.create_oval(x - tour_radius_x, y - tour_radius_y, x + tour_radius_x,
                                y + tour_radius_y,
-                                dash= (5,2), fill="", tags=('tour_radius',),
-                                width=radius_largeur, outline="red")
-
+                                dash= (3,5), fill="", width= radius_largeur, tags=('tour_radius',), outline="lightblue")
+    
         self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
 
         self.canvas.tag_lower('tour_radius')
         self.canvas.tag_lower('chemin')
+        self.canvas.tag_lower('chemin_outline')
 
     def get_info_tour(self, event):
         self.canvas.tag_unbind('TO', '<Button>', self.activation_to)
@@ -155,7 +168,7 @@ class Vue:
 
 
     def afficher_info_tour(self,tour):
-        self.reset_border()
+        # self.reset_border()
         self.canvas.tag_unbind('tour', '<Button>', self.information)
         self.tour_choisi = tour
 
@@ -204,16 +217,17 @@ class Vue:
 
         for tour in self.modele.partie.liste_tours:
             for projectile in tour.liste_projectiles:
-                self.canvas.create_oval(
+                self.canvas.create_rectangle(
                 projectile.pos_x * self.ratio_x - projectile_largeur,
                 projectile.pos_y * self.ratio_y - projectile_hauteur,
                 projectile.pos_x * self.ratio_x + projectile_largeur,
                 projectile.pos_y * self.ratio_y + projectile_hauteur,
-                fill="pink", tags=("projectile", projectile.id))
+                fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
 
     def dessiner_jeu(self):
         self.dessiner_creeps()
         self.dessiner_obus()
+        self.dessiner_tours()
         self.update_info_partie()
 
     # Caller dans le controleur a chaque tick de boucle
@@ -252,8 +266,11 @@ class Vue:
         # reconfig
         self.canvas.config(width=self.largeur, height=self.hauteur)
         self.canvas.scale("all", 0, 0, w, h)
+        self.canvas.itemconfig("chemin_outline", width=(self.largeur_chemin+5) * (self.ratio_x + self.ratio_y) / 2)
         self.canvas.itemconfig("chemin", width=self.largeur_chemin * (self.ratio_x + self.ratio_y) / 2)
-        self.canvas.itemconfig("tour_radius", width=5 * (self.ratio_y + self.ratio_x) / 2)
+        self.canvas.itemconfig("tour_radius", width=1 * (self.ratio_y + self.ratio_x) / 2)
+        self.canvas.tag_lower('chemin_outline')
+
         
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
@@ -266,7 +283,6 @@ class Vue:
         self.canvas.delete('info_tour', 'btn_x')
 
         self.canvas.create_text(90 * self.ratio_x, 585 * self.ratio_y, text="Chrono", font=self.font, tags=("info",))
-        # self.canvas.create_text(90 * self.ratio_x, 615 * self.ratio_y, text=self.controleur.get_timer_str(), tags=("info",'timer', ), font=self.font)
         self.canvas.create_text(90 * self.ratio_x, 645 * self.ratio_y, text="Vague", font=self.font, tags=("info", ))
         self.canvas.create_text(90 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.vague, tags=("info",'vague', ), font=self.font)
         self.canvas.create_text(260 * self.ratio_x, 585 * self.ratio_y, text="Choix de tours", font=self.font, tags=("info", "choix_tour", ))
@@ -286,8 +302,7 @@ class Vue:
     def bind_canvas(self, evt):
         self.tag_bouton_choisi = self.canvas.itemcget(evt.widget.find_withtag("current")[0], "tags").split()[1]
         print(self.tag_bouton_choisi)
-        self.canvas.bind("<Button-1>", self.creer_tour)
-        
+        self.creation = self.canvas.bind("<Button>", self.creer_tour)  
 
     def dessiner_segments(self):
         segments = self.modele.partie.chemin.segments #self.chemin.segments
@@ -298,9 +313,12 @@ class Vue:
                 y0 = segment[1]
                 x1 = segments[i + 1][0]
                 y1 = segments[i + 1][1]
-
+                
+                self.canvas.create_line(x0, y0, x1, y1,
+                                        tags=("chemin_outline",), joinstyle=MITER, fill='blue')
                 self.canvas.create_line(x0, y0, x1, y1,
                                         tags=("chemin",), joinstyle=MITER)
+                
             except IndexError:
                 break
 

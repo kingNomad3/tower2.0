@@ -1,9 +1,10 @@
 import helper as hp
 import random
+from PIL import Image
 
 
 class Creep:
-    largeur = 20
+    largeur = 45
     
     def __init__(self, parent, pos_x, pos_y, niveau):
         self.__id = hp.Helper.creer_id()
@@ -25,6 +26,7 @@ class Creep:
         self.__vitesse = 5
         self.__taille = 1
         self.__segment_actuel = 0
+        self.__img_src = self.definir_img_src()
         self.definir_attribut()
         self.nouvelle_cible()                
         
@@ -79,7 +81,15 @@ class Creep:
         # if self.__compteur_electrocute == 3:
         #     self.est_electrocute = False
         pass
+    
+    def definir_img_src(self):
+        random_src = random.randint(0,3)
+        return f'./img/creep_{random_src}.png'
             
+    @property
+    def img_src(self):
+        return self.__img_src
+    
     @property
     def cible(self):
         return self.__cible
