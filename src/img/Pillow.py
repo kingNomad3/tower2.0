@@ -98,3 +98,31 @@ draw.ellipse((taille/2-3, taille/2-3, taille-3, taille-3), fill=(255, 0, 0), out
 draw.arc((taille/3, taille/2, taille-1, 0), fill=(212, 159, 74))
 
 img.save('img/cerise.png', 'PNG')
+
+
+################################### CHATEAU ############################################
+
+img = Image.new('RGBA', (130, 200), (255, 0, 0, 0))
+
+x = 20
+color = 'blue'
+draw = ImageDraw.Draw(img)
+#     draw.line([58, taille-23, 64.5, taille-23], fill=(237, 240, 237), width=w)
+draw.line([7,70,7,7], fill=color, width=7)
+draw.line([4,7,122,7], fill=color, width=7)
+draw.line([122,4,122,192], fill=color, width=7)
+draw.line([125,192,7,192], fill=color, width=7)
+draw.line([7,195,7,130], fill=color, width=7)
+
+draw.line([7+x,70,7+x,7+x], fill=color, width=7)
+draw.line([4+x,7+x,122-x,7+x], fill=color, width=7)
+draw.line([122-x,4+x,122-x,192-x], fill=color, width=7)
+draw.line([125-x,192-x,7+x,192-x], fill=color, width=7)
+draw.line([7+x,195-x,7+x,130], fill=color, width=7)
+
+draw.line([4,70,10+x,70], fill=color, width=7)
+draw.line([4,130,10+x,130], fill=color, width=7)
+
+draw.line([15.5,74,15.5,126], fill='pink', width=7)
+
+img.save('chateau.png', 'PNG')
