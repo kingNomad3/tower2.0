@@ -111,7 +111,7 @@ class Tour:
             self.__niveau_amelioration += 1
 
     def verifcation_cout_amelioration(self):
-        return self.__joueur.argent_courant - self.__cout_amelioration >= 0
+        return self.__joueur.partie.argent_courant - self.__cout_amelioration >= 0
 
     def ameloriation_permanente(self): #TODO dans le modele self.amelioration_perm
         pass

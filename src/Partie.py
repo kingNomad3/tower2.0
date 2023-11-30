@@ -70,7 +70,7 @@ class Partie:
 
     @argent_courant.setter  # TODO Pour les améliorations, si les tours deviennent plus grosses
     def argent_courant(self, montant):
-        self.__argent_courant += montant
+        self.__argent_courant = montant
     
     @property
     def fin_partie(self):
@@ -100,7 +100,7 @@ class Partie:
     def perte_vie(self):
         # châtelains...
         self.vie -= 1
-        print(self.vie)
+        # print(self.vie)
 
     def prochaine_vague(self):
         # pour chaque nouvelle vague
@@ -229,7 +229,8 @@ class Joueur():
         tour = Partie.CHOISIR_TOUR[tag](self, x, y)
         if self.peut_acheter_tour(tour): 
             self.tours.append(tour)
-            self.partie.argent_courant -= tour.cout
+            self.partie.argent_courant = self.partie.argent_courant - tour.cout
+    
             
     
     def peut_acheter_tour(self, tour) -> bool:

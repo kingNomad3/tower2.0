@@ -26,7 +26,6 @@ class Projectile:
             self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
         else:
             # frappe le creep vise
-            print("hi")
             self.attaque_special()
             self.__cible.recoit_coup(self.__dommage)
             self.__tour.liste_projectiles.remove(self)

@@ -105,21 +105,19 @@ class Vue:
             x = event.x / self.ratio_x
             y = event.y / self.ratio_y
             self.controleur.creer_tour(self.tag_bouton_choisi, x, y)
-            
-            #TODO: modifier self.modele.partie.joueur.liste_tour...
-            
-            self.dessiner_icone_tour(self.modele.partie.liste_tours[-1])  # dessine la dernière tour mise
+                        
+            self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
             # self.reset_border()
 
 
     def dessiner_tours(self):
         # dessines les tours du modèle
-        for tour in self.modele.partie.liste_tours:
+        self.canvas.delete('dynamique')
+        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
             self.dessiner_icone_tour(tour)
 
     def dessiner_icone_tour(self, tour):
-        self.canvas.delete('dynamique')
         size = 50
         # dessine une tour sur le canvas
         x = tour.pos_x * self.ratio_x
@@ -162,7 +160,7 @@ class Vue:
         target = self.canvas.gettags("current")[1]
 
 
-        for tour in self.modele.partie.liste_tours:
+        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
             if tour.id == target:
                 self.afficher_info_tour(tour)
 
@@ -214,8 +212,7 @@ class Vue:
         projectile_largeur = Projectile.largeur * self.ratio_x
         projectile_hauteur = Projectile.largeur * self.ratio_y
 
-
-        for tour in self.modele.partie.liste_tours:
+        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
             for projectile in tour.liste_projectiles:
                 self.canvas.create_rectangle(
                 projectile.pos_x * self.ratio_x - projectile_largeur,
@@ -225,6 +222,8 @@ class Vue:
                 fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
 
     def dessiner_jeu(self):
+        # print(len(self.canvas.find_all()))
+        self.images = {}
         self.dessiner_creeps()
         self.dessiner_obus()
         self.dessiner_tours()
@@ -301,7 +300,7 @@ class Vue:
 
     def bind_canvas(self, evt):
         self.tag_bouton_choisi = self.canvas.itemcget(evt.widget.find_withtag("current")[0], "tags").split()[1]
-        print(self.tag_bouton_choisi)
+        # print(self.tag_bouton_choisi)
         self.creation = self.canvas.bind("<Button>", self.creer_tour)  
 
     def dessiner_segments(self):
