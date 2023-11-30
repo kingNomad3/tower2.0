@@ -1,0 +1,24 @@
+title TD_Splash
+
+participant Joueur1
+participant Splash
+
+participant Splash
+participant Lobby
+
+activate Splash
+activate Lobby
+activate Jeu_limbe
+activate Jeu
+participant Serveur
+Joueur1->Splash:peut changer son nom
+Joueur1->Splash:peut changer son serveur
+Joueur1->Splash:click sur Connecter
+Splash->Serveur:connecter au serveur
+Serveur->Splash:connection valide
+Joueur1->Serveur:peut requerir reset
+Serveur->Splash:activer bouton Creer partie
+Joueur1->Splash:click sur Creer partie
+
+
+
