@@ -7,7 +7,7 @@ class Tour:
     
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         self.__id = hp.creer_id()
-        self.__partie = parent
+        self.__joueur = parent
         self.__rayon = rayon
         self.__champ_action = self.__rayon * 3.5 #TODO Taille exacte du champ d'action à décider. On pourrait se passer en paramètre le multiplicateur au besoin.
         self.__pos_x = pos_x
@@ -27,8 +27,8 @@ class Tour:
         return self.__id
     
     @property #TODO À voir si on a besoin
-    def partie(self):
-        return self.__partie
+    def joueur(self):
+        return self.__joueur
     
     @property
     def rayon(self):
@@ -107,7 +107,7 @@ class Tour:
             self.__niveau_amelioration += 1
 
     def verifcation_cout_amelioration(self):
-        return self.__partie.argent_courant - self.__cout_amelioration >= 0
+        return self.__joueur.argent_courant - self.__cout_amelioration >= 0
 
     def ameloriation_permanente(self): #TODO dans le modele self.amelioration_perm
         pass
@@ -117,7 +117,7 @@ class Tour:
 
     def verif_cible_active(self, cible): # verification si la cible existe encore
         dist = hp.calcDistance(cible.pos_x, cible.pos_y, self.__pos_x, self.__pos_y)
-        if dist > self.__champ_action or self.cible.vie == 0 or len(self.__partie.liste_creeps) == 0:
+        if dist > self.__champ_action or self.cible.vie == 0 or len(self.__joueur.partie.liste_creeps) == 0:
             self.__cible = None
 
     def activer_combinaison_tour(self):
@@ -127,7 +127,7 @@ class Tour:
         pass
 
     def definir_cible(self):
-        for creep in self.__partie.liste_creeps:
+        for creep in self.__joueur.partie.liste_creeps:
             dist = hp.calcDistance(creep.pos_x, creep.pos_y, self.__pos_x, self.__pos_y)
             if dist < self.__champ_action:
                 self.__cible = creep
@@ -209,7 +209,7 @@ class TourMitrailleuse(TourAttaque):
         if self.cible:
             balle = Balle(self, self.pos_x, self.pos_y,self.cible,self.niveau_amelioration)#TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(balle)
-        self.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
+        self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
 
 class TourEclair(TourAttaque):

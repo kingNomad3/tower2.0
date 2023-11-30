@@ -7,35 +7,36 @@ import json
 
 class Controleur:
     def __init__(self):
-        self.modele = Modele(self)
+        self.nom_joueur_local= self.generer_pseudo_nom()
+        self.modele = Modele(self) # fonction au bas de la page, devrait être envoyée par la vue
+        self.modele.lancer_partie([self.nom_joueur_local])
+        self.partie = self.modele.partie
         self.timer = 0
         self.vue = Vue(self, self.modele)
-        self.nom_joueur_local= self.generer_pseudo_nom()  # fonction au bas de la page, devrait être envoyée par la vue
         self.egoserveur = False # devient vrai si on creer une partie
         self.partie_locale = True # si False, on joue reseau
         self.iteration_boucle_jeu = 0
         self.prochainsplash = 0
-        self.partie = None
         self.on_joue = 1 # devient 0 si le serveur envoie un probleme de synchro
         self.actions_requises = [] # arrive via l'interface graphique
         #info reseau
         # self.session = None
         # self.modulo_appeler_serveur = 2     # on appelle le serveur mois souvent que la buocle de jeu
-        # self.delai_de_boucle_de_jeu = 20    # millisecondes avant que la boucle_de_jeu se rappelle      
+        self.delai_de_boucle_de_jeu = 20    # millisecondes avant que la boucle_de_jeu se rappelle      
         self.url_serveur = None
         #vue
-        self.vue.root.after(300, self.boucler_jeu) 
+        self.vue.root.after(300, self.boucler_sur_jeu) 
         self.vue.root.mainloop()
 
-    def boucler_jeu(self):
-        self.iteration_boucle_jeu += 1
-        if not self.modele.partie.fin_partie:
-            self.incrementer_timer()
-            self.modele.jouer()
-            self.vue.dessiner_jeu()
-            self.vue.root.after(50, self.boucler_jeu)
-        else:
-           self.traiter_gameover()
+    # def boucler_jeu(self):
+    #     self.iteration_boucle_jeu += 1
+    #     if not self.modele.partie.fin_partie:
+    #         self.incrementer_timer()
+    #         self.modele.jouer()
+    #         self.vue.dessiner_jeu()
+    #         self.vue.root.after(50, self.boucler_jeu)
+    #     else:
+    #        self.traiter_gameover()
 
 
     # pour du visuel et le modèle (en cas de besoin)
@@ -49,8 +50,11 @@ class Controleur:
     def traiter_gameover(self):
         self.vue.root.destroy()
 
-    def creer_tour(self, x, y):
-        self.modele.partie.creer_tour(x, y, "TourMitrailleuse")
+    def creer_tour(self, type_tour, x, y):
+        action_demande = [self.nom_joueur_local,"creer_tour",[type_tour,x,y]]
+        self.actions_requises.append(action_demande)
+        #self.modele.partie.creer_tour(x, y, type_tour)
+        
         
     def generer_pseudo_nom(self):
         nom_joueur_local = "robert" + str(random.randrange(100, 1000))
@@ -146,7 +150,7 @@ class Controleur:
     #     reptext = self.appeler_serveur(url, data, "POST")
 
     def activer_partie(self):
-        if self.partie:
+        if self.partie_locale:
             self.boucler_sur_jeu()
         else:
             url = self.url_serveur + "/activer_partie"
@@ -156,8 +160,58 @@ class Controleur:
             reptext = self.appeler_serveur(url, data, "POST")
         #self.pause = 1
         #self.boucler_en_attente()
+        
     
         
+        
+    def boucler_sur_jeu(self):
+        self.iteration_boucle_jeu += 1
+        # test pour communiquer avec le serveur periodiquement
+        if self.partie_locale == False:
+            pass
+            # if self.iteration_boucle_jeu % self.modulo_appeler_serveur == 0:
+            #     actions = []
+            #     if self.actions_requises:
+            #         actions = self.actions_requises
+            #         self.actions_requises = []
+            #     url = self.url_serveur + "/boucler_sur_jeu"
+            #     params = {"nom": self.nom_joueur_local,
+            #               "iteration_boucle_jeu": self.iteration_boucle_jeu,
+            #               "actions_requises": actions}
+
+            #     try:
+            #         mondict = self.appeler_serveur(url, params, method = "POST")
+            #         # verifie pour requete d'attente d'un joueur plus lent
+            #         if "ATTENTION" in mondict:
+            #             print("SAUTEEEEE")
+            #             self.on_joue = 0
+
+            #         elif mondict:
+            #             self.partie_active.ajouter_actions_a_faire(self.iteration_boucle_jeu,mondict)
+
+            #     except requests.exceptions.RequestException as e:
+            #         print("An error occurred:", e)
+            #         self.on_joue = 0
+        else:
+            if self.actions_requises:
+                actions = self.actions_requises
+                self.actions_requises = []
+                self.partie.ajouter_actions_a_faire(self.iteration_boucle_jeu+1,
+                                                           [[self.iteration_boucle_jeu+1, json.dumps(actions)]]) #json.dumps genere du json
+
+        if self.on_joue:
+            # envoyer les messages au modele et a la vue de faire leur job
+            self.partie.jouer_coup(self.iteration_boucle_jeu)
+            self.incrementer_timer()
+            self.vue.dessiner_jeu()
+        else:
+            self.iteration_boucle_jeu -= 1
+            self.on_joue = 1
+        # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
+        self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+
+    
+    
         
         
         
