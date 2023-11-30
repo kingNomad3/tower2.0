@@ -6,6 +6,11 @@ class Vue:
         self.controleur = parent
         self.modele = modele
         self.root = Tk()
+        # self.nom_joueur_local = nom_joueur_local
+        
+        self.cadres = {}    # dictionnaire des Frame pour changer la fen root d'etat
+        self.cadre_courant = None
+        # self.creer_cadres(self.nom_joueur_local)
 
         self.largeur = 1152
         self.hauteur = 648
@@ -16,6 +21,8 @@ class Vue:
 
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(10 * ((self.ratio_y + self.ratio_x) / 2)))
+        
+        self.tag_bouton_choisi = None
 
         # frame interne
         self.interface_panel = None
@@ -66,9 +73,6 @@ class Vue:
         self.canvas.delete("creep")
         creep_largeur = Creep.largeur * self.ratio_x
         creep_hauteur = Creep.largeur * self.ratio_y
-        # taille_vie = 10 * ((self.ratio_y + self.ratio_x) / 2) #supprimer, juste pour voir vie
-        # font = "Arial " + str(int(taille_vie)) #
-        # self.canvas.delete("creep_mana") #
 
         for creep in self.modele.partie.liste_creeps:
 
@@ -78,11 +82,6 @@ class Vue:
                 creep.pos_x * self.ratio_x + creep_largeur,
                 creep.pos_y * self.ratio_y + creep_hauteur,
                 fill="red", tags=("creep", creep.id,))
-
-            # self.canvas.create_text( #
-            #     i.x * self.ratio_x, #
-            #     i.y * self.ratio_y, #
-            #     text=i.mana, tags=("creep_mana", ), font=font) #
 
 
     def creer_tour(self, event):
@@ -101,7 +100,10 @@ class Vue:
         if not any(i in temp for i in chemins) and event.y + tour_largeur < 570 and not any(i in temp for i in tours):
             x = event.x / self.ratio_x
             y = event.y / self.ratio_y
-            self.controleur.creer_tour(x, y)
+            self.controleur.creer_tour(self.tag_bouton_choisi, x, y)
+            
+            #TODO: modifier self.modele.partie.joueur.liste_tour...
+            
             self.dessiner_icone_tour(self.modele.partie.liste_tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
             self.reset_border()
@@ -224,9 +226,9 @@ class Vue:
         
     # Dessine InterfacePannel et le Bouton ChoixTour
     def dessiner_interface_info(self):        
-        if self.interface_panel and self.toggle_menu_tour:
+        if self.interface_panel or self.toggle_menu_tour:
             self.interface_panel.destroy()
-            self.toggle_menu_tour.destroy()
+            # self.toggle_menu_tour.destroy()
             
         self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
         self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
@@ -234,14 +236,7 @@ class Vue:
         # # fuck le scalling???
         # self.toggle_menu_tour = PacManButton(50 * self.ratio_x, 10 * self.ratio_y, "tours")
         # self.toggle_menu_tour.place(anchor="ne", x=250, y=40)
-    
 
-    # def update_info_partie(self):
-    #     timer = self.controleur.get_timer_str()
-    #     self.canvas.itemconfig('vie', text=self.modele.partie.vie)
-    #     self.canvas.itemconfig('vague', text=self.modele.partie.vague)
-    #     self.canvas.itemconfig('argent', text=self.modele.partie.argent)
-    #     self.canvas.itemconfig('timer', text=timer)
 
 
     def resize(self, evt):
@@ -275,36 +270,24 @@ class Vue:
         self.canvas.create_text(90 * self.ratio_x, 645 * self.ratio_y, text="Vague", font=self.font, tags=("info", ))
         self.canvas.create_text(90 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.vague, tags=("info",'vague', ), font=self.font)
         self.canvas.create_text(260 * self.ratio_x, 585 * self.ratio_y, text="Choix de tours", font=self.font, tags=("info", "choix_tour", ))
-        self.canvas.create_text(250 * self.ratio_x, 640 * self.ratio_y, text="TO", font=self.font, tags=("info", "choix_tour",'TO', ), fill="WHITE")
-        self.canvas.create_text(350 * self.ratio_x, 640 * self.ratio_y, text="TE", font=self.font, tags=("info", "choix_tour", 'TE',), fill="WHITE")
-        self.canvas.create_text(450 * self.ratio_x, 640 * self.ratio_y, text="TP", font=self.font, tags=("info", "choix_tour", 'TP',), fill="WHITE")
+        self.canvas.create_text(250 * self.ratio_x, 640 * self.ratio_y, text="TO", font=self.font, tags=("info",'TourMitrailleuse', ), fill="WHITE")
+        self.canvas.create_text(350 * self.ratio_x, 640 * self.ratio_y, text="TE", font=self.font, tags=("info", 'TourEclair',), fill="WHITE")
+        self.canvas.create_text(450 * self.ratio_x, 640 * self.ratio_y, text="TP", font=self.font, tags=("info", 'TourPoison',), fill="WHITE")
         self.canvas.create_text(760 * self.ratio_x, 585 * self.ratio_y, text="Vies", font=self.font, tags=("info", ))
         self.canvas.create_text(760 * self.ratio_x, 615 * self.ratio_y, text=self.modele.partie.vie, tags=("info",'vie', ), font=self.font, fill="RED")
         self.canvas.create_text(760 * self.ratio_x, 645 * self.ratio_y, text="Argent", font=self.font, tags=("info", ))
         self.canvas.create_text(760 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.argent_courant, tags=("info",'argent', ), font=self.font)
 
+        self.activation_to = self.canvas.tag_bind('TourMitrailleuse', '<Button>', self.bind_canvas)
+        self.activation_te = self.canvas.tag_bind('TourEclair', '<Button>', self.bind_canvas)
+        self.activation_tp = self.canvas.tag_bind('TourPoisonP', '<Button>', self.bind_canvas)
 
-        self.activation_to = self.canvas.tag_bind('TO', '<Button>', self.activer_creation_tour_to)
-        self.activation_te = self.canvas.tag_bind('TE', '<Button>', self.activer_creation_tour_te)
-        self.activation_tp = self.canvas.tag_bind('TP', '<Button>', self.activer_creation_tour_tp)
 
-    def activer_creation_tour_to(self, event):
-        # if self.modele.partie.peut_acheter_tour():
-        self.reset_border()
-        self.canvas.itemconfig('TO_carre',outline="RED", width=10)
-        self.creation = self.canvas.bind("<Button>", self.creer_tour)
-
-    def activer_creation_tour_te(self, event):
-        # if self.modele.partie.peut_acheter_tour():
-        self.reset_border()
-        self.canvas.itemconfig('TE_carre',outline="RED", width=10)
-        self.creation = self.canvas.bind("<Button>", self.creer_tour)
-
-    def activer_creation_tour_tp(self, event):
-        # if self.modele.partie.peut_acheter_tour():
-        self.reset_border()
-        self.canvas.itemconfig('TP_carre',outline="RED", width=10)
-        self.creation = self.canvas.bind("<Button>", self.creer_tour)
+    def bind_canvas(self, evt):
+        self.tag_bouton_choisi = self.canvas.itemcget(evt.widget.find_withtag("current")[0], "tags").split()[1]
+        print(self.tag_bouton_choisi)
+        self.canvas.bind("<Button-1>", self.creer_tour)
+        
 
     def dessiner_segments(self):
         segments = self.modele.partie.chemin.segments #self.chemin.segments
