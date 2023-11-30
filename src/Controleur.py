@@ -31,8 +31,8 @@ class Controleur:
     def traiter_gameover(self):
         self.vue.root.destroy()
 
-    def creer_tour(self, x, y):
-        self.modele.partie.creer_tour(x, y, "TourMitrailleuse")
+    def creer_tour(self, type_tour, x, y):
+        self.modele.partie.creer_tour(x, y, type_tour)
             
 
 if __name__ == "__main__":
