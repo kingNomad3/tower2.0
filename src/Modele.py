@@ -4,7 +4,7 @@ from Partie import *
 class Modele:
     def __init__(self, parent):
         self.controleur = parent
-        self.partie = Partie(self, 1, 1) # Mettre à none quand on aura des tableaux et difficultés.
+        self.partie = None
         
     # def creer_partie(self,  parent): # Passer tableau et difficulte
     #     self.partie = Partie(self, 1, 1, parent) # Mettre tableau et difficulte en temps et lieu.
@@ -14,4 +14,7 @@ class Modele:
 
     def jouer(self):
         self.partie.jouer()
+        
+    def lancer_partie(self,joueurs):
+        self.partie = Partie(self,1, 1,joueurs)
 

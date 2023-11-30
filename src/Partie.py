@@ -2,6 +2,7 @@ from Tour import *
 from Creep import *
 import time
 from Chemin import *
+import json
 
 # Fonction qui génère un id pour chaque partie qui pourra être envoyé en réseau.
 def creer_id():
@@ -16,7 +17,7 @@ class Partie:
     CHOISIR_TOUR = {"TourMitrailleuse":TourMitrailleuse, "TourEclair": TourEclair, "TourPoison": TourPoison, "TourGrenade": TourGrenade, "TourMine":TourMine, "TourCanon": TourCanon, \
         "TourRalentissement": TourRalentissement, "TourRepoussante": TourRepoussante, "TourArgent": TourArgent, "TourBoost": TourBoost }
     
-    def __init__(self, parent, tableau, difficulte, seed=id): #Le seed pour randomiser les Creeps de la même façon en réseau.
+    def __init__(self, parent, tableau, difficulte, joueurs, seed=id): #Le seed pour randomiser les Creeps de la même façon en réseau.
         self.__tableau = tableau
         self.__difficulte = difficulte
         self.__argent_base = 2000 #TODO a determiner
@@ -31,8 +32,13 @@ class Partie:
         self.__liste_tours = []
         self.__creeps_en_attente = []
         self.__liste_creeps = []
+        self.actions_a_faire = {}        
         self.__pause = False
-        self.__creeps_tues = 0      
+        self.__creeps_tues = 0   
+        self.joueurs = {}
+        for i in joueurs:
+            self.joueurs[i] = Joueur(self,i)   
+        print(self.joueurs)
         #self.liste_creeps_full = False
         #Appartient au modele ou classe Tableau
         self.__chemin = Chemin(self)
@@ -79,14 +85,8 @@ class Partie:
         return self.__liste_tours
         
 
-    def creer_tour(self, x, y, tag):
-        tour = Partie.CHOISIR_TOUR[tag](self, x, y)
-        if self.peut_acheter_tour(tour): 
-            self.__liste_tours.append(tour)
-            self.__argent_courant -= tour.cout
 
-    def peut_acheter_tour(self, tour) -> bool:
-        return self.__argent_courant >= tour.cout 
+
 
     def creer_creeps(self):
         self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[0][0], self.__chemin.pivots[0][1],self.__vague) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
@@ -95,36 +95,7 @@ class Partie:
         if self.__creeps_en_attente:
             self.__liste_creeps.append(self.__creeps_en_attente.pop(0))
 
-    def jouer(self):
-        # fait apparaître les creeps progressivement
-        if self.__creeps_en_attente:
-            if len(self.__creeps_en_attente) < 20:
-                start = time.time()
-                if start - self.delta_time > Partie.ESPACE_CREEP:
-                    self.creeps_apparaissent() #TODO a comprendre 
-                    self.delta_time = time.time()
-            else:
-                self.creeps_apparaissent()
-
-        if self.est_game_over():
-            print("PERDU") # pour debogage
-
-
-        for creep in self.__liste_creeps:
-            creep.bouger()
-
-        for tour in self.__liste_tours: # Les tours d'attaque sont des fonctions récursives 
-            for projectile in tour.liste_projectiles:
-                projectile.deplacer()
-
-        self.remove_creep()
-        # self.remove_obus()
-        
-        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE:
-            self.temps_derniere_vague = maintenant
-            self.prochaine_vague()
-            
-        
+   
         
     def perte_vie(self):
         # châtelains...
@@ -152,3 +123,114 @@ class Partie:
     #         for i in tour.obus:
     #             if not i.vivant:
     #                 tour.obus.remove(i)
+    
+     #############################################################################
+    # ATTENTION : NE PAS TOUCHER
+    def ajouter_actions_a_faire(self, iteration,actionsrecues):
+        for i in actionsrecues:
+            iteration_cle = i[0]
+            if (iteration - 1) > int(iteration_cle):
+                print("PEUX PAS")
+            action = json.loads(i[1])
+            if action:
+                if iteration_cle not in self.actions_a_faire.keys():
+                    self.actions_a_faire[iteration_cle] = action
+                else:
+                    for j in action:
+                        self.actions_a_faire[iteration_cle].append(j)
+                        
+    # def jouer(self):
+    #     # fait apparaître les creeps progressivement
+    #     if self.__creeps_en_attente:
+    #         if len(self.__creeps_en_attente) < 20:
+    #             start = time.time()
+    #             if start - self.delta_time > Partie.ESPACE_CREEP:
+    #                 self.creeps_apparaissent() #TODO a comprendre 
+    #                 self.delta_time = time.time()
+    #         else:
+    #             self.creeps_apparaissent()
+
+    #     if self.est_game_over():
+    #         print("PERDU") # pour debogage
+
+
+    #     for creep in self.__liste_creeps:
+    #         creep.bouger()
+
+    #     for tour in self.__liste_tours: # Les tours d'attaque sont des fonctions récursives 
+    #         for projectile in tour.liste_projectiles:
+    #             projectile.deplacer()
+
+    #     self.remove_creep()
+    #     # self.remove_obus()
+        
+    #     if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE:
+    #         self.temps_derniere_vague = maintenant
+    #         self.prochaine_vague()
+            
+        
+    ##############################################################################
+    
+    
+    def jouer_coup(self, iteration):
+        ##################################################################
+        # faire nouvelle action recu du serveur si on est au bon cadrecourant
+        # ATTENTION : NE PAS TOUCHER
+        if iteration in self.actions_a_faire:
+            for i in self.actions_a_faire[iteration]:
+                self.joueurs[i[0]].actions[i[1]](i[2])
+                #self.joueurs["Claude101"].creer_tour([x, y, tag])
+        ##################################################################
+        # Gestion des creeps
+        
+        if self.__creeps_en_attente:
+            if len(self.__creeps_en_attente) < 20:
+                start = time.time()
+                if start - self.delta_time > Partie.ESPACE_CREEP:
+                    self.creeps_apparaissent() #TODO a comprendre 
+                    self.delta_time = time.time()
+            else:
+                self.creeps_apparaissent()
+
+        if self.est_game_over():
+            print("PERDU") # pour debogage
+
+
+        for creep in self.__liste_creeps:
+            creep.bouger()
+
+        for nom_joueur in self.joueurs: # Les tours d'attaque sont des fonctions récursives 
+            for tour in self.joueurs[nom_joueur].tours:
+                for projectile in tour.liste_projectiles:
+                    projectile.deplacer()
+
+        self.remove_creep()
+        # self.remove_obus()
+        
+        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE:
+            self.temps_derniere_vague = maintenant
+            self.prochaine_vague()
+            
+       
+            
+class Joueur():
+    def __init__(self,parent,nom):
+        self.partie = parent
+        self.nom_joueur = nom
+        
+        self.tours = []
+        self.actions ={"creer_tour":self.creer_tour                    
+                    #    "ameliorer_tour":None,
+                    #    "vendre_tour":None
+                    }
+            
+    def creer_tour(self, parametres):
+        tag, x, y = parametres
+        tour = Partie.CHOISIR_TOUR[tag](self, x, y)
+        if self.peut_acheter_tour(tour): 
+            self.tours.append(tour)
+            self.partie.argent_courant -= tour.cout
+            
+    
+    def peut_acheter_tour(self, tour) -> bool:
+        return self.partie.argent_courant >= tour.cout 
