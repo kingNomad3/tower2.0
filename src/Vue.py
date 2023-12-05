@@ -132,7 +132,7 @@ class Vue:
         img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
         
         if tour.cible:
-            angle = hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y)
+            angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * -1
             img = img.rotate(angle)
             
         tk_img = ImageTk.PhotoImage(img)
