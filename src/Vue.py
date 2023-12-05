@@ -5,9 +5,9 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 class Vue:
-    def __init__(self, parent, modele, nom_joueur_local):
+    def __init__(self, parent, nom_joueur_local):
         self.controleur = parent
-        self.modele = modele
+        self.modele = None
         self.root = Tk()
         self.nom_joueur_local = nom_joueur_local
         
@@ -28,7 +28,12 @@ class Vue:
         
         self.tag_bouton_choisi = None
         
-    
+    def afficher_cadre(self,cadre_demande):
+        if self.cadre_courant:
+            self.cadre_courant.pack_forget()
+        self.cadre_courant = self.cadres[cadre_demande]
+        self.cadre_courant.pack(expand=1,fill=BOTH)
+        
     def creer_cadres(self,nom_joueur_local):
         self.cadres["cadre_splash"] = self.creer_cadre_splash(nom_joueur_local)
         
@@ -43,7 +48,7 @@ class Vue:
         self.canevas_splash.pack()
         # section Identification
         self.canevas_splash.create_text(480,150,anchor="e",text="Identification",font=("Arial",18))
-        values = self.trouver_usagers_locaux()
+        values = []
         values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
                                      values = values)
@@ -164,7 +169,7 @@ class Vue:
         self.btnreset.config(state=NORMAL)
         url_serveur = self.url_initial.get()
         if url_serveur:
-            self.parent.initialiser_splash_post_connection(url_serveur)
+            self.controleur.initialiser_splash_post_connection(url_serveur)
         else:
             self.etat_du_jeu.config(text="Aucune adresse de serveur")
 
@@ -187,48 +192,50 @@ class Vue:
     def update_lobby(self, joueurs):
         if len(joueurs) == 2:
             self.label_joueur_coop.config(text=joueurs[1][0])
-            if self.parent.egoserveur == True:
+            if self.controleur.egoserveur == True:
                 self.btn_lancer_partie.config(state=NORMAL)
 
     def creer_partie(self):
         nom = self.drop_nom.get()
-        self.parent.creer_partie(nom)
+        self.controleur.creer_partie(nom)
 
     def lancer_partie_locale(self):
-        self.parent.initialiser_partie_locale()
+        self.controleur.initialiser_partie_locale()
 
     def lancer_partie(self):
-        self.parent.lancer_partie()
+        self.controleur.lancer_partie()
 
     def inscrire_joueur(self):
         nom = self.drop_nom.get()
         urljeu = self.url_initial.get()
-        self.parent.inscrire_joueur(nom, urljeu)
+        self.controleur.inscrire_joueur(nom, urljeu)
 
     def reset_partie(self):
-        rep = self.parent.reset_partie()
+        rep = self.controleur.reset_partie()
 
     def choisir_tablo(self, evt):
         tablo_choisi = evt.widget
         nom_tablo = tablo_choisi.cget("text")
 
     def trouver_usagers_locaux(self):
-        nom_values = self.parent.requerir_info("joueurs_locaux",["nom"] )
-        return nom_values
+        pass
+        # nom_values = self.controleur.requerir_info("joueurs_locaux",["nom"] )
+        # return nom_values
 
     def ouvrir_lobby_local(self):
-        nom_values = self.parent.agent_bd.chercher_usagers()
+        nom_values = ["julien", "cathcath", "alexis"]
         nom_joueur_courant = self.drop_nom.get()
         if nom_joueur_courant not in nom_values:
+            pass
             #print(nom_joueur_courant)
-            self.parent.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
-        self.parent.creer_partie_locale(nom_joueur_courant)
+            # self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
+        self.controleur.creer_partie_locale(nom_joueur_courant)
 
     def ouvrir_bonus(self):
         pass #self.afficher_cadre("cadre_jeu")   
     
     def activer_partie(self):
-        self.parent.activer_partie()
+        self.controleur.activer_partie()
     
     def afficher_choix_tours(self):
         self.canvas.create_rectangle(250 - 40, 640 - 40, 250 + 40,

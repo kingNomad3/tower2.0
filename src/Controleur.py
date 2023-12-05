@@ -9,10 +9,8 @@ class Controleur:
     def __init__(self):
         self.nom_joueur_local = self.generer_pseudo_nom()
         self.modele = Modele(self) # fonction au bas de la page, devrait être envoyée par la vue
-        self.modele.lancer_partie([self.nom_joueur_local])
-        self.partie = self.modele.partie
+        self.partie = None
         self.timer = 0
-        self.vue = Vue(self, self.modele, self.nom_joueur_local)
         self.egoserveur = False # devient vrai si on creer une partie
         self.partie_locale = True # si False, on joue reseau
         self.iteration_boucle_jeu = 0
@@ -25,7 +23,8 @@ class Controleur:
         self.delai_de_boucle_de_jeu = 20    # millisecondes avant que la boucle_de_jeu se rappelle      
         self.url_serveur = None
         #vue
-        self.vue.root.after(300, self.boucler_sur_jeu) 
+        self.vue = Vue(self, self.nom_joueur_local)
+        self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
 
     # pour du visuel et le modèle (en cas de besoin)
@@ -87,9 +86,9 @@ class Controleur:
             listejoueurs.append(i[0])
 
         # on cree le modele (la partie)
-        self.partie_active = self.modele.lancer_partie(listejoueurs)
+        self.partie = self.modele.lancer_partie(listejoueurs)
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
-        self.vue.modele = self.partie_active
+        self.vue.modele = self.partie
         # on met la vue a jour avec les infos de partie
         self.vue.creer_cadre_jeu()
         # on change le cadre la fenetre pour passer dans l'interface de jeu
@@ -112,9 +111,10 @@ class Controleur:
         #    listejoueurs.append(i[0])
 
         # on cree le modele (la partie)
-        self.partie_active = self.modele.lancer_partie([self.nom_joueur_local])
+        self.partie = self.modele.lancer_partie([self.nom_joueur_local])
+        print("allo")
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
-        self.vue.modele = self.partie_active
+        self.vue.modele = self.modele
         # on met la vue a jour avec les infos de partie
         self.vue.creer_cadre_jeu()
         # on change le cadre la fenetre pour passer dans l'interface de jeu
@@ -240,7 +240,11 @@ class Controleur:
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
         
-        
+       # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE
+    def requerir_info(self, table, colonnes):
+        db_rep = self.agent_bd.requerir_info(table, colonnes)
+        return db_rep
+    
     # fonction qui fait les appels au serveur
     def appeler_serveur(self, url, params, method="GET"):
         if method == "GET":
