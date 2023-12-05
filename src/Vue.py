@@ -1,19 +1,20 @@
 from tkinter import *
 from Modele import *
+from tkinter import ttk
 
 from PIL import Image, ImageTk
 
 class Vue:
-    def __init__(self, parent, modele):
+    def __init__(self, parent, modele, nom_joueur_local):
         self.controleur = parent
         self.modele = modele
         self.root = Tk()
-        # self.nom_joueur_local = nom_joueur_local
+        self.nom_joueur_local = nom_joueur_local
         
         self.cadres = {}    # dictionnaire des Frame pour changer la fen root d'etat
         self.cadre_courant = None
         self.images = {}
-        # self.creer_cadres(self.nom_joueur_local)
+        self.creer_cadres(self.nom_joueur_local)
 
         self.largeur = 1152
         self.hauteur = 648
@@ -26,15 +27,122 @@ class Vue:
         self.font_2 = "Arial " + str(int(10 * ((self.ratio_y + self.ratio_x) / 2)))
         
         self.tag_bouton_choisi = None
+        
+    
+    def creer_cadres(self,nom_joueur_local):
+        self.cadres["cadre_splash"] = self.creer_cadre_splash(nom_joueur_local)
+        
+    def creer_cadre_splash(self, nom_joueur_local):
+        # cadre pour toute la fenetre, contient 2 aires distinctes
+        cadre_splash = Frame(self.root)
+        self.canevas_splash = Canvas(cadre_splash,width=800,
+                              height=800,bg="pink")
+        # section Titre
+        etiquette_entree = Etiquette(self.canevas_splash,text="Tours du CVM")
+        self.canevas_splash.create_window(500,50,anchor="center",window=etiquette_entree)
+        self.canevas_splash.pack()
+        # section Identification
+        self.canevas_splash.create_text(480,150,anchor="e",text="Identification",font=("Arial",18))
+        values = self.trouver_usagers_locaux()
+        values.insert(0,nom_joueur_local)
+        self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
+                                     values = values)
+        self.drop_nom.set(nom_joueur_local)
+        self.canevas_splash.create_window(520,150,anchor="w",window=self.drop_nom)
 
-        # frame interne
+        # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
+        # les champs et
+        self.etat_du_jeu = Label(text="Non connecter", font=("Arial", 16), borderwidth=2, relief=RIDGE)
+        self.url_initial = Entry(font=("Arial", 14))
+
+        #self.url_initial.insert(0, "http://jmdeschamps.pythonanywhere.com")
+        self.url_initial.insert(0, "http://127.0.0.1:8000") #"http://jmdeschamps.pythonanywhere.com"
+        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12), command=self.initialiser_splash_post_connection)
+        # on les place sur le canevas_splash
+        self.canevas_splash.create_window(220, 250, window=self.url_initial, width=200, height=30)
+        self.canevas_splash.create_window(220, 300, window=self.btnurlconnect, width=100, height=30)
+        self.canevas_splash.create_window(220, 350, window=self.etat_du_jeu, width=300, height=30)
+
+        # section pour partie reseau
+        self.btncreerpartie = Button(text="Creer partie reseau", font=("Arial", 12), state=DISABLED, command=self.creer_partie)
+        self.btninscrirejoueur = Button(text="Inscrire a partie reseau", font=("Arial", 12), state=DISABLED,
+                                        command=self.inscrire_joueur)
+        self.btnreset = Button(text="Reinitialiser partie", font=("Arial", 9), state=DISABLED,
+                               command=self.reset_partie)
+        # on place les boutons
+        self.canevas_splash.create_window(220, 400, window=self.btncreerpartie, width=200, height=30)
+        self.canevas_splash.create_window(220, 450, window=self.btninscrirejoueur, width=200, height=30)
+        self.canevas_splash.create_window(220, 500, window=self.btnreset, width=200, height=30)
+
+        # section pour partie locale
+        self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
+        self.btn_ouvrir_bonus=Button(cadre_splash,text="Ouvrir magasin de Bonus",command=self.ouvrir_bonus)
+
+        self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
+        self.canevas_splash.create_window(680,500,anchor="center",window=self.btn_ouvrir_bonus)
+        return cadre_splash
+
+    def creer_cadre_lobby_reseau(self):
+        pass
+
+    def creer_cadre_lobby(self, local_ou_reseau, joueurs):
+        # cadre pour toute la fenetre, contient 2 aires distinctes
+        cadre_lobby = Frame(self.root)
+        self.canevas_lobby = Canvas(cadre_lobby,width=800,
+                              height=800,bg="lightgreen")
+        self.canevas_lobby.pack()
+
+        self.canevas_lobby.create_text(400,50,anchor="center",text="Lobby des Tours du CVM",font=("Arial",24))
+        self.canevas_lobby.create_text(400,100,anchor="center",text=local_ou_reseau,font=("Arial",18))
+
+        self.btn_lancer_partie=Button(self.canevas_lobby,text="Debuter la partie",
+                                      command=self.lancer_partie,)
+        self.canevas_lobby.create_window(400,700,anchor="center",window=self.btn_lancer_partie)
+        #
+        if local_ou_reseau == "reseau":
+            if len(joueurs)== 1:
+                self.canevas_lobby.create_text(200,200,text="Createur de la partie")
+                joueur_createur = joueurs[0][0]
+                self.label_joueur_createur = Label(self.canevas_lobby,text = joueur_createur)
+                self.canevas_lobby.create_window(200,250,window=self.label_joueur_createur)
+            #
+                self.canevas_lobby.create_text(500, 200, text="Joueur Coop de la partie")
+                self.label_joueur_coop = Label(self.canevas_lobby, text="Inconnu")
+                self.canevas_lobby.create_window(500, 250, window=self.label_joueur_coop)
+            else:
+                self.canevas_lobby.create_text(200,200,text="Createur de la partie")
+                joueur_createur = joueurs[0][0]
+                self.label_joueur_createur = Label(self.canevas_lobby,text = joueur_createur)
+                self.canevas_lobby.create_window(200,250,window=self.label_joueur_createur)
+            #
+                self.canevas_lobby.create_text(500, 200, text="Joueur Coop de la partie")
+                joueur_coop = joueurs[1][0]
+                self.label_joueur_coop = Label(self.canevas_lobby, text=joueur_coop)
+                self.canevas_lobby.create_window(500, 250, window=self.label_joueur_coop)
+                self.btn_lancer_partie.config(state="disabled")
+        else:
+            self.btn_lancer_partie.config(command=self.lancer_partie_locale)
+
+        ##
+        # Create a matrix of buttons for board selection on the canvas
+        x = 200
+        y = 350
+        for rang in range(3):
+            x = x + 100
+            no_tablo = rang
+            self.btn_tablo = Button(self.canevas_lobby, text=f"Tablo {no_tablo}")
+            self.btn_tablo.bind("<Button>",self.choisir_tablo)
+            self.canevas_lobby .create_window(x, y, anchor="center", window=self.btn_tablo)
+        ##
+        self.cadres["cadre_lobby"] = cadre_lobby
+        
+    def creer_cadre_jeu(self):
         self.interface_panel = None
         self.toggle_menu_tour = None
-        self.frame = Frame(self.root)
-        self.frame.pack(fill=BOTH, expand=YES)
+        cadre_jeu = Frame(self.root)
+        cadre_jeu.pack(fill=BOTH, expand=YES)
 
-        # canvas
-        self.canvas = Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="black", highlightthickness=0)
+        self.canvas = Canvas(cadre_jeu, width=self.largeur, height=self.hauteur, bg="black", highlightthickness=0)
         self.canvas.bind("<Configure>", self.resize)
         self.canvas.pack(fill=BOTH, expand=YES)
 
@@ -47,8 +155,81 @@ class Vue:
         self.dessiner_interface_info()
         self.dessiner_chateau()
         self.dessiner_information()
+        # on place ce cadre parmi l'ensemble des cadres
+        self.cadres["cadre_jeu"]= cadre_jeu
         
-        
+    def initialiser_splash_post_connection(self):
+        self.btninscrirejoueur.config(state=NORMAL)
+        self.btncreerpartie.config(state=NORMAL)
+        self.btnreset.config(state=NORMAL)
+        url_serveur = self.url_initial.get()
+        if url_serveur:
+            self.parent.initialiser_splash_post_connection(url_serveur)
+        else:
+            self.etat_du_jeu.config(text="Aucune adresse de serveur")
+
+    def update_splash(self, etat):
+        if "attente" in etat or "courante" in etat:
+            self.btncreerpartie.config(state=DISABLED)
+        if "courante" in etat:
+            self.etat_du_jeu.config(text="Desole - partie encours !")
+            self.btninscrirejoueur.config(state=DISABLED)
+        elif "attente" in etat:
+            self.etat_du_jeu.config(text="Partie en attente de joueurs !")
+            self.btninscrirejoueur.config(state=NORMAL)
+        elif "dispo" in etat:
+            self.etat_du_jeu.config(text="Bienvenue ! Serveur disponible")
+            self.btninscrirejoueur.config(state=DISABLED)
+            self.btncreerpartie.config(state=NORMAL)
+        else:
+            self.etat_du_jeu.config(text="ERREUR - un probleme est survenu")
+
+    def update_lobby(self, joueurs):
+        if len(joueurs) == 2:
+            self.label_joueur_coop.config(text=joueurs[1][0])
+            if self.parent.egoserveur == True:
+                self.btn_lancer_partie.config(state=NORMAL)
+
+    def creer_partie(self):
+        nom = self.drop_nom.get()
+        self.parent.creer_partie(nom)
+
+    def lancer_partie_locale(self):
+        self.parent.initialiser_partie_locale()
+
+    def lancer_partie(self):
+        self.parent.lancer_partie()
+
+    def inscrire_joueur(self):
+        nom = self.drop_nom.get()
+        urljeu = self.url_initial.get()
+        self.parent.inscrire_joueur(nom, urljeu)
+
+    def reset_partie(self):
+        rep = self.parent.reset_partie()
+
+    def choisir_tablo(self, evt):
+        tablo_choisi = evt.widget
+        nom_tablo = tablo_choisi.cget("text")
+
+    def trouver_usagers_locaux(self):
+        nom_values = self.parent.requerir_info("joueurs_locaux",["nom"] )
+        return nom_values
+
+    def ouvrir_lobby_local(self):
+        nom_values = self.parent.agent_bd.chercher_usagers()
+        nom_joueur_courant = self.drop_nom.get()
+        if nom_joueur_courant not in nom_values:
+            #print(nom_joueur_courant)
+            self.parent.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
+        self.parent.creer_partie_locale(nom_joueur_courant)
+
+    def ouvrir_bonus(self):
+        pass #self.afficher_cadre("cadre_jeu")   
+    
+    def activer_partie(self):
+        self.parent.activer_partie()
+    
     def afficher_choix_tours(self):
         self.canvas.create_rectangle(250 - 40, 640 - 40, 250 + 40,
                                      640 + 40,
@@ -132,7 +313,7 @@ class Vue:
         img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
         
         if tour.cible:
-            angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * -1
+            angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * - 1
             img = img.rotate(angle)
             
         tk_img = ImageTk.PhotoImage(img)
@@ -356,4 +537,9 @@ class PacManButton(Frame):
         button = Button(self, bg='black', fg='goldenrod3', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text)
         button.pack()
     
+class Etiquette(Label):
+    def __init__(self,master,*args, **kwargs):
+        Label.__init__(self,master,*args, **kwargs)
+        self.config(font=("arial",48,"bold"))
+        self.config(fg="goldenrod3")
     
