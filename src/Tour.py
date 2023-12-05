@@ -228,7 +228,7 @@ class TourEclair(TourAttaque):
         if self.cible:
             eclair = Eclair(self, self.pos_x, self.pos_y, self.cible,self.niveau_amelioration)#TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(eclair)
-        self.partie.modele.controleur.vue.root.after(self.temps_recharge, self.attaquer)
+        self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
 
 class TourPoison(TourAttaque):
