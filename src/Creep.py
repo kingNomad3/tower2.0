@@ -1,5 +1,6 @@
 import helper as hp
 import random
+from effetVisuel import *
 from PIL import Image
 
 
@@ -28,7 +29,8 @@ class Creep:
         self.__segment_actuel = 0
         self.__img_src = self.definir_img_src()
         self.definir_attribut()
-        self.nouvelle_cible()                
+        self.nouvelle_cible()
+        self.__explosion = None
         
         
     def definir_attribut(self):
@@ -58,6 +60,8 @@ class Creep:
         if self.__vie <= 0:
             self.__vivant = False
             self.__partie.argent_courant += self.valeur_argent
+            self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
+
 
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
@@ -67,10 +71,10 @@ class Creep:
         self.__cible = [x, y]
 
     def maj_vie(self):
-        # if self.__est_empoisone:
-        #     if self.__cible.attribut is "poison": 
-        #         self.dmg_poison /= 2
-        #     self.vie -= self.dmg_poison
+        if self.__est_empoisone:
+            if self.__cible.attribut is "poison":
+                self.dmg_poison /= 2
+            self.vie -= self.dmg_poison
             
         # if self.__est_electrocute:
         #     self.__compteur_electrocute += 1

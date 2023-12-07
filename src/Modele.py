@@ -15,6 +15,6 @@ class Modele:
     def jouer(self):
         self.partie.jouer()
         
-    def lancer_partie(self,joueurs):
-        self.partie = Partie(self,1, 1,joueurs)
+    def lancer_partie(self,joueurs, tableau):
+        self.partie = Partie(self,1,joueurs, tableau)
 

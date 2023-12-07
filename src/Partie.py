@@ -13,7 +13,7 @@ class Partie:
     CHOISIR_TOUR = {"TourMitrailleuse":TourMitrailleuse, "TourEclair": TourEclair, "TourPoison": TourPoison, "TourGrenade": TourGrenade, "TourMine":TourMine, "TourCanon": TourCanon, \
         "TourRalentissement": TourRalentissement, "TourRepoussante": TourRepoussante, "TourArgent": TourArgent, "TourBoost": TourBoost }
     
-    def __init__(self, parent, tableau, difficulte, joueurs, seed=id): #Le seed pour randomiser les Creeps de la même façon en réseau.
+    def __init__(self, parent, difficulte, joueurs, tableau=0, seed=id): #Le seed pour randomiser les Creeps de la même façon en réseau.
         self.__tableau = tableau
         self.__difficulte = difficulte
         self.__argent_base = 2000 #TODO a determiner
@@ -35,9 +35,9 @@ class Partie:
         for i in joueurs:
             self.joueurs[i] = Joueur(self,i)   
         #Appartient au modele ou classe Tableau
-        self.__chemin = Chemin(self)
-        self.__agent_BD = Agent_BD()
-        
+
+        self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
+
         self.vie = 20
         self.delta_time = time.time()
         self.temps_derniere_vague = time.time()
@@ -78,13 +78,18 @@ class Partie:
     @property
     def liste_tours(self):
         return self.__liste_tours
+    
+    @property
+    def tableau(self):
+        return self.__tableau
+    @tableau.setter
+    def tableau(self, value):
+        self.__tableau = value
         
 
 
-
-
     def creer_creeps(self):
-        self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[0][0], self.__chemin.pivots[0][1],self.__vague) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
+        self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[self.__tableau][0][0], self.__chemin.pivots[self.__tableau][0][1],self.__vague) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
 
     def creeps_apparaissent(self):
         if self.__creeps_en_attente:

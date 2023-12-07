@@ -158,6 +158,7 @@ class Vue:
         self.root.bind('<KeyPress-space>', self.skip)
 
         self.dessiner_interface_info()
+        # self.dessiner_menu()
         self.dessiner_chateau()
         self.dessiner_information()
         # on place ce cadre parmi l'ensemble des cadres
@@ -215,14 +216,15 @@ class Vue:
 
     def choisir_tablo(self, evt):
         tablo_choisi = evt.widget
-        nom_tablo = tablo_choisi.cget("text")
+        self.tableau_choisi = int(tablo_choisi.cget("text")[-1:])
+        self.controleur.choisir_tablo(self.tableau_choisi)
 
     def trouver_usagers_locaux(self):
         nom_values = self.controleur.requerir_info("joueurs_locaux",["nom"] )
         return nom_values
 
     def ouvrir_lobby_local(self):
-        nom_values = self.parent.agent_bd.chercher_usagers()
+        nom_values = self.controleur.agent_bd.chercher_usagers()
         nom_joueur_courant = self.drop_nom.get()
         if nom_joueur_courant not in nom_values:
             self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
@@ -251,8 +253,8 @@ class Vue:
 
     def dessiner_chateau(self):
         length = len(self.modele.partie.chemin.pivots)
-        x = self.modele.partie.chemin.pivots[length-1][0]
-        y = self.modele.partie.chemin.pivots[length-1][1]
+        x = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][0]
+        y = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][1]
         self.canvas.create_rectangle(x - 30, y - 30 , x + 30, y + 30, fill="GREY", outline="")
         self.canvas.create_rectangle(x - 15, 465 - 15, x + 15, 465 + 15, fill="RED", outline='')
 
@@ -424,16 +426,15 @@ class Vue:
         
     # Dessine InterfacePannel et le Bouton ChoixTour
     def dessiner_interface_info(self):        
-        if self.interface_panel or self.toggle_menu_tour:
+        if self.interface_panel and self.toggle_menu_tour:
             self.interface_panel.destroy()
-            # self.toggle_menu_tour.destroy()
+            self.toggle_menu_tour.destroy()
             
         self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
         self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
         
-        # # fuck le scalling???
-        # self.toggle_menu_tour = PacManButton(50 * self.ratio_x, 10 * self.ratio_y, "tours")
-        # self.toggle_menu_tour.place(anchor="ne", x=250, y=40)
+        self.toggle_menu_tour = PacManButton(int(20 * self.ratio_x), int(2 * self.ratio_y), "Activer la partie", self.activer_partie)
+        self.toggle_menu_tour.place(anchor="center", relx=0.5, y=40)
 
 
 
@@ -530,7 +531,7 @@ class InterfacePannel(Frame):
         # #choix button qui trigger le menu placer tour
         
 class PacManButton(Frame):
-    def __init__(self, width, height, text):
+    def __init__(self, width, height, text, command = None):
         super().__init__()
         self['bg'] = 'black'
         self['width'] = width
@@ -538,7 +539,7 @@ class PacManButton(Frame):
         self['highlightthickness'] = 2
         self['highlightbackground'] = 'goldenrod3'
         
-        button = Button(self, bg='black', fg='goldenrod3', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text)
+        button = Button(self, bg='black', fg='goldenrod3', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
         button.pack()
     
 class Etiquette(Label):
