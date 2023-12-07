@@ -64,8 +64,8 @@ class Creep:
 
 
     def nouvelle_cible(self):
-        x = self.__partie.chemin.segments[self.segment_actuel][1][1][0]
-        y = self.__partie.chemin.segments[self.segment_actuel][1][1][1]
+        x = self.__partie.chemin.segments[self.segment_actuel][1][0]
+        y = self.__partie.chemin.segments[self.segment_actuel][1][1]
 
         self.__angle_target = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, x, y)
         self.__cible = [x, y]

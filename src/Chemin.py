@@ -6,7 +6,7 @@ class Chemin():
                        ]
         self.segments = []
         self.temp = self.pivots[choixTableau]
-        self.creer_segments(self.pivots)
+        self.creer_segments(self.temp)
 
 
     def creer_segments(self, pivots):

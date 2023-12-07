@@ -18,6 +18,7 @@ class Controleur:
         self.prochainsplash = 0
         self.on_joue = 1 # devient 0 si le serveur envoie un probleme de synchro
         self.actions_requises = [] # arrive via l'interface graphique
+        self.tableau_choisi = None
         #info reseau
         self.session = None
         self.modulo_appeler_serveur = 2     # on appelle le serveur mois souvent que la buocle de jeu
@@ -84,7 +85,7 @@ class Controleur:
             listejoueurs.append(i[0])
 
         # on cree le modele (la partie)
-        self.modele.lancer_partie(listejoueurs)
+        self.modele.lancer_partie(listejoueurs, self.tableau_choisi)
         self.partie = self.modele.partie
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
         self.vue.modele = self.partie
@@ -99,7 +100,7 @@ class Controleur:
         random.seed(12473)
 
         # on cree le modele (la partie)
-        self.modele.lancer_partie([self.nom_joueur_local])
+        self.modele.lancer_partie([self.nom_joueur_local], self.tableau_choisi)
         self.partie = self.modele.partie
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
         self.vue.modele = self.modele
@@ -201,7 +202,6 @@ class Controleur:
                     mondict = self.appeler_serveur(url, params, method = "POST")
                     # verifie pour requete d'attente d'un joueur plus lent
                     if "ATTENTION" in mondict:
-                        print("SAUTEEEEE")
                         self.on_joue = 0
 
                     elif mondict:
@@ -241,6 +241,9 @@ class Controleur:
             response = self.session.post(url, json=params)
         response.raise_for_status()
         return response.json()
+    
+    def choisir_tablo(self, tableau_choisi):
+        self.tableau_choisi = tableau_choisi
 
 if __name__ == "__main__":
     c = Controleur()

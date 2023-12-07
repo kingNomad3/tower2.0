@@ -216,7 +216,8 @@ class Vue:
 
     def choisir_tablo(self, evt):
         tablo_choisi = evt.widget
-        nom_tablo = tablo_choisi.cget("text")
+        self.tableau_choisi = int(tablo_choisi.cget("text")[-1:])
+        self.controleur.choisir_tablo(self.tableau_choisi)
 
     def trouver_usagers_locaux(self):
         nom_values = self.controleur.requerir_info("joueurs_locaux",["nom"] )
@@ -252,8 +253,8 @@ class Vue:
 
     def dessiner_chateau(self):
         length = len(self.modele.partie.chemin.pivots)
-        x = self.modele.partie.chemin.pivots[length-1][0]
-        y = self.modele.partie.chemin.pivots[length-1][1]
+        x = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][0]
+        y = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][1]
         self.canvas.create_rectangle(x - 30, y - 30 , x + 30, y + 30, fill="GREY", outline="")
         self.canvas.create_rectangle(x - 15, 465 - 15, x + 15, 465 + 15, fill="RED", outline='')
 
