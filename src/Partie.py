@@ -3,11 +3,7 @@ from Creep import *
 import time
 from Chemin import *
 import json
-
-# Fonction qui génère un id pour chaque partie qui pourra être envoyé en réseau.
-def creer_id():
-    pass
-    #random.randint(0, 10000)
+from TD_agent_BD import *
 
 
 class Partie:
@@ -38,10 +34,9 @@ class Partie:
         self.joueurs = {}
         for i in joueurs:
             self.joueurs[i] = Joueur(self,i)   
-        print(self.joueurs)
-        #self.liste_creeps_full = False
         #Appartient au modele ou classe Tableau
         self.__chemin = Chemin(self)
+        self.__agent_BD = Agent_BD()
         
         self.vie = 20
         self.delta_time = time.time()

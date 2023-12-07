@@ -218,17 +218,14 @@ class Vue:
         nom_tablo = tablo_choisi.cget("text")
 
     def trouver_usagers_locaux(self):
-        pass
-        # nom_values = self.controleur.requerir_info("joueurs_locaux",["nom"] )
-        # return nom_values
+        nom_values = self.controleur.requerir_info("joueurs_locaux",["nom"] )
+        return nom_values
 
     def ouvrir_lobby_local(self):
-        nom_values = ["julien", "cathcath", "alexis"]
+        nom_values = self.parent.agent_bd.chercher_usagers()
         nom_joueur_courant = self.drop_nom.get()
         if nom_joueur_courant not in nom_values:
-            pass
-            #print(nom_joueur_courant)
-            # self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
+            self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
         self.controleur.creer_partie_locale(nom_joueur_courant)
 
     def ouvrir_bonus(self):
