@@ -35,7 +35,8 @@ class Partie:
         for i in joueurs:
             self.joueurs[i] = Joueur(self,i)   
         #Appartient au modele ou classe Tableau
-        self.__chemin = Chemin(self)
+
+        self.__chemin = Chemin(self,1)# TODO 0 pour teableau 1 et 1 pour tebleau 2
         
         self.vie = 20
         self.delta_time = time.time()
@@ -83,7 +84,7 @@ class Partie:
 
 
     def creer_creeps(self):
-        self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[0][0], self.__chemin.pivots[0][1],self.__vague) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
+        self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[0][1][0], self.__chemin.pivots[0][1][1],self.__vague) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
 
     def creeps_apparaissent(self):
         if self.__creeps_en_attente:
