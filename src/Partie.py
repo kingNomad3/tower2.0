@@ -30,10 +30,12 @@ class Partie:
         self.__liste_creeps = []
         self.actions_a_faire = {}        
         self.__pause = False
-        self.__creeps_tues = 0   
+        self.__creeps_tues = 0
+        self.nuages = []
         self.joueurs = {}
         for i in joueurs:
-            self.joueurs[i] = Joueur(self,i)   
+            self.joueurs[i] = Joueur(self,i)
+        self.explosions = []
         #Appartient au modele ou classe Tableau
 
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
@@ -204,13 +206,29 @@ class Partie:
                 for projectile in tour.liste_projectiles:
                     projectile.deplacer()
 
+        # Gestion des explosions
+        for i in self.explosions:
+            i.jouer_coup()
+
+        # for i in self.joueurs:
+        #     self.joueurs[i].jouer_coup()
+
         self.remove_creep()
         # self.remove_obus()
         
         if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE:
             self.temps_derniere_vague = maintenant
             self.prochaine_vague()
-            
+
+    def supprimer_explosion(self, explosion):
+        if explosion in self.explosions:
+            self.explosions.remove(explosion)
+
+    def supprimer_nuage(self,nuage):
+        if nuage in self.nuages:
+            self.nuages.remove(nuage)
+            if self.nuages ==  []:
+                self.parent.supprimer_explosion(self)
        
             
 class Joueur():
