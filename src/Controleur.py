@@ -4,6 +4,7 @@ from Tour import *
 import random
 import requests
 import json
+from TD_agent_BD import *
 
 class Controleur:
     def __init__(self):
@@ -26,6 +27,7 @@ class Controleur:
         self.vue = Vue(self, self.nom_joueur_local)
         self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
+        self.agent_bd = Agent_BD(self)
 
     # pour du visuel et le modèle (en cas de besoin)
     def incrementer_timer(self):
