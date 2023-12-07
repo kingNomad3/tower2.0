@@ -41,16 +41,16 @@ class Creep:
         self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle_target, self.__vitesse, self.__pos_x, self.__pos_y)
         
         dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible[0], self.__cible[1])
-
+        # print(len(self.__partie.chemin.segments)[1])
         if dist < self.__vitesse:
             self.__pos_x = self.__cible[0]
             self.__pos_y = self.__cible[1]
             self.__segment_actuel += 1
-            if self.__segment_actuel <= 7:
+            if self.__segment_actuel < len(self.__partie.chemin.segments):
                 self.nouvelle_cible()
 
             # arrive au chateau
-            elif self.__segment_actuel == 8:
+            elif self.__segment_actuel == len(self.__partie.chemin.segments):
                 self.__partie.perte_vie()
 
                 self.__vivant = False

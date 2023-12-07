@@ -6,6 +6,7 @@ from werkzeug.wrappers import Response
 import random
 import sqlite3
 
+
 app = Flask(__name__)
 
 app.secret_key = "qwerasdf1234"
@@ -14,6 +15,16 @@ class Dbman():
     def __init__(self):
         self.conn = sqlite3.connect("RTS_serveur_DB.db")
         self.curs = self.conn.cursor()
+        
+        self.create_table_tableau()
+        
+    def create_table_tableau(self):
+        self.curs.execute("CREATE TABLE IF NOT EXISTS tableau (tableau_choisi NUMBER);")
+        self.conn.commit()
+        
+    def settableauchoisi(self, tableau):
+        self.curs.execute("INSERT into tableau (tableau_choisi) VALUES(?);", (tableau,))
+        self.conn.commit()
 
     def setpartiecourante(self, chose):
         self.vidertable("partiecourante")
@@ -123,6 +134,7 @@ def inscrire_joueur():
 @app.route("/boucler_sur_lobby", methods=["GET", "POST"])
 def boucler_sur_lobby():
     db = Dbman()
+    
     info = db.getinfo("partiecourante")
     #print("BOUCER SUR LOBBY",info)
     if "courante" in info[0]:
@@ -132,8 +144,14 @@ def boucler_sur_lobby():
         db.fermerdb()
         return jsonify(reponse)
     else:
-        info = db.getinfo("joueurs")
-
+        data = request.get_json()
+        tableau = data["tableau"]
+        
+        if tableau is not None or tableau != db.getinfo(tableau)[0]:
+            db.settableauchoisi(tableau)
+            
+        info = {"info_joueur": db.getinfo("joueurs"), "tableau": db.getinfo(tableau)[0]}
+        
         db.fermerdb()
         return jsonify(info)
 
@@ -222,4 +240,5 @@ def boucler_sur_jeu():
     return jsonify(maliste)
 
 if __name__ == '__main__':
+   
     app.run(debug=True, port=8000)
