@@ -10,13 +10,15 @@ class Vue:
         self.modele = None
         self.root = Tk()
         self.nom_joueur_local = nom_joueur_local
+        self.partie_active = False
+        self.demarrer_partie = None
         
         self.cadres = {}    # dictionnaire des Frame pour changer la fen root d'etat
         self.cadre_courant = None
         self.images = {}
         self.creer_cadres(self.nom_joueur_local)
 
-        self.largeur = 1152
+        self.largeur = 1200
         self.hauteur = 648
         self.largeur_chemin = 55
 
@@ -158,6 +160,7 @@ class Vue:
         self.root.bind('<KeyPress-space>', self.skip)
 
         self.dessiner_interface_info()
+        self.dessiner_interface_tour()
         # self.dessiner_menu()
         self.dessiner_chateau()
         self.dessiner_information()
@@ -235,6 +238,8 @@ class Vue:
     
     def activer_partie(self):
         self.controleur.activer_partie()
+        self.demarrer_partie.destroy()
+        self.partie_active = True
     
     def afficher_choix_tours(self):
         self.canvas.create_rectangle(250 - 40, 640 - 40, 250 + 40,
@@ -252,7 +257,6 @@ class Vue:
         print(event.keysym)
 
     def dessiner_chateau(self):
-        length = len(self.modele.partie.chemin.pivots)
         x = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][0]
         y = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][1]
         self.canvas.create_rectangle(x - 30, y - 30 , x + 30, y + 30, fill="GREY", outline="")
@@ -342,10 +346,9 @@ class Vue:
 
     def get_info_tour(self, event):
         self.canvas.tag_unbind('TO', '<Button>', self.activation_to)
-        self.canvas.tag_unbind('TO', '<Button>', self.activation_te)
-        self.canvas.tag_unbind('TO', '<Button>', self.activation_tp)
+        self.canvas.tag_unbind('TE', '<Button>', self.activation_te)
+        self.canvas.tag_unbind('TP', '<Button>', self.activation_tp)
         target = self.canvas.gettags("current")[1]
-
 
         for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
             if tour.id == target:
@@ -426,16 +429,23 @@ class Vue:
         
     # Dessine InterfacePannel et le Bouton ChoixTour
     def dessiner_interface_info(self):        
-        if self.interface_panel and self.toggle_menu_tour:
+        if self.interface_panel:
             self.interface_panel.destroy()
-            self.toggle_menu_tour.destroy()
+            
+        if not self.partie_active:
+            if self.demarrer_partie:
+                self.demarrer_partie.destroy()
+            self.demarrer_partie = PacManButton(int(20 * self.ratio_x), int(2 * self.ratio_y), "Démarrer la partie", self.activer_partie)
+            self.demarrer_partie.place(anchor="center", relx=0.5, y=40)
             
         self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
         self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
-        
-        self.toggle_menu_tour = PacManButton(int(20 * self.ratio_x), int(2 * self.ratio_y), "Activer la partie", self.activer_partie)
-        self.toggle_menu_tour.place(anchor="center", relx=0.5, y=40)
 
+        
+        
+    def dessiner_interface_tour(self):
+        self.menu_tour =  InterfaceTour(self, 250 * self.ratio_x, 500 * self.ratio_y)
+        self.menu_tour.place(anchor="ne", x=self.largeur-10, y=70)
 
 
     def resize(self, evt):
@@ -447,6 +457,7 @@ class Vue:
         self.ratio_y *= h
         
         self.dessiner_interface_info()
+        self.dessiner_interface_tour()
         
         # reconfig
         self.canvas.config(width=self.largeur, height=self.hauteur)
@@ -479,9 +490,9 @@ class Vue:
         self.canvas.create_text(760 * self.ratio_x, 645 * self.ratio_y, text="Argent", font=self.font, tags=("info", ))
         self.canvas.create_text(760 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.argent_courant, tags=("info",'argent', ), font=self.font)
 
-        self.activation_to = self.canvas.tag_bind('TourMitrailleuse', '<Button>', self.bind_canvas)
-        self.activation_te = self.canvas.tag_bind('TourEclair', '<Button>', self.bind_canvas)
-        self.activation_tp = self.canvas.tag_bind('TourPoisonP', '<Button>', self.bind_canvas)
+        # self.activation_to = self.canvas.tag_bind('TourMitrailleuse', '<Button>', self.bind_canvas)
+        # self.activation_te = self.canvas.tag_bind('TourEclair', '<Button>', self.bind_canvas)
+        # self.activation_tp = self.canvas.tag_bind('TourPoisonP', '<Button>', self.bind_canvas)
 
 
     def bind_canvas(self, evt):
@@ -526,9 +537,25 @@ class InterfacePannel(Frame):
         self.vague_info.place(anchor="center", relx= 0.4, rely=0.5)
         self.vie_info.place(anchor="center", relx= 0.6, rely=0.5)
         self.argent_info.place(anchor="center", relx= 0.85, rely=0.5)
-    
-    
-        # #choix button qui trigger le menu placer tour
+        
+
+class InterfaceTour(Frame):
+    def __init__(self, parent, width, height):
+        super().__init__()
+        self['bg'] = 'black'
+        self['width'] = width
+        self['height'] = height
+        self['highlightthickness'] = 3
+        self['highlightbackground'] = 'blue'
+        
+        # self.activation_to = PacManButton(12, 1, "TourMitrailleuse", parent.bind_canvas)
+        # self.activation_te = PacManButton(12, 1, "TourEclair", parent.bind_canvas)
+        # self.activation_tp = PacManButton(12, 1, "TourPoisonP", parent.bind_canvas)
+        
+        # self.activation_to.place(anchor="center")
+        # self.activation_te.place(anchor="center")
+        # self.activation_tp.place(anchor="center")
+        
         
 class PacManButton(Frame):
     def __init__(self, width, height, text, command = None):
