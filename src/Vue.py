@@ -222,7 +222,7 @@ class Vue:
         return nom_values
 
     def ouvrir_lobby_local(self):
-        nom_values = self.parent.agent_bd.chercher_usagers()
+        nom_values = self.controleur.agent_bd.chercher_usagers()
         nom_joueur_courant = self.drop_nom.get()
         if nom_joueur_courant not in nom_values:
             self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
