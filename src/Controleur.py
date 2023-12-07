@@ -64,14 +64,18 @@ class Controleur:
 
     def boucler_sur_lobby(self):
         url = self.url_serveur + "/boucler_sur_lobby"
-        params = {"nom": self.nom_joueur_local}
-        info_etat_joueur = self.appeler_serveur(url, params)
+        
+        params = {"nom": self.nom_joueur_local, "tableau" : self.tableau_choisi}
+                
+        info_etat_joueur = self.appeler_serveur(url, params, "POST")
         # si l'etat est courant, c'est que la partie vient d'etre lancer
-        if "courante" in info_etat_joueur[0]:
-            self.initialiser_partie(info_etat_joueur)
+        print(info_etat_joueur)
+        
+        if "courante" in info_etat_joueur["info_joueur"][0]:
+            self.initialiser_partie(info_etat_joueur)        
         else:
-            self.joueurs = info_etat_joueur
-            self.vue.update_lobby(info_etat_joueur)
+            self.joueurs = info_etat_joueur["info_joueur"]
+            self.vue.update_lobby(info_etat_joueur["info_joueur"])
             self.vue.root.after(50, self.boucler_sur_lobby)
             
     def initialiser_partie(self, mondict):
@@ -88,12 +92,24 @@ class Controleur:
         self.modele.lancer_partie(listejoueurs, self.tableau_choisi)
         self.partie = self.modele.partie
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
-        self.vue.modele = self.partie
+        self.vue.modele = self.modele
         # on met la vue a jour avec les infos de partie
         self.vue.creer_cadre_jeu()
         # on change le cadre la fenetre pour passer dans l'interface de jeu
         self.vue.afficher_cadre("cadre_jeu")
         self.boucler_en_attente()
+
+    # EN ATTENTE DE L'ACTIVATION DANS LE JEU
+    def boucler_en_attente(self):
+        url = self.url_serveur + "/verifier_activation_partie"
+        data = {
+            'nom': self.nom_joueur_local  # Make sure to include this parameter
+        }
+        info_etat_joueur = self.appeler_serveur(url, data, "POST")
+        if "activer" in info_etat_joueur[0]:
+            self.boucler_sur_jeu()
+        else:
+            self.vue.root.after(50, self.boucler_en_attente)
 
     # provient du bouton Debuter_partie
     def initialiser_partie_locale(self):
