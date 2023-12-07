@@ -23,11 +23,11 @@ class Controleur:
         self.modulo_appeler_serveur = 2     # on appelle le serveur mois souvent que la buocle de jeu
         self.delai_de_boucle_de_jeu = 20    # millisecondes avant que la boucle_de_jeu se rappelle      
         self.url_serveur = None
+        self.agent_bd = Agent_BD(self)
         #vue
         self.vue = Vue(self, self.nom_joueur_local)
         self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
-        self.agent_bd = Agent_BD(self)
 
     # pour du visuel et le modèle (en cas de besoin)
     def incrementer_timer(self):
@@ -76,10 +76,6 @@ class Controleur:
     def initialiser_partie(self, mondict):
         # on recoit les divers parametres d'initialisation du serveur
         initaleatoire = mondict[1][0][0]
-        # POUR TEST
-        # random ALEATOIRE fourni par le serveur
-        # random.seed(int(initaleatoire))
-        # random FIXE pour test - generera la meme suite de nombre chaque fois
         random.seed(12473)
 
         # on recoit la derniere liste des joueurs pour la partie
@@ -88,7 +84,8 @@ class Controleur:
             listejoueurs.append(i[0])
 
         # on cree le modele (la partie)
-        self.partie = self.modele.lancer_partie(listejoueurs)
+        self.modele.lancer_partie(listejoueurs)
+        self.partie = self.modele.partie
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
         self.vue.modele = self.partie
         # on met la vue a jour avec les infos de partie
@@ -99,22 +96,11 @@ class Controleur:
 
     # provient du bouton Debuter_partie
     def initialiser_partie_locale(self):
-        # on recoit les divers parametres d'initialisation du serveur
-        #initaleatoire = mondict[1][0][0]
-        # POUR TEST
-        # random ALEATOIRE fourni par le serveur
-        # random.seed(int(initaleatoire))
-        # random FIXE pour test - generera la meme suite de nombre chaque fois
         random.seed(12473)
 
-        # on recoit la derniere liste des joueurs pour la partie
-        #listejoueurs = []
-        #for i in self.joueurs:
-        #    listejoueurs.append(i[0])
-
         # on cree le modele (la partie)
-        self.partie = self.modele.lancer_partie([self.nom_joueur_local])
-        print("allo")
+        self.modele.lancer_partie([self.nom_joueur_local])
+        self.partie = self.modele.partie
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
         self.vue.modele = self.modele
         # on met la vue a jour avec les infos de partie
@@ -124,10 +110,10 @@ class Controleur:
         #self.boucler_en_attente()
     
     def reset_partie(self):
-            le_url = self.url_serveur + "/reset_jeu"
-            reptext = self.appeler_serveur(le_url, 0)
-            self.vue.update_splash(reptext[0][0]) #
-            return reptext
+        le_url = self.url_serveur + "/reset_jeu"
+        reptext = self.appeler_serveur(le_url, 0)
+        self.vue.update_splash(reptext[0][0]) #
+        return reptext
     
     # fonction pour demarrer une partie coop
     def creer_partie(self, nom_joueur_local):

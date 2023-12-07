@@ -36,7 +36,6 @@ class Partie:
             self.joueurs[i] = Joueur(self,i)   
         #Appartient au modele ou classe Tableau
         self.__chemin = Chemin(self)
-        self.__agent_BD = Agent_BD()
         
         self.vie = 20
         self.delta_time = time.time()
