@@ -6,6 +6,7 @@ from werkzeug.wrappers import Response
 import random
 import sqlite3
 
+tableau_choisi = None
 
 app = Flask(__name__)
 
@@ -16,16 +17,6 @@ class Dbman():
         self.conn = sqlite3.connect("RTS_serveur_DB.db")
         self.curs = self.conn.cursor()
         
-        self.create_table_tableau()
-        
-    def create_table_tableau(self):
-        self.curs.execute("CREATE TABLE IF NOT EXISTS tableau (tableau_choisi NUMBER);")
-        self.conn.commit()
-        
-    def settableauchoisi(self, tableau):
-        self.curs.execute("INSERT into tableau (tableau_choisi) VALUES(?);", (tableau,))
-        self.conn.commit()
-
     def setpartiecourante(self, chose):
         self.vidertable("partiecourante")
         self.curs.execute("Insert into partiecourante (etat) VALUES(?);", (chose,))
@@ -106,6 +97,14 @@ def reset_jeu():
     #print("RESET",info)
     return jsonify(info)
 
+@app.route("/set_tableau", methods=["POST"])
+def set_tableau():
+    global tableau_choisi
+    data = request.get_json()
+    tableau_choisi = data.get("tableau")
+    return jsonify({"message": "Tableau choisi set successfully"})
+
+
 @app.route("/creer_partie", methods=["GET", "POST"])
 def creer_partie():
     db = Dbman()
@@ -133,10 +132,10 @@ def inscrire_joueur():
 
 @app.route("/boucler_sur_lobby", methods=["GET", "POST"])
 def boucler_sur_lobby():
+    global tableau_choisi
     db = Dbman()
-    
     info = db.getinfo("partiecourante")
-    #print("BOUCER SUR LOBBY",info)
+
     if "courante" in info[0]:
         initaleatoire = db.getinfo("initaleatoire")
         reponse = ["courante", initaleatoire]
@@ -144,14 +143,7 @@ def boucler_sur_lobby():
         db.fermerdb()
         return jsonify(reponse)
     else:
-        data = request.get_json()
-        tableau = data["tableau"]
-        
-        if tableau is not None or tableau != db.getinfo(tableau)[0]:
-            db.settableauchoisi(tableau)
-            
-        info = {"info_joueur": db.getinfo("joueurs"), "tableau": db.getinfo(tableau)[0]}
-        
+        info = {"info_joueur": db.getinfo("joueurs"), "tableau": tableau_choisi}
         db.fermerdb()
         return jsonify(info)
 
@@ -208,6 +200,7 @@ def boucler_sur_jeu():
     db.updatejoueur(nom, cadrejeu)
 
     joueurscadrejeu = db.getinfo("joueurs")
+    print("BOUCLER SUR JEU", joueurscadrejeu)
     # besoin de ceci pour evaluer la distance temporel entre les joueurs
     _min = min(joueurscadrejeu, key=lambda t: t[1])
     _max = max(joueurscadrejeu, key=lambda t: t[1])

@@ -65,16 +65,18 @@ class Controleur:
     def boucler_sur_lobby(self):
         url = self.url_serveur + "/boucler_sur_lobby"
         
-        params = {"nom": self.nom_joueur_local, "tableau" : self.tableau_choisi}
+        params = {"nom": self.nom_joueur_local}
                 
         info_etat_joueur = self.appeler_serveur(url, params, "POST")
         # si l'etat est courant, c'est que la partie vient d'etre lancer
         print(info_etat_joueur)
         
-        if "courante" in info_etat_joueur["info_joueur"][0]:
+        if "courante" in info_etat_joueur:
             self.initialiser_partie(info_etat_joueur)        
         else:
             self.joueurs = info_etat_joueur["info_joueur"]
+            self.tableau_choisi = info_etat_joueur["tableau"]
+            self.vue.tableau_choisi = self.tableau_choisi
             self.vue.update_lobby(info_etat_joueur["info_joueur"])
             self.vue.root.after(50, self.boucler_sur_lobby)
             
@@ -260,6 +262,8 @@ class Controleur:
     
     def choisir_tablo(self, tableau_choisi):
         self.tableau_choisi = tableau_choisi
+        self.appeler_serveur(self.url_serveur + "/set_tableau", {"tableau": self.tableau_choisi}, "POST")
+
 
 if __name__ == "__main__":
     c = Controleur()

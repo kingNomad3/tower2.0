@@ -17,6 +17,7 @@ class Vue:
         self.cadre_courant = None
         self.images = {}
         self.creer_cadres(self.nom_joueur_local)
+        self.tableau_choisi = None
 
         self.largeur = 1200
         self.hauteur = 648
