@@ -76,11 +76,11 @@ class Creep:
                 self.dmg_poison /= 2
             self.vie -= self.dmg_poison
             
-        # if self.__est_electrocute:
-        #     self.__compteur_electrocute += 1
-        #     if self.__cible.attribut is "electrocution":
-        #         self.__compteur_electrocute +=1 
-        #     self.__vie -= self.dmg_electrocute
+        if self.__est_electrocute:
+            self.__compteur_electrocute += 1
+            if self.__cible.attribut is "electrocution":
+                self.__compteur_electrocute +=1 
+            self.__vie -= self.dmg_electrocute
 
         # if self.__compteur_electrocute == 3:
         #     self.est_electrocute = False
@@ -168,7 +168,7 @@ class Creep:
         return self.__id
 
     @est_electrocute.setter
-    def vitesse(self, est_electrocute):
+    def est_electrocute(self, est_electrocute):
         self.__est_electrocute = est_electrocute  # Pour les améliorations qui réduisent le coût des tours.
     
     @vie.setter
