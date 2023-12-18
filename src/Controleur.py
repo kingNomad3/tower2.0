@@ -241,11 +241,13 @@ class Controleur:
             self.partie.jouer_coup(self.iteration_boucle_jeu)
             self.incrementer_timer()
             self.vue.dessiner_jeu()
+
         else:
             self.iteration_boucle_jeu -= 1
             self.on_joue = 1
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
         self.modele.partie.chrono = self.delai_de_boucle_de_jeu
+        print(self.modele.partie.liste_creeps[0].vie)
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
         
        # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE

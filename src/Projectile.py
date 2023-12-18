@@ -95,7 +95,7 @@ class Obus(Projectile):
 
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 5
+        self.vitesse = 6
         self.dommage = 4 * niveau_tour
 
 
@@ -111,7 +111,8 @@ class Poison(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 8  
-        self.dommage = 0.3 * niveau_tour
+        self.dommage = 0.1 * niveau_tour
+        cible.est_empoisone = True
         
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
@@ -128,13 +129,8 @@ class Grenade(Projectile):
 class Mine(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 5 
+        self.vitesse = 6
         self.dommage = 8
-        
-        
- 
-
-
 
 #if __name__ == "__main__":
 
