@@ -442,12 +442,6 @@ class Vue:
         self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
         self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
 
-        
-        
-    def dessiner_interface_tour(self):
-        self.menu_tour =  InterfaceTour(self, 250 * self.ratio_x, 500 * self.ratio_y)
-        self.menu_tour.place(anchor="ne", x=self.largeur-10, y=70)
-
 
     def resize(self, evt):
         w = evt.width / self.largeur
@@ -495,9 +489,9 @@ class Vue:
         # self.activation_te = self.canvas.tag_bind('TourEclair', '<Button>', self.bind_canvas)
         # self.activation_tp = self.canvas.tag_bind('TourPoisonP', '<Button>', self.bind_canvas)
 
-
-    def bind_canvas(self, evt):
-        self.tag_bouton_choisi = self.canvas.itemcget(evt.widget.find_withtag("current")[0], "tags").split()[1]
+    def bind_canvas(self):
+        print("bind_canvas", self.button.text)
+        self.tag_bouton_choisi = self.button.text
         # print(self.tag_bouton_choisi)
         self.creation = self.canvas.bind("<Button>", self.creer_tour)  
 
@@ -518,6 +512,11 @@ class Vue:
                 
             except IndexError:
                 break
+      
+    def dessiner_interface_tour(self):
+        self.menu_tour =  InterfaceTour(self.largeur, 250 * self.ratio_x, 500 * self.ratio_y, self.ratio_x, self.ratio_y, self.bind_canvas)
+        self.menu_tour.place(anchor="ne", x=self.largeur-10, y=70)
+
 
 class InterfacePannel(Frame):
     
@@ -541,7 +540,7 @@ class InterfacePannel(Frame):
         
 
 class InterfaceTour(Frame):
-    def __init__(self, parent, width, height):
+    def __init__(self, largeur, width, height, ratio_x=1, ratio_y=1, command=None):
         super().__init__()
         self['bg'] = 'black'
         self['width'] = width
@@ -549,17 +548,19 @@ class InterfaceTour(Frame):
         self['highlightthickness'] = 3
         self['highlightbackground'] = 'blue'
         
-        # self.activation_to = PacManButton(12, 1, "TourMitrailleuse", parent.bind_canvas)
-        # self.activation_te = PacManButton(12, 1, "TourEclair", parent.bind_canvas)
-        # self.activation_tp = PacManButton(12, 1, "TourPoisonP", parent.bind_canvas)
+        self.activation_to = PacManButton(int(20*ratio_x), int(1*ratio_y), "TourMitrailleuse", command=command)
+        self.activation_te = PacManButton(int(20*ratio_x), int(1*ratio_y), "TourEclair" , command=command)
+        self.activation_tp = PacManButton(int(20*ratio_x), int(1*ratio_y), "TourPoisonP", command=command)
         
-        # self.activation_to.place(anchor="center")
-        # self.activation_te.place(anchor="center")
-        # self.activation_tp.place(anchor="center")
+        # Calculate the center coordinates of self.menu_tour
+        
+        self.activation_to.place(x=largeur-43, y=90, anchor="ne")
+        self.activation_te.place(x=largeur-43, y=130, anchor="ne")
+        self.activation_tp.place(x=largeur-43, y=190, anchor="ne")
         
         
 class PacManButton(Frame):
-    def __init__(self, width, height, text, command = None):
+    def __init__(self, width, height, text, command=None):
         super().__init__()
         self['bg'] = 'black'
         self['width'] = width

@@ -262,7 +262,8 @@ class Controleur:
     
     def choisir_tablo(self, tableau_choisi):
         self.tableau_choisi = tableau_choisi
-        self.appeler_serveur(self.url_serveur + "/set_tableau", {"tableau": self.tableau_choisi}, "POST")
+        if not self.partie_locale:
+            self.appeler_serveur(self.url_serveur + "/set_tableau", {"tableau": self.tableau_choisi}, "POST")
 
 
 if __name__ == "__main__":
