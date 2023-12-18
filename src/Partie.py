@@ -246,8 +246,8 @@ class Joueur():
         self.nom_joueur = nom
         
         self.tours = []
-        self.actions ={"creer_tour":self.creer_tour                    
-                    #    "ameliorer_tour":None,
+        self.actions ={"creer_tour":self.creer_tour,
+                        "ameliorer_tour": self.ameliorer_tour,
                     #    "vendre_tour":None
                     }
             
@@ -262,6 +262,9 @@ class Joueur():
         return self.partie.argent_courant >= tour.cout 
 
     
-    def ameliorer_tour(self):
-        self.niveau_amelioration += 1
+    def ameliorer_tour(self, parametres):
+        tag = parametres
+        for tour in self.tours:
+            if tour.id == tag:
+                self.niveau_amelioration += 1
         

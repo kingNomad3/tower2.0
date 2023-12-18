@@ -45,6 +45,10 @@ class Controleur:
     def creer_tour(self, type_tour, x, y):
         action_demande = [self.nom_joueur_local,"creer_tour",[type_tour,x,y]]
         self.actions_requises.append(action_demande)
+    
+    def ameliorer_tour(self, tag):
+        action_demande = [self.nom_joueur_local,"ameliorer_tour",[tag]]
+        self.actions_requises.append(action_demande)
         
     def generer_pseudo_nom(self):
         nom_joueur_local = "robert" + str(random.randrange(100, 1000))
@@ -247,7 +251,6 @@ class Controleur:
             self.on_joue = 1
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
         self.modele.partie.chrono = self.delai_de_boucle_de_jeu
-        print(self.modele.partie.liste_creeps[0].vie)
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
         
        # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE
