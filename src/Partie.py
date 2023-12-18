@@ -20,7 +20,7 @@ class Partie:
         self.__argent_courant = self.__argent_base
         self.__modele = parent
         self.__tour_selectionne = None
-        self.__vague = 1
+        self.__vague = 0
         # self.__chateau = Chateau()
         # self.__aire_de_jeu = AireDeJeu() utile?
         self.__fin_partie = False
@@ -43,7 +43,7 @@ class Partie:
         self.vie = 20
         self.delta_time = time.time()
         self.temps_derniere_vague = time.time()
-        self.creer_creeps()
+        self.prochaine_vague()
         
     @property
     def chemin(self):
@@ -60,6 +60,10 @@ class Partie:
     @property
     def chrono(self):
         return self.__chrono
+
+    @chrono.setter
+    def chrono(self, value):
+        self.__chrono += value/1000
     
     @property
     def argent_courant(self):
@@ -119,6 +123,7 @@ class Partie:
         for creep in self.__liste_creeps:
             if not creep.vivant:
                 self.__liste_creeps.remove(creep)
+
 
     # def remove_obus(self):
     #     for tour in self.tours:
@@ -186,17 +191,17 @@ class Partie:
         # Gestion des creeps
         
         if self.__creeps_en_attente:
-            if len(self.__creeps_en_attente) < 20:
-                start = time.time()
-                if start - self.delta_time > Partie.ESPACE_CREEP:
-                    self.creeps_apparaissent() #TODO a comprendre 
-                    self.delta_time = time.time()
-            else:
-                self.creeps_apparaissent()
+            # if len(self.__creeps_en_attente) < 20:
+            start = time.time()
+            if start - self.delta_time > Partie.ESPACE_CREEP:
+                self.creeps_apparaissent() #TODO a comprendre
+                self.delta_time = time.time()
+            # else:
+            #     self.creeps_apparaissent()
 
         if self.est_game_over():
-            print("PERDU") # pour debogage
-
+            pass;
+            self.modele.controleur.traiter_gameover()
 
         for creep in self.__liste_creeps:
             creep.bouger()
@@ -216,7 +221,7 @@ class Partie:
         self.remove_creep()
         # self.remove_obus()
         
-        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE:
+        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and self.__liste_creeps == 0:
             self.temps_derniere_vague = maintenant
             self.prochaine_vague()
 
