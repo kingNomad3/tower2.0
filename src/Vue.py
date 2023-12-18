@@ -321,8 +321,9 @@ class Vue:
             x = event.x / self.ratio_x
             y = event.y / self.ratio_y
             self.controleur.creer_tour(self.tag_bouton_choisi, x, y)
-                        
-            self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
+
+            if self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
+                self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
             # self.reset_border()
     
@@ -430,7 +431,7 @@ class Vue:
         self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
 
 
-    def dessiner_obus(self):
+    def dessiner_projectiles(self):
         self.canvas.delete("projectile")
         projectile_largeur = Projectile.largeur * self.ratio_x
         projectile_hauteur = Projectile.largeur * self.ratio_y
@@ -438,17 +439,37 @@ class Vue:
         for joueur in self.modele.partie.joueurs:
             for tour in self.modele.partie.joueurs[joueur].tours:
                 for projectile in tour.liste_projectiles:
-                    self.canvas.create_rectangle(
-                    projectile.pos_x * self.ratio_x - projectile_largeur,
-                    projectile.pos_y * self.ratio_y - projectile_hauteur,
-                    projectile.pos_x * self.ratio_x + projectile_largeur,
-                    projectile.pos_y * self.ratio_y + projectile_hauteur,
-                    fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
+                    if isinstance(projectile, Balle):
+                        self.canvas.create_rectangle(
+                        projectile.pos_x * self.ratio_x - projectile_largeur,
+                        projectile.pos_y * self.ratio_y - projectile_hauteur,
+                        projectile.pos_x * self.ratio_x + projectile_largeur,
+                        projectile.pos_y * self.ratio_y + projectile_hauteur,
+                        fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
+                    elif isinstance(projectile, Eclair):
+                        self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2)
+                        # self.canvas.create_line()
+                        # self.canvas.create_line()
+                        # self.canvas.create_line()
+                    elif isinstance(projectile, Poison):
+                        self.canvas.create_oval(
+                        projectile.pos_x * self.ratio_x - (projectile_largeur + 5),
+                        projectile.pos_y * self.ratio_y - (projectile_hauteur + 5),
+                        projectile.pos_x * self.ratio_x + (projectile_largeur + 5),
+                        projectile.pos_y * self.ratio_y + (projectile_hauteur + 5),
+                        fill="limegreen", outline="limegreen",stipple="gray50", tags=("projectile", projectile.id))
+                    elif isinstance(projectile, Obus):
+                        pass
+                    elif isinstance(projectile, Grenade):
+                        pass
+                    else:
+                        pass
+                    
 
     def dessiner_jeu(self):
         self.images = {}
         self.dessiner_creeps()
-        self.dessiner_obus()
+        self.dessiner_projectiles()
         self.dessiner_tours()
         self.update_info_partie()
         self.dessiner_chateau()

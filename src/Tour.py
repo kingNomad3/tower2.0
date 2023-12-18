@@ -248,7 +248,7 @@ class TourPoison(TourAttaque):
         if self.cible:
             poison = Poison(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(poison)
-        self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
+        self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge) * 5, self.attaquer)
 
 class TourGrenade(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):

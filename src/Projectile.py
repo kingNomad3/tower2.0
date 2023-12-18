@@ -119,7 +119,8 @@ class Poison(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 8  
-        self.dommage = 0.3 * niveau_tour
+        self.dommage = 0.1 * niveau_tour
+        cible.est_empoisone = True
         
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
@@ -139,11 +140,6 @@ class Mine(Projectile):
         #self.vitesse = 6
         self.dommage = 8
         self.champ_action = 10
-        
-        
- 
-
-
 
 #if __name__ == "__main__":
 

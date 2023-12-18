@@ -1,7 +1,5 @@
 import helper as hp
-import random
 from effetVisuel import *
-from PIL import Image
 
 
 class Creep:
@@ -16,7 +14,8 @@ class Creep:
         self.__est_empoisone = False
         self.__est_electrocute = False
         self.__compteur_electrocute = None
-        self.__dmg_poison = None
+        self.__compteur_poison = 0
+        self.__dmg_poison = 0.001
         self.__dmg_electrocute = None
         self.__vivant = True
         self.__modele = parent
@@ -62,7 +61,6 @@ class Creep:
             self.__partie.argent_courant += self.valeur_argent
             self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
 
-
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
         y = self.__partie.chemin.segments[self.segment_actuel][1][1]
@@ -72,19 +70,24 @@ class Creep:
 
     def maj_vie(self):
         if self.__est_empoisone:
-            if self.__cible.attribut is "poison":
-                self.dmg_poison /= 2
-            self.vie -= self.dmg_poison
+            if self.__attribut == "poison":
+                self.__dmg_poison /= 2
+            self.__compteur_poison += 1
+            self.vie -= self.__dmg_poison
             
         if self.__est_electrocute:
             self.__compteur_electrocute += 1
-            if self.__cible.attribut is "electrocution":
-                self.__compteur_electrocute +=1 
-            self.__vie -= self.dmg_electrocute
+            if self.__attribut == "electrocution":
+                self.__compteur_electrocute += 1
+            self.__vie -= self.__dmg_electrocute
 
-        # if self.__compteur_electrocute == 3:
-        #     self.est_electrocute = False
-        pass
+        if self.__compteur_electrocute == 3:
+            self.__compteur_electrocute == 0
+            self.est_electrocute = False
+
+        if self.__compteur_poison % 50 == 0:
+            self.__compteur_poison = 0
+            self.est_empoisone = False
     
     def definir_img_src(self):
         random_src = random.randint(0,3)
@@ -148,6 +151,7 @@ class Creep:
     @property
     def vie(self):
         return self.__vie
+
     @property
     def taille(self):
         return self.__taille
@@ -170,10 +174,18 @@ class Creep:
     @est_electrocute.setter
     def est_electrocute(self, est_electrocute):
         self.__est_electrocute = est_electrocute  # Pour les améliorations qui réduisent le coût des tours.
-    
+
+    @est_empoisone.setter
+    def est_empoisone(self, est_empoisonee):
+        self.__est_empoisone = est_empoisonee  # Pour les améliorations qui réduisent le coût des tours.
+
     @vie.setter
     def vie(self, vie):
         self.__vie = vie
+
+    @vivant.setter
+    def vivant(self, alive):
+        self.__vivant = alive
         
     @taille.setter
     def taille(self, taille):
