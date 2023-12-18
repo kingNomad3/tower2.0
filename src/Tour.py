@@ -186,7 +186,7 @@ class TourMitrailleuse(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         # p1 : parent, p2 : rayon (le même pour toutes les tours de ce type), p3 et p4 : positions, p5 : niveau 1 en partant (amélioration générale possible??)
         # p6 : coût (amélioration générale possible??), éventuel p7 : vie (si on fait perdre de la vie à nos tours)
-        super().__init__(parent, 35, pos_x, pos_y, 1, 1, 300) 
+        super().__init__(parent, 35, pos_x, pos_y, 1, 1, 600) 
         self.background_src = "./img/tour_mitrailleuse.png"
 
     def attaquer(self):
@@ -199,7 +199,7 @@ class TourMitrailleuse(TourAttaque):
 
 class TourEclair(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-       super().__init__(parent, 40, pos_x, pos_y, 7, 1, 80)
+       super().__init__(parent, 40, pos_x, pos_y, 7, 1, 1000)
        self.background_src = "./img/tour_eclair.png"
 
     def attaquer(self):
@@ -212,7 +212,7 @@ class TourEclair(TourAttaque):
 
 class TourPoison(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-        super().__init__(parent, 45, pos_x, pos_y, 3, 1, 80)
+        super().__init__(parent, 50, pos_x, pos_y, 5, 1, 800)
         self.background_src = "./img/tour_poison.png"
 
     def attaquer(self):
@@ -224,7 +224,7 @@ class TourPoison(TourAttaque):
 
 class TourGrenade(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-        super().__init__(parent, 30, pos_x, pos_y, 5, 1, 160) 
+        super().__init__(parent, 50, pos_x, pos_y, 10, 1, 2000) 
         self.background_src = "./img/tour_grenade.png"
 
     def attaquer(self):
@@ -237,7 +237,7 @@ class TourGrenade(TourAttaque):
 
 class TourMine(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-        super().__init__(parent, 42, pos_x, pos_y, 10, 1, 100)
+        super().__init__(parent, 40, pos_x, pos_y, 12, 1, 1800)
         self.background_src = "./img/tour_mine.png"
 
     def attaquer(self):
@@ -253,7 +253,7 @@ class TourMine(TourAttaque):
 
 class TourCanon(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
-        super().__init__(parent, 25, pos_x, pos_y, 15, 1, 150) 
+        super().__init__(parent, 60, pos_x, pos_y, 15, 1, 3000) 
         self.background_src = "./img/tour_canon.png"
 
     def attaquer(self):

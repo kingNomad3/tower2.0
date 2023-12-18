@@ -10,13 +10,13 @@ class Creep:
         self.__cible = None
         self.__angle_target = None
         self.__partie = parent
-        self.__valeur_argent = 2
+        self.__valeur_argent = 20
         self.__est_empoisone = False
         self.__est_electrocute = False
         self.__compteur_electrocute = 0
         self.__compteur_poison = 0
         self.__dmg_poison = 0.001
-        self.__dmg_electrocute = None
+        self.__dmg_electrocute = 0.05
         self.__vivant = True
         self.__modele = parent
         self.__vie = 10 * niveau

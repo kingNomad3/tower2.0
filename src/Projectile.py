@@ -103,7 +103,7 @@ class Obus(Projectile):
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 6
-        self.dommage = 4 * niveau_tour
+        self.dommage = 10 * niveau_tour
 
 
 class Eclair(Projectile):
@@ -111,32 +111,32 @@ class Eclair(Projectile):
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 15
-        self.dommage = 0.05 * niveau_tour
+        self.dommage = 2 * niveau_tour
         # niveau 3 a determiner
             
 class Poison(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 8  
-        self.dommage = 0.1 * niveau_tour
+        self.dommage = 0.5 * niveau_tour
         
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 10
-        self.dommage = 2 
+        self.dommage = 1 * niveau_tour
         
 class Grenade(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 7 
-        self.dommage = 8
+        self.dommage = 8 * niveau_tour
         
 class Mine(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.dommage = 8
-        self.champ_action = 10
+        self.dommage = 6 * niveau_tour
+        self.champ_action = 35
         self.img_src = "./img/cerise.png"        
 
 
