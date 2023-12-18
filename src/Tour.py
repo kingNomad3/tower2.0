@@ -208,6 +208,7 @@ class TourMitrailleuse(TourAttaque):
         # p1 : parent, p2 : rayon (le même pour toutes les tours de ce type), p3 et p4 : positions, p5 : niveau 1 en partant (amélioration générale possible??)
         # p6 : coût (amélioration générale possible??), éventuel p7 : vie (si on fait perdre de la vie à nos tours)
         super().__init__(parent, 25, pos_x, pos_y, 1, 300) #TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_mitrailleuse.png"
 
     def attaquer(self):
         if self.cible:
@@ -223,6 +224,8 @@ class TourMitrailleuse(TourAttaque):
 class TourEclair(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
        super().__init__(parent, 25, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
+       self.background_src = "./img/tour_eclaire.png"
+
 
     def attaquer(self):
         if self.cible:
@@ -238,6 +241,8 @@ class TourEclair(TourAttaque):
 class TourPoison(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 25, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_poison.png"
+
 
     def attaquer(self):
         if self.cible:
@@ -253,6 +258,8 @@ class TourPoison(TourAttaque):
 class TourGrenade(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 35, pos_x, pos_y, 1, 160) #TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_grenade.png"
+
 
     def attaquer(self):
         if self.cible:
@@ -268,6 +275,8 @@ class TourGrenade(TourAttaque):
 class TourMine(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 42, pos_x, pos_y, 1, 100)#TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_mine.png"
+
 
     def attaquer(self):
         if self.cible:
@@ -283,6 +292,7 @@ class TourMine(TourAttaque):
 class TourCanon(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 100, pos_x, pos_y, 1, 150) #TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_canon.png"
 
     def attaquer(self):
         if self.cible:
