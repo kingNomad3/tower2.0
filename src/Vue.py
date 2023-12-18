@@ -489,9 +489,9 @@ class Vue:
         # self.activation_te = self.canvas.tag_bind('TourEclair', '<Button>', self.bind_canvas)
         # self.activation_tp = self.canvas.tag_bind('TourPoisonP', '<Button>', self.bind_canvas)
 
-    def bind_canvas(self):
-        print("bind_canvas", self.button.text)
-        self.tag_bouton_choisi = self.button.text
+    def bind_canvas(self, button):
+        print("bind_canvas", button)
+        self.tag_bouton_choisi = button
         # print(self.tag_bouton_choisi)
         self.creation = self.canvas.bind("<Button>", self.creer_tour)  
 
@@ -540,7 +540,7 @@ class InterfacePannel(Frame):
         
 
 class InterfaceTour(Frame):
-    def __init__(self, largeur, width, height, ratio_x=1, ratio_y=1, command=None):
+    def __init__(self, largeur, width, height, ratio_x=1, ratio_y=1, command = None):
         super().__init__()
         self['bg'] = 'black'
         self['width'] = width
@@ -548,15 +548,21 @@ class InterfaceTour(Frame):
         self['highlightthickness'] = 3
         self['highlightbackground'] = 'blue'
         
-        self.activation_to = PacManButton(int(20*ratio_x), int(1*ratio_y), "TourMitrailleuse", command=command)
-        self.activation_te = PacManButton(int(20*ratio_x), int(1*ratio_y), "TourEclair" , command=command)
-        self.activation_tp = PacManButton(int(20*ratio_x), int(1*ratio_y), "TourPoisonP", command=command)
+        self.activation_to = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Mitrailleuse", command=lambda: command("TourMitrailleuse"))
+        self.activation_te = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Eclair" , command=lambda: command("TourEclair"))
+        self.activation_tp = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Poison", command=lambda: command("TourPoison"))
+        self.activation_tg = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Grenade", command=lambda: command("TourGrenade"))
+        self.activation_tm = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Mine", command=lambda: command("TourMine"))
+        self.activation_tc = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Canon", command=lambda: command("TourCanon"))
         
         # Calculate the center coordinates of self.menu_tour
         
-        self.activation_to.place(x=largeur-43, y=90, anchor="ne")
-        self.activation_te.place(x=largeur-43, y=130, anchor="ne")
-        self.activation_tp.place(x=largeur-43, y=190, anchor="ne")
+        self.activation_to.place(x=largeur-27, y=90, anchor="ne")
+        self.activation_te.place(x=largeur-27, y=130, anchor="ne")
+        self.activation_tp.place(x=largeur-27, y=170, anchor="ne")
+        self.activation_tg.place(x=largeur-27, y=210, anchor="ne")
+        self.activation_tm.place(x=largeur-27, y=250, anchor="ne")
+        self.activation_tc.place(x=largeur-27, y=290, anchor="ne")
         
         
 class PacManButton(Frame):
