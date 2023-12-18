@@ -1,6 +1,5 @@
 from Vue import *
 from Modele import *
-from Tour import *
 import random
 import requests
 import json
@@ -74,7 +73,6 @@ class Controleur:
                 
         info_etat_joueur = self.appeler_serveur(url, params, "POST")
         # si l'etat est courant, c'est que la partie vient d'etre lancer
-        #print(info_etat_joueur)
         
         if "courante" in info_etat_joueur:
             self.initialiser_partie(info_etat_joueur)        
@@ -131,7 +129,7 @@ class Controleur:
         self.vue.creer_cadre_jeu()
         # on change le cadre la fenetre pour passer dans l'interface de jeu
         self.vue.afficher_cadre("cadre_jeu")
-        #self.boucler_en_attente()
+
     
     def reset_partie(self):
         le_url = self.url_serveur + "/reset_jeu"
@@ -204,8 +202,7 @@ class Controleur:
                 'nom': self.nom_joueur_local  # Make sure to include this parameter
             }
             reptext = self.appeler_serveur(url, data, "POST")
-        #self.pause = 1
-        #self.boucler_en_attente()
+
         
     def boucler_sur_jeu(self):
         self.iteration_boucle_jeu += 1

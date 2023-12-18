@@ -57,6 +57,11 @@ class Vue:
         self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img)
         self.canevas_splash.pack()
         
+        # Image splash
+        self.img2= ImageTk.PhotoImage(Image.open("img/pacman_splashScreen.png"))
+        self.canevas_splash.create_image(620,180, anchor="n",image=self.img2)
+        self.canevas_splash.pack()
+        
         # section Identification
         self.canevas_splash.create_text(self.largeur/6*2+20,170,anchor="n",text="Identification",font=fontStyleTitle, fill='yellow')
         values = []
@@ -108,16 +113,28 @@ class Vue:
     def creer_cadre_lobby(self, local_ou_reseau, joueurs):
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_lobby = Frame(self.root)
-        self.canevas_lobby = Canvas(cadre_lobby,width=800,
-                              height=800,bg="lightgreen")
+        self.canevas_lobby = Canvas(cadre_lobby,width=self.largeur,
+                              height=self.hauteur,bg="black")      
         self.canevas_lobby.pack()
-
-        self.canevas_lobby.create_text(400,50,anchor="center",text="Lobby des Tours du CVM",font=("Arial",24))
-        self.canevas_lobby.create_text(400,100,anchor="center",text=local_ou_reseau,font=("Arial",18))
+        
+        #Logo lobby
+        if local_ou_reseau == 'local':
+            self.logo_lobby= ImageTk.PhotoImage(Image.open("img/lobby_logo.png"))
+        else:
+            self.logo_lobby= ImageTk.PhotoImage(Image.open("img/lobby_logo_reseau.png"))
+        self.canevas_lobby.create_image(self.largeur/2,0, anchor="n",image=self.logo_lobby)
+        
+        #Image lobby
+        self.img= ImageTk.PhotoImage(Image.open("img/bg_lobby.jpg"))
+        self.canevas_lobby.create_image(self.largeur/2, self.hauteur-300, anchor="n",image=self.img)
 
         self.btn_lancer_partie=Button(self.canevas_lobby,text="Debuter la partie",
                                       command=self.lancer_partie,)
-        self.canevas_lobby.create_window(400,700,anchor="center",window=self.btn_lancer_partie)
+        self.canevas_lobby.create_window(600,400,anchor="center",window=self.btn_lancer_partie)
+        # NE FONCTIONNE PAS SI BUTTON TO PACMANBUTTON
+        # self.btn_lancer_partie = PacManButton(10, 1, "Debuter la partie", command=self.lancer_partie)
+        # self.btn_lancer_partie.place(x=600, y=400, anchor="center")
+            
         #
         if local_ou_reseau == "reseau":
             if len(joueurs)== 1:
@@ -145,14 +162,14 @@ class Vue:
 
         ##
         # Create a matrix of buttons for board selection on the canvas
-        x = 200
+        x = 400
         y = 350
         for rang in range(3):
-            x = x + 100
+            x = x + 120
             no_tablo = rang
-            self.btn_tablo = Button(self.canevas_lobby, text=f"Tablo {no_tablo}")
-            self.btn_tablo.bind("<Button>",self.choisir_tablo)
-            self.canevas_lobby .create_window(x, y, anchor="center", window=self.btn_tablo)
+            self.btn_tablo = PacManButton(8, 1, f"Tableau {no_tablo}", command="")
+            self.btn_tablo.button.bind("<Button>",self.choisir_tablo)
+            self.btn_tablo.place(x=x-50, y=y, anchor="center")
         ##
         self.cadres["cadre_lobby"] = cadre_lobby
         
@@ -180,9 +197,9 @@ class Vue:
         self.cadres["cadre_jeu"]= cadre_jeu
         
     def initialiser_splash_post_connection(self):
-        self.btninscrirejoueur.config(state=NORMAL)
-        self.btncreerpartie.config(state=NORMAL)
-        self.btnreset.config(state=NORMAL)
+        self.btninscrirejoueur.button.config(state=NORMAL)
+        self.btncreerpartie.button.config(state=NORMAL)
+        self.btnreset.button.config(state=NORMAL)
         url_serveur = self.url_initial.get()
         if url_serveur:
             self.controleur.initialiser_splash_post_connection(url_serveur)
@@ -191,17 +208,17 @@ class Vue:
 
     def update_splash(self, etat):
         if "attente" in etat or "courante" in etat:
-            self.btncreerpartie.config(state=DISABLED)
+            self.btncreerpartie.button.config(state=DISABLED)
         if "courante" in etat:
             self.etat_du_jeu.config(text="Desole - partie encours !")
-            self.btninscrirejoueur.config(state=DISABLED)
+            self.btninscrirejoueur.button.config(state=DISABLED)
         elif "attente" in etat:
             self.etat_du_jeu.config(text="Partie en attente de joueurs !")
-            self.btninscrirejoueur.config(state=NORMAL)
+            self.btninscrirejoueur.button.config(state=NORMAL)
         elif "dispo" in etat:
             self.etat_du_jeu.config(text="Bienvenue ! Serveur disponible")
-            self.btninscrirejoueur.config(state=DISABLED)
-            self.btncreerpartie.config(state=NORMAL)
+            self.btninscrirejoueur.button.config(state=DISABLED)
+            self.btncreerpartie.button.config(state=NORMAL)
         else:
             self.etat_du_jeu.config(text="ERREUR - un probleme est survenu")
 

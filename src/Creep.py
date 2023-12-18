@@ -10,13 +10,13 @@ class Creep:
         self.__cible = None
         self.__angle_target = None
         self.__partie = parent
-        self.__valeur_argent = 2
+        self.__valeur_argent = 20
         self.__est_empoisone = False
         self.__est_electrocute = False
         self.__compteur_electrocute = 0
         self.__compteur_poison = 0
         self.__dmg_poison = 0.001
-        self.__dmg_electrocute = None
+        self.__dmg_electrocute = 0.05
         self.__vivant = True
         self.__modele = parent
         self.__vie = 10 * niveau
@@ -40,7 +40,6 @@ class Creep:
         self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle_target, self.__vitesse, self.__pos_x, self.__pos_y)
         
         dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible[0], self.__cible[1])
-        # print(len(self.__partie.chemin.segments)[1])
         if dist < self.__vitesse:
             self.__pos_x = self.__cible[0]
             self.__pos_y = self.__cible[1]
@@ -238,8 +237,3 @@ class Super_Creep(Creep):
             self.partie.liste_creeps.append(c)
         
 
-
-
-# if __name__ == "__main__":
-#     c = Creep(None, 20, 20, 1)
-#     print(c.attribut)

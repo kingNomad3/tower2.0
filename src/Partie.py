@@ -3,7 +3,6 @@ from Creep import *
 import time
 from Chemin import *
 import json
-from TD_agent_BD import *
 
 
 class Partie:
@@ -21,11 +20,8 @@ class Partie:
         self.__modele = parent
         self.__tour_selectionne = None
         self.__vague = 0
-        # self.__chateau = Chateau()
-        # self.__aire_de_jeu = AireDeJeu() utile?
         self.__fin_partie = False
         self.__chrono = 0
-        #self.__liste_tours = []
         self.__creeps_en_attente = []
         self.__liste_creeps = []
         self.actions_a_faire = {}        
@@ -101,7 +97,6 @@ class Partie:
         if self.__creeps_en_attente:
             self.__liste_creeps.append(self.__creeps_en_attente.pop(0))
 
-   
         
     def perte_vie(self):
         # châtelains...
@@ -123,13 +118,6 @@ class Partie:
         for creep in self.__liste_creeps:
             if not creep.vivant:
                 self.__liste_creeps.remove(creep)
-
-
-    # def remove_obus(self):
-    #     for tour in self.tours:
-    #         for i in tour.obus:
-    #             if not i.vivant:
-    #                 tour.obus.remove(i)
     
      #############################################################################
     # ATTENTION : NE PAS TOUCHER
@@ -145,37 +133,6 @@ class Partie:
                 else:
                     for j in action:
                         self.actions_a_faire[iteration_cle].append(j)
-                        
-    # def jouer(self):
-    #     # fait apparaître les creeps progressivement
-    #     if self.__creeps_en_attente:
-    #         if len(self.__creeps_en_attente) < 20:
-    #             start = time.time()
-    #             if start - self.delta_time > Partie.ESPACE_CREEP:
-    #                 self.creeps_apparaissent() #TODO a comprendre 
-    #                 self.delta_time = time.time()
-    #         else:
-    #             self.creeps_apparaissent()
-
-    #     if self.est_game_over():
-    #         print("PERDU") # pour debogage
-
-
-    #     for creep in self.__liste_creeps:
-    #         creep.bouger()
-
-    #     for tour in self.__liste_tours: # Les tours d'attaque sont des fonctions récursives 
-    #         for projectile in tour.liste_projectiles:
-    #             projectile.deplacer()
-
-    #     self.remove_creep()
-    #     # self.remove_obus()
-        
-    #     if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE:
-    #         self.temps_derniere_vague = maintenant
-    #         self.prochaine_vague()
-            
-        
     ##############################################################################
     
     
@@ -186,18 +143,14 @@ class Partie:
         if iteration in self.actions_a_faire:
             for i in self.actions_a_faire[iteration]:
                 self.joueurs[i[0]].actions[i[1]](i[2])
-                #self.joueurs["Claude101"].creer_tour([x, y, tag])
-        ##################################################################
+
         # Gestion des creeps
-        
         if self.__creeps_en_attente:
-            # if len(self.__creeps_en_attente) < 20:
             start = time.time()
             if start - self.delta_time > Partie.ESPACE_CREEP:
                 self.creeps_apparaissent() #TODO a comprendre
                 self.delta_time = time.time()
-            # else:
-            #     self.creeps_apparaissent()
+
 
         if self.est_game_over():
             pass
@@ -219,13 +172,9 @@ class Partie:
         for i in self.explosions:
             i.jouer_coup()
 
-        # for i in self.joueurs:
-        #     self.joueurs[i].jouer_coup()
-
         self.remove_creep()
-        # self.remove_obus()
         
-        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and self.__liste_creeps == 0:
+        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and not self.__liste_creeps:
             self.temps_derniere_vague = maintenant
             self.prochaine_vague()
 
@@ -233,7 +182,7 @@ class Partie:
         if explosion in self.explosions:
             self.explosions.remove(explosion)
 
-    def supprimer_nuage(self,nuage):
+    def supprimer_nuage(self, nuage):
         if nuage in self.nuages:
             self.nuages.remove(nuage)
             if self.nuages ==  []:
@@ -260,11 +209,15 @@ class Joueur():
     
     def peut_acheter_tour(self, tour) -> bool:
         return self.partie.argent_courant >= tour.cout 
-
+    
+    def peut_acheter_amelioration(self, tour) -> bool:
+        return self.partie.argent_courant >= tour.cout_amelioration
     
     def ameliorer_tour(self, parametres):
         tag = parametres
         for tour in self.tours:
             if tour.id == tag:
-                self.niveau_amelioration += 1
+                if self.peut_acheter_amelioration(tour):
+                    self.niveau_amelioration += 1
+                    self.partie.argent_courant = self.partie.argent_courant - tour.cout_amelioration
         

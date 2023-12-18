@@ -6,9 +6,6 @@ class Modele:
         self.controleur = parent
         self.partie = None
         
-    # def creer_partie(self,  parent): # Passer tableau et difficulte
-    #     self.partie = Partie(self, 1, 1, parent) # Mettre tableau et difficulte en temps et lieu.
-        
     def terminer_partie(self):
         self.partie = None
 
