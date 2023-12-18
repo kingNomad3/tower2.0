@@ -39,7 +39,8 @@ class Controleur:
 
     # Lié à l'intéraction usager...
     def traiter_gameover(self):
-        self.vue.root.destroy()
+        pass
+        # self.vue.afficher_gameover()
 
     def creer_tour(self, type_tour, x, y):
         action_demande = [self.nom_joueur_local,"creer_tour",[type_tour,x,y]]
@@ -244,6 +245,7 @@ class Controleur:
             self.iteration_boucle_jeu -= 1
             self.on_joue = 1
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
+        self.modele.partie.chrono = self.delai_de_boucle_de_jeu
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
         
        # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE
