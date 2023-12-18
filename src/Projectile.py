@@ -139,6 +139,7 @@ class Mine(Projectile):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         #self.vitesse = 6
         self.dommage = 8
+        self.champ_action = 10
         self.img_src = "./img/cerise.png"        
         
  

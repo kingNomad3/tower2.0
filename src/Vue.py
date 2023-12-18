@@ -477,9 +477,7 @@ class Vue:
                         # Store the image reference to prevent garbage collection
                         self.images[projectile.id] = tk_img
                         
-                        self.canvas.create_image((projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("projectile", projectile.id,))
-                        
-                        
+                        self.canvas.create_image((projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("projectile", projectile.id,))              
                     
 
     def dessiner_jeu(self):
