@@ -38,7 +38,6 @@ class Nuage():
         self.y = y+random.randrange(nl)-nl2
         self.largemax = random.randrange(10,30)
         self.couleur = rgb_to_hex(random.randrange(220,240), random.randrange(5,220), 3)
-        #return '#{:02x}{:02x}{:02x}'.format(r, g, b)
         self.large = 2
         self.x1 = self.x - self.large
         self.x2 = self.x + self.large

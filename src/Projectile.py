@@ -13,11 +13,6 @@ class Projectile:
         self.__rayon_attaque = 4
         self.__vitesse = None
         self.__dommage = None
-        #self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
-
-    # @property
-    # def angle(self):
-    #     return self.__angle
     
     def deplacer(self):
         if isinstance(self, Mine):
@@ -36,9 +31,11 @@ class Projectile:
             else:
                 # frappe le creep vise
                 self.attaque_special()
+                if isinstance(self, Poison):
+                    self.__cible.est_empoisone = True
                 self.__cible.recoit_coup(self.__dommage)
                 self.__tour.liste_projectiles.remove(self)
-                self.__cible.est_empoisone = True
+
 
             
     def attaque_special(self):
@@ -122,7 +119,6 @@ class Poison(Projectile):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 8  
         self.dommage = 0.1 * niveau_tour
-        # cible.est_empoisone = True
         
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
@@ -139,16 +135,10 @@ class Grenade(Projectile):
 class Mine(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        #self.vitesse = 6
         self.dommage = 8
         self.champ_action = 10
         self.img_src = "./img/cerise.png"        
-        
- 
 
-
-
-#if __name__ == "__main__":
 
 
 
