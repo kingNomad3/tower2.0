@@ -70,7 +70,7 @@ class Controleur:
                 
         info_etat_joueur = self.appeler_serveur(url, params, "POST")
         # si l'etat est courant, c'est que la partie vient d'etre lancer
-        print(info_etat_joueur)
+        #print(info_etat_joueur)
         
         if "courante" in info_etat_joueur:
             self.initialiser_partie(info_etat_joueur)        

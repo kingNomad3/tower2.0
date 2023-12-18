@@ -200,7 +200,7 @@ def boucler_sur_jeu():
     db.updatejoueur(nom, cadrejeu)
 
     joueurscadrejeu = db.getinfo("joueurs")
-    print("BOUCLER SUR JEU", joueurscadrejeu)
+    #print("BOUCLER SUR JEU", joueurscadrejeu)
     # besoin de ceci pour evaluer la distance temporel entre les joueurs
     _min = min(joueurscadrejeu, key=lambda t: t[1])
     _max = max(joueurscadrejeu, key=lambda t: t[1])
