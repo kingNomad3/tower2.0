@@ -1,5 +1,6 @@
 from Projectile import *
 from helper import Helper as hp
+import random
 
 class Tour:
     largeur = 20
@@ -268,10 +269,13 @@ class TourMine(TourAttaque):
         self.background_src = "./img/tour_mine.png"
 
     def attaquer(self):
-        self.definir_cible()
-        if self.cible:
-            mine = Mine(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
-            self.liste_projectiles.append(mine)
+        pos_x = random.randint(self.pos_x - self.champ_action, self.pos_x + self.champ_action)
+        pos_y = random.randint(self.pos_y - self.champ_action, self.pos_y + self.champ_action)
+        while not self.joueur.partie.modele.controleur.vue.canvas.find_overlapping(pos_x - Projectile.largeur, pos_y - Projectile.largeur, pos_x + Projectile.largeur, pos_y + Projectile.largeur):
+            pos_x = random.randint(self.pos_x - self.champ_action, self.pos_x + self.champ_action)
+            pos_y = random.randint(self.pos_y - self.champ_action, self.pos_y + self.champ_action)       
+        mine = Mine(self, pos_x, pos_y, self.cible, self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
+        self.liste_projectiles.append(mine)
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
 

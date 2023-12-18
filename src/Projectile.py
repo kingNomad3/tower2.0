@@ -13,22 +13,30 @@ class Projectile:
         self.__rayon_attaque = 4
         self.__vitesse = None
         self.__dommage = None
-        self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
+        #self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
 
-    @property
-    def angle(self):
-        return self.__angle
+    # @property
+    # def angle(self):
+    #     return self.__angle
     
     def deplacer(self):
-        self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
-        dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
-        if self.__vitesse < dist:
-            self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
+        if isinstance(self, Mine):
+            for creep in self.tour.joueur.partie.liste_creeps:
+                dist = hp.Helper.calcDistance(creep.pos_x, creep.pos_y, self.__pos_x, self.__pos_y)
+                if dist < self.champ_action:
+                    self.attaque_special()
+                    creep.recoit_coup(self.__dommage)
+                    self.__tour.liste_projectiles.remove(self)
         else:
-            # frappe le creep vise
-            self.attaque_special()
-            self.__cible.recoit_coup(self.__dommage)
-            self.__tour.liste_projectiles.remove(self)
+            self.__angle = hp.Helper.calcAngle(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
+            dist = hp.Helper.calcDistance(self.__pos_x, self.__pos_y, self.__cible.pos_x, self.__cible.pos_y)
+            if self.__vitesse < dist:
+                self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle, self.__vitesse, self.__pos_x, self.__pos_y)
+            else:
+                # frappe le creep vise
+                self.attaque_special()
+                self.__cible.recoit_coup(self.__dommage)
+                self.__tour.liste_projectiles.remove(self)
             
     def attaque_special(self):
         #niveau_tour affectera les effets
@@ -128,8 +136,9 @@ class Grenade(Projectile):
 class Mine(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 6
+        #self.vitesse = 6
         self.dommage = 8
+        self.champ_action = 10
         
         
  
