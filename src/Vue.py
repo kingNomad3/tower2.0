@@ -42,6 +42,9 @@ class Vue:
         self.cadres["cadre_splash"] = self.creer_cadre_splash(nom_joueur_local)
         
     def creer_cadre_splash(self, nom_joueur_local):
+        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        fontStyle = ("Gill Sans Ultra Bold", 10)
+        
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_splash = Frame(self.root)
         self.canevas_splash = Canvas(cadre_splash,width=self.largeur,
@@ -53,47 +56,47 @@ class Vue:
         self.canevas_splash.pack()
         
         # section Identification
-        self.canevas_splash.create_text(self.largeur/6,170,anchor="n",text="Identification",font=("Arial",18), fill='yellow')
+        self.canevas_splash.create_text(self.largeur/6*2+20,170,anchor="n",text="Identification",font=fontStyleTitle, fill='yellow')
         values = []
         values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
-                                     values = values, font=("Arial", 14))
+                                     values = values, font=fontStyleTitle, justify='center')
         self.drop_nom.set(nom_joueur_local)
-        self.canevas_splash.create_window(self.largeur/6*2,170,anchor="n",window=self.drop_nom)
+        self.canevas_splash.create_window(self.largeur/6*3.5,170,anchor="n",window=self.drop_nom)
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
-        self.etat_du_jeu = Label(text="Non connecter", font=("Arial", 16), borderwidth=2, relief=RIDGE)
-        self.url_initial = Entry(font=("Arial", 14))
+        self.etat_du_jeu = Label(text="Non connecté", font=fontStyle, borderwidth=2, relief=RIDGE)
+        self.url_initial = Entry(font=fontStyle, justify='center')
 
         #self.url_initial.insert(0, "http://jmdeschamps.pythonanywhere.com")
-        self.url_initial.insert(0, "http://127.0.0.1:8000") #"http://jmdeschamps.pythonanywhere.com"
-        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12), command=self.initialiser_splash_post_connection)
+        self.url_initial.insert(0, "http://127.0.0.1:8000") #"http://jmdeschamps.pythonanywhere.com"     
+        self.btnurlconnect = PacManButton(20, 1, "Connecter", command=self.initialiser_splash_post_connection)
+        
         # on les place sur le canevas_splash
-        self.canevas_splash.create_window(220, 250, window=self.url_initial, width=200, height=30)
-        self.canevas_splash.create_window(220, 300, window=self.btnurlconnect, width=100, height=30)
-        self.canevas_splash.create_window(220, 350, window=self.etat_du_jeu, width=300, height=30)
+        self.canevas_splash.create_window(200, 250, window=self.url_initial, width=270, height=30)
+        self.btnurlconnect.place(x=206, y=300,anchor="n")
+        self.canevas_splash.create_window(206, 360, window=self.etat_du_jeu, width=170, height=30)
 
         # section pour partie reseau
-        self.btncreerpartie = Button(text="Creer partie reseau", font=("Arial", 12), state=DISABLED, command=self.creer_partie)
-        self.btninscrirejoueur = Button(text="Inscrire a partie reseau", font=("Arial", 12), state=DISABLED,
-                                        command=self.inscrire_joueur)
-        self.btnreset = Button(text="Reinitialiser partie", font=("Arial", 9), state=DISABLED,
-                               command=self.reset_partie)
-        # on place les boutons
-        self.canevas_splash.create_window(220, 400, window=self.btncreerpartie, width=200, height=30)
-        self.canevas_splash.create_window(220, 450, window=self.btninscrirejoueur, width=200, height=30)
-        self.canevas_splash.create_window(220, 500, window=self.btnreset, width=200, height=30)
-
-        # section pour partie locale
-        # self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
-        self.btn_ouvrir_bonus=Button(cadre_splash,text="Ouvrir magasin de Bonus",command=self.ouvrir_bonus)
-
-        # self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
-        self.canevas_splash.create_window(680,500,anchor="center",window=self.btn_ouvrir_bonus)
+        self.btncreerpartie = PacManButton(20, 1, "Creer partie reseau", command=self.creer_partie)
+        self.btncreerpartie.button.config(state=DISABLED)
+        self.btncreerpartie.place(x=206, y=400, anchor="n")
         
+        self.btninscrirejoueur = PacManButton(20, 1, "Inscrire a partie reseau", command=self.inscrire_joueur)
+        self.btninscrirejoueur.button.config(state=DISABLED)
+        self.btninscrirejoueur.place(x=206, y=440, anchor="n")
+        
+        self.btnreset = PacManButton(20, 1, "Reinitialiser partie", command=self.inscrire_joueur)
+        self.btnreset.button.config(state=DISABLED)
+        self.btnreset.place(x=206, y=480, anchor="n")
+
+        # section pour partie locale        
         self.btn_ouvrir_lobby_local = PacManButton(20, 1, "Creer partie locale", command=self.ouvrir_lobby_local)
-        self.btn_ouvrir_lobby_local.place(x=500, y=500, anchor="n")
+        self.btn_ouvrir_lobby_local.place(x=1000, y=230, anchor="n")
+        
+        self.btn_ouvrir_bonus = PacManButton(20, 1, "Ouvrir magasin de Bonus", command=self.ouvrir_bonus)
+        self.btn_ouvrir_bonus.place(x=1000, y=280,anchor="n")
         
         return cadre_splash
 
@@ -630,8 +633,8 @@ class PacManButton(Frame):
         self['highlightthickness'] = 2
         self['highlightbackground'] = '#F1D92A'
         
-        button = Button(self, bg='black', fg='#F1D92A', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
-        button.pack()
+        self.button = Button(self, bg='black', fg='#F1D92A', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
+        self.button.pack()
     
 class Etiquette(Label):
     def __init__(self,master,*args, **kwargs):
