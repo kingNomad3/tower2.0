@@ -25,7 +25,7 @@ class Partie:
         # self.__aire_de_jeu = AireDeJeu() utile?
         self.__fin_partie = False
         self.__chrono = 0
-        self.__liste_tours = []
+        #self.__liste_tours = []
         self.__creeps_en_attente = []
         self.__liste_creeps = []
         self.actions_a_faire = {}        
@@ -257,8 +257,6 @@ class Joueur():
         if self.peut_acheter_tour(tour): 
             self.tours.append(tour)
             self.partie.argent_courant = self.partie.argent_courant - tour.cout
-    
-            
     
     def peut_acheter_tour(self, tour) -> bool:
         return self.partie.argent_courant >= tour.cout 

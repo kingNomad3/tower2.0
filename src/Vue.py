@@ -16,7 +16,6 @@ class Vue:
         self.cadres = {}    # dictionnaire des Frame pour changer la fen root d'etat
         self.cadre_courant = None
         self.images = {}
-        self.creer_cadres(self.nom_joueur_local)
         self.tableau_choisi = None
 
         self.largeur = 1200
@@ -29,6 +28,7 @@ class Vue:
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(10 * ((self.ratio_y + self.ratio_x) / 2)))
         
+        self.creer_cadres(self.nom_joueur_local)
         self.menu_tour = None
         self.tag_bouton_choisi = None
         
@@ -44,20 +44,22 @@ class Vue:
     def creer_cadre_splash(self, nom_joueur_local):
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_splash = Frame(self.root)
-        self.canevas_splash = Canvas(cadre_splash,width=800,
-                              height=800,bg="pink")
+        self.canevas_splash = Canvas(cadre_splash,width=self.largeur,
+                              height=self.hauteur,bg="black")
         # section Titre
-        etiquette_entree = Etiquette(self.canevas_splash,text="Tours du CVM")
-        self.canevas_splash.create_window(500,50,anchor="center",window=etiquette_entree)
+        # Logo https://text.imageonline.co/ ////////////////////////////////////////////////////// Effacer
+        self.img= ImageTk.PhotoImage(Image.open("img/logo.png"))
+        self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img)
         self.canevas_splash.pack()
+        
         # section Identification
-        self.canevas_splash.create_text(480,150,anchor="e",text="Identification",font=("Arial",18))
+        self.canevas_splash.create_text(self.largeur/6,170,anchor="n",text="Identification",font=("Arial",18), fill='yellow')
         values = []
         values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
-                                     values = values)
+                                     values = values, font=("Arial", 14))
         self.drop_nom.set(nom_joueur_local)
-        self.canevas_splash.create_window(520,150,anchor="w",window=self.drop_nom)
+        self.canevas_splash.create_window(self.largeur/6*2,170,anchor="n",window=self.drop_nom)
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
@@ -84,11 +86,15 @@ class Vue:
         self.canevas_splash.create_window(220, 500, window=self.btnreset, width=200, height=30)
 
         # section pour partie locale
-        self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
+        # self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
         self.btn_ouvrir_bonus=Button(cadre_splash,text="Ouvrir magasin de Bonus",command=self.ouvrir_bonus)
 
-        self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
+        # self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
         self.canevas_splash.create_window(680,500,anchor="center",window=self.btn_ouvrir_bonus)
+        
+        self.btn_ouvrir_lobby_local = PacManButton(20, 1, "Creer partie locale", command=self.ouvrir_lobby_local)
+        self.btn_ouvrir_lobby_local.place(x=500, y=500, anchor="n")
+        
         return cadre_splash
 
     def creer_cadre_lobby_reseau(self):
@@ -258,10 +264,22 @@ class Vue:
         print(event.keysym)
 
     def dessiner_chateau(self):
+        self.canvas.delete("chateau")
+        
+        largeur = 130
+        hauteur = 200
+        
         x = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][0]
         y = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][1]
-        self.canvas.create_rectangle(x - 30, y - 30 , x + 30, y + 30, fill="GREY", outline="")
-        self.canvas.create_rectangle(x - 15, 465 - 15, x + 15, 465 + 15, fill="RED", outline='')
+        
+        img = Image.open("./img/chateau.png")
+        tk_img = img.resize((int(largeur), int(hauteur)), Image.Resampling.NEAREST)
+        tk_img = ImageTk.PhotoImage(img)
+        
+        # Store the image reference to prevent garbage collection
+    
+        self.images[-1] = tk_img
+        self.canvas.create_image((x * self.ratio_x, y * self.ratio_y), anchor='w', image=tk_img, tags=("chateau",))
 
 
     def dessiner_creeps(self):
@@ -270,7 +288,13 @@ class Vue:
         creep_hauteur = Creep.largeur * self.ratio_y
 
         for creep in self.modele.partie.liste_creeps:
-            img = Image.open(creep.img_src)
+            if creep.est_empoisone:
+                img = Image.open("./img/creep_poison.png")
+            elif creep.est_electrocute:
+                img = Image.open("./img/creep_elect.png")
+            else:
+                img = Image.open(creep.img_src)
+                
             img = img.resize((int(creep_largeur), int(creep_hauteur)), Image.Resampling.NEAREST)
             tk_img = ImageTk.PhotoImage(img)
             
@@ -307,8 +331,9 @@ class Vue:
     def dessiner_tours(self):
         # dessines les tours du modèle
         self.canvas.delete('dynamique')
-        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
-            self.dessiner_icone_tour(tour)
+        for joueur in self.modele.partie.joueurs:
+            for tour in self.modele.partie.joueurs[joueur].tours:
+                self.dessiner_icone_tour(tour)
 
     def dessiner_icone_tour(self, tour):
         size = 50
@@ -324,14 +349,22 @@ class Vue:
         img = Image.open(tour.img_src)
         img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
         
+        bg_img = Image.open(tour.background_src)
+        bg_img = bg_img.resize((int(tour_largeur + 30), int(tour_hauteur + 30)), Image.Resampling.NEAREST)
+
+
         if tour.cible:
             angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * - 1
             img = img.rotate(angle)
             
         tk_img = ImageTk.PhotoImage(img)
+        tk_bg = ImageTk.PhotoImage(bg_img)
         
         # Store the image reference to prevent garbage collection
-        self.images[tour.id] = tk_img
+        self.images[tour.id] = [tk_img, tk_bg]
+        
+        self.canvas.create_image((x, y), anchor='center',
+                                    image=tk_bg, tags=('tour','dynamique',tour.id, ))
 
         self.canvas.create_image((x, y), anchor='center',
                                     image=tk_img, tags=('tour','dynamique',tour.id, ))
@@ -398,27 +431,49 @@ class Vue:
         self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
 
 
-    def dessiner_obus(self):
+    def dessiner_projectiles(self):
         self.canvas.delete("projectile")
         projectile_largeur = Projectile.largeur * self.ratio_x
         projectile_hauteur = Projectile.largeur * self.ratio_y
-
-        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
-            for projectile in tour.liste_projectiles:
-                self.canvas.create_rectangle(
-                projectile.pos_x * self.ratio_x - projectile_largeur,
-                projectile.pos_y * self.ratio_y - projectile_hauteur,
-                projectile.pos_x * self.ratio_x + projectile_largeur,
-                projectile.pos_y * self.ratio_y + projectile_hauteur,
-                fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
+        
+        for joueur in self.modele.partie.joueurs:
+            for tour in self.modele.partie.joueurs[joueur].tours:
+                for projectile in tour.liste_projectiles:
+                    if isinstance(projectile, Balle):
+                        self.canvas.create_rectangle(
+                        projectile.pos_x * self.ratio_x - projectile_largeur,
+                        projectile.pos_y * self.ratio_y - projectile_hauteur,
+                        projectile.pos_x * self.ratio_x + projectile_largeur,
+                        projectile.pos_y * self.ratio_y + projectile_hauteur,
+                        fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
+                    elif isinstance(projectile, Eclair):
+                        self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2)
+                        # self.canvas.create_line()
+                        # self.canvas.create_line()
+                        # self.canvas.create_line()
+                    elif isinstance(projectile, Poison):
+                        self.canvas.create_oval(
+                        projectile.pos_x * self.ratio_x - (projectile_largeur + 5),
+                        projectile.pos_y * self.ratio_y - (projectile_hauteur + 5),
+                        projectile.pos_x * self.ratio_x + (projectile_largeur + 5),
+                        projectile.pos_y * self.ratio_y + (projectile_hauteur + 5),
+                        fill="limegreen", outline="limegreen",stipple="gray50", tags=("projectile", projectile.id))
+                    elif isinstance(projectile, Obus):
+                        pass
+                    elif isinstance(projectile, Grenade):
+                        pass
+                    else:
+                        pass
+                    
 
     def dessiner_jeu(self):
-        # print(len(self.canvas.find_all()))
         self.images = {}
         self.dessiner_creeps()
-        self.dessiner_obus()
+        self.dessiner_projectiles()
         self.dessiner_tours()
         self.update_info_partie()
+        self.dessiner_chateau()
+
 
     # Caller dans le controleur a chaque tick de boucle
     # Update les valeurs dynamique du InterfacePannel    
@@ -477,7 +532,6 @@ class Vue:
         self.canvas.itemconfig("tour_radius", width=1 * (self.ratio_y + self.ratio_x) / 2)
         self.canvas.tag_lower('chemin_outline')
 
-        
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
 
@@ -560,14 +614,14 @@ class PacManButton(Frame):
         self['width'] = width
         self['height'] = height
         self['highlightthickness'] = 2
-        self['highlightbackground'] = 'goldenrod3'
+        self['highlightbackground'] = '#F1D92A'
         
-        button = Button(self, bg='black', fg='goldenrod3', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
+        button = Button(self, bg='black', fg='#F1D92A', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
         button.pack()
     
 class Etiquette(Label):
     def __init__(self,master,*args, **kwargs):
         Label.__init__(self,master,*args, **kwargs)
         self.config(font=("arial",48,"bold"))
-        self.config(fg="goldenrod3")
+        self.config(fg="#F1D92A")
     
