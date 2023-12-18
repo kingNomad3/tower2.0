@@ -258,3 +258,8 @@ class Joueur():
     
     def peut_acheter_tour(self, tour) -> bool:
         return self.partie.argent_courant >= tour.cout 
+
+    
+    def ameliorer_tour(self):
+        self.niveau_amelioration += 1
+        

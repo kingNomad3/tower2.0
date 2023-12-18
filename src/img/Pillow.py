@@ -216,46 +216,71 @@ taille = 70
 
 #################################### PACMAN ##########################################
 
-# ---- PIL.Image.new(mode, size, color)
-# im = Image.new('RGB', (400, 400), (250, 0, 0))
-taille = 100
-color1 = (77,127,23)
-color2 = (107,177,32)
-color3 = (154,254,46)
+# # ---- PIL.Image.new(mode, size, color)
+# # im = Image.new('RGB', (400, 400), (250, 0, 0))
+# taille = 100
+# color1 = (77,127,23)
+# color2 = (107,177,32)
+# color3 = (154,254,46)
 
-tours = {
-    'poison' :          [(77,127,23),   (107,177,32),     (154,254,46)],
-    'mitrailleuse' :    [(24,57,43),   	(32,76,57),       (41,95,72)],
-    'eclair' :          [(119,170,255), (153,204,255),    (187,238,255)],
-    'grenade' :         [(163,32,32),   (220,105,0),      (235,140,0)],
-    'mine' :            [(71,15,15),    (124,27,27),      (178,39,39)],
-    'canon' :           [(53,62,69),    (85,95,104),      (86,129,138)]
-}
+# tours = {
+#     'poison' :          [(77,127,23),   (107,177,32),     (154,254,46)],
+#     'mitrailleuse' :    [(24,57,43),   	(32,76,57),       (41,95,72)],
+#     'eclair' :          [(119,170,255), (153,204,255),    (187,238,255)],
+#     'grenade' :         [(163,32,32),   (220,105,0),      (235,140,0)],
+#     'mine' :            [(71,15,15),    (124,27,27),      (178,39,39)],
+#     'canon' :           [(53,62,69),    (85,95,104),      (86,129,138)]
+# }
 
-for nom, tour in tours.items():
-    img = Image.new('RGBA', (taille, taille), (255, 0, 0, 0))
+# for nom, tour in tours.items():
+#     img = Image.new('RGBA', (taille, taille), (255, 0, 0, 0))
 
-    draw = ImageDraw.Draw(img)
-    draw.ellipse((10, 5, 40, 35),   outline=None, fill=tour[0], width=50)
-    draw.ellipse((0, 15, 35, 45),   outline=None, fill=tour[2], width=50)
-    draw.ellipse((5, 30, 40, 65),   outline=None, fill=tour[0], width=50)
-    draw.ellipse((12, 45, 57, 85),  outline=None, fill=tour[2], width=50)
-    draw.ellipse((15, 60, 40, 85),  outline=None, fill=tour[1], width=50)
-    draw.ellipse((58, 55, 87, 85),  outline=None, fill=tour[0], width=50)
-    draw.ellipse((34, 79, 60, 99),  outline=None, fill=tour[0], width=50)
-    draw.ellipse((40, 65, 70, 90),  outline=None, fill=tour[1], width=50)
-    draw.ellipse((75, 43, 95, 63),  outline=None, fill=tour[2], width=50)
-    draw.ellipse((45, 45, 75, 75),  outline=None, fill=tour[2], width=50)
-    draw.ellipse((55, 30, 85, 60),  outline=None, fill=tour[0], width=50)
-    draw.ellipse((75, 30, 90, 45),  outline=None, fill=tour[1], width=50)
-    draw.ellipse((60, 15, 85, 40),  outline=None, fill=tour[0], width=50)
-    draw.ellipse((30, 10, 60, 40),  outline=None, fill=tour[2], width=50)
-    draw.ellipse((37, 20, 67, 50),  outline=None, fill=tour[1], width=50)
-    draw.ellipse((37, 20, 67, 50),  outline=None, fill=tour[2], width=50)
-    draw.ellipse((70, 5, 85, 20),   outline=None, fill=tour[2], width=50)
-    draw.ellipse((75, 15, 95, 35),  outline=None, fill=tour[1], width=50)
-    draw.ellipse((50, 5, 70, 25),   outline=None, fill=tour[0], width=50)
+#     draw = ImageDraw.Draw(img)
+#     draw.ellipse((10, 5, 40, 35),   outline=None, fill=tour[0], width=50)
+#     draw.ellipse((0, 15, 35, 45),   outline=None, fill=tour[2], width=50)
+#     draw.ellipse((5, 30, 40, 65),   outline=None, fill=tour[0], width=50)
+#     draw.ellipse((12, 45, 57, 85),  outline=None, fill=tour[2], width=50)
+#     draw.ellipse((15, 60, 40, 85),  outline=None, fill=tour[1], width=50)
+#     draw.ellipse((58, 55, 87, 85),  outline=None, fill=tour[0], width=50)
+#     draw.ellipse((34, 79, 60, 99),  outline=None, fill=tour[0], width=50)
+#     draw.ellipse((40, 65, 70, 90),  outline=None, fill=tour[1], width=50)
+#     draw.ellipse((75, 43, 95, 63),  outline=None, fill=tour[2], width=50)
+#     draw.ellipse((45, 45, 75, 75),  outline=None, fill=tour[2], width=50)
+#     draw.ellipse((55, 30, 85, 60),  outline=None, fill=tour[0], width=50)
+#     draw.ellipse((75, 30, 90, 45),  outline=None, fill=tour[1], width=50)
+#     draw.ellipse((60, 15, 85, 40),  outline=None, fill=tour[0], width=50)
+#     draw.ellipse((30, 10, 60, 40),  outline=None, fill=tour[2], width=50)
+#     draw.ellipse((37, 20, 67, 50),  outline=None, fill=tour[1], width=50)
+#     draw.ellipse((37, 20, 67, 50),  outline=None, fill=tour[2], width=50)
+#     draw.ellipse((70, 5, 85, 20),   outline=None, fill=tour[2], width=50)
+#     draw.ellipse((75, 15, 95, 35),  outline=None, fill=tour[1], width=50)
+#     draw.ellipse((50, 5, 70, 25),   outline=None, fill=tour[0], width=50)
 
-    draw.pieslice((15, 15, taille-14, taille-14), start=25, end=325, fill=(255, 255, 0), outline=(0, 0, 0), width=3)
+#     # draw.pieslice((15, 15, taille-14, taille-14), start=25, end=325, fill=(255, 255, 0), outline=(0, 0, 0), width=3)
 
-    img.save(f'img/tour_{nom}.png', 'PNG')
+#     img.save(f'img/tour_{nom}.png', 'png')
+
+
+
+
+
+
+################################### POLYGONE ##########################################
+
+# colors = {'red','orange','yellow'}
+# taille = 50
+# color= (0, 0, 0)
+
+# img = Image.new('RGBA', (taille, taille), (0, 0, 0, 0))
+
+# for color in colors:
+#     draw = ImageDraw.Draw(img)
+#     draw.polygon(((taille/21*10,0), 
+#                 (taille/21*20,taille/21*8), 
+#                 (taille/21*16,taille/21*20), 
+#                 (taille/21*5,taille/21*20), 
+#                 (0,taille/21*8), 
+#                 (taille/21*10,0)), 
+#                 fill=None, outline=color, width=5)
+
+#     img.save(f'img/polygone_{color}.png', 'PNG')
