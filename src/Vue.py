@@ -446,10 +446,16 @@ class Vue:
                         projectile.pos_y * self.ratio_y + projectile_hauteur,
                         fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
                     elif isinstance(projectile, Eclair):
-                        self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2)
-                        # self.canvas.create_line()
-                        # self.canvas.create_line()
-                        # self.canvas.create_line()
+                        self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2, tags=("projectile", projectile.id))
+                        for i in range(3):
+                            end_x = projectile.pos_x * self.ratio_x + random.randint(-5, 5)  # Adjust the range as needed
+                            end_y = projectile.pos_y * self.ratio_y + random.randint(-5, 5)  # Adjust the range as needed
+                            width = random.randint(1, 3)  # Adjust the range as needed
+                            
+                            color = ["#01065A", "#3393FF", "#F5FAFF"]
+                            self.canvas.create_line(tour.pos_x + random.randint(-5, 5) * self.ratio_x, tour.pos_y + random.randint(-5, 5)* self.ratio_y, 
+                                                    end_x, end_y, 
+                                                    fill=color[random.randint(0,2)], width=width, tags=("projectile", projectile.id))
                     elif isinstance(projectile, Poison):
                         self.canvas.create_oval(
                         projectile.pos_x * self.ratio_x - (projectile_largeur + 5),
@@ -462,7 +468,17 @@ class Vue:
                     elif isinstance(projectile, Grenade):
                         pass
                     else:
-                        pass
+                        img = Image.open(projectile.img_src)
+                
+                        img = img.resize((int(projectile_hauteur), int(projectile_largeur)), Image.Resampling.NEAREST)
+                        tk_img = ImageTk.PhotoImage(img)
+                        
+                        # Store the image reference to prevent garbage collection
+                        self.images[projectile.id] = tk_img
+                        
+                        self.canvas.create_image((projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("projectile", projectile.id,))
+                        
+                        
                     
 
     def dessiner_jeu(self):
