@@ -29,6 +29,7 @@ class Projectile:
             self.attaque_special()
             self.__cible.recoit_coup(self.__dommage)
             self.__tour.liste_projectiles.remove(self)
+            self.__cible.est_empoisone = True
             
     def attaque_special(self):
         #niveau_tour affectera les effets
@@ -36,8 +37,7 @@ class Projectile:
             self.__cible.est_electrocute = True
             self.__cible.counter_electrocute = 0
             self.__cible.dmg_electrocute = self.__dommage
-        elif isinstance(self, Poison):            
-            self.__cible.est_empoisone = True
+        elif isinstance(self, Poison):
             self.__cible.dmg_poison = self.__dommage
         elif isinstance(self, Grenade):
             pass
@@ -103,8 +103,8 @@ class Eclair(Projectile):
 
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 18
-        self.dommage = 5 * niveau_tour
+        self.vitesse = 15
+        self.dommage = 0.05 * niveau_tour
         # niveau 3 a determiner
             
 class Poison(Projectile):
@@ -112,7 +112,7 @@ class Poison(Projectile):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 8  
         self.dommage = 0.1 * niveau_tour
-        cible.est_empoisone = True
+        # cible.est_empoisone = True
         
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):

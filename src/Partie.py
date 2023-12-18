@@ -219,13 +219,9 @@ class Partie:
         for i in self.explosions:
             i.jouer_coup()
 
-        # for i in self.joueurs:
-        #     self.joueurs[i].jouer_coup()
-
         self.remove_creep()
-        # self.remove_obus()
-        
-        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and self.__liste_creeps == 0:
+
+        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and not self.__liste_creeps:
             self.temps_derniere_vague = maintenant
             self.prochaine_vague()
 
@@ -233,7 +229,7 @@ class Partie:
         if explosion in self.explosions:
             self.explosions.remove(explosion)
 
-    def supprimer_nuage(self,nuage):
+    def supprimer_nuage(self, nuage):
         if nuage in self.nuages:
             self.nuages.remove(nuage)
             if self.nuages ==  []:

@@ -13,7 +13,7 @@ class Creep:
         self.__valeur_argent = 2
         self.__est_empoisone = False
         self.__est_electrocute = False
-        self.__compteur_electrocute = None
+        self.__compteur_electrocute = 0
         self.__compteur_poison = 0
         self.__dmg_poison = 0.001
         self.__dmg_electrocute = None
