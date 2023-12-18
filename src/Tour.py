@@ -227,7 +227,7 @@ class TourMitrailleuse(TourAttaque):
 class TourEclair(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
        super().__init__(parent, 40, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
-       self.background_src = "./img/tour_eclaire.png"
+       self.background_src = "./img/tour_eclair.png"
 
     def attaquer(self):
         self.definir_cible()

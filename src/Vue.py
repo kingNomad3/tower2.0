@@ -264,10 +264,22 @@ class Vue:
         print(event.keysym)
 
     def dessiner_chateau(self):
+        self.canvas.delete("chateau")
+        
+        largeur = 130
+        hauteur = 200
+        
         x = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][0]
         y = self.modele.partie.chemin.pivots[self.tableau_choisi][-1][1]
-        self.canvas.create_rectangle(x - 30, y - 30 , x + 30, y + 30, fill="GREY", outline="")
-        self.canvas.create_rectangle(x - 15, 465 - 15, x + 15, 465 + 15, fill="RED", outline='')
+        
+        img = Image.open("./img/chateau.png")
+        tk_img = img.resize((int(largeur), int(hauteur)), Image.Resampling.NEAREST)
+        tk_img = ImageTk.PhotoImage(img)
+        
+        # Store the image reference to prevent garbage collection
+    
+        self.images[-1] = tk_img
+        self.canvas.create_image((x * self.ratio_x, y * self.ratio_y), anchor='w', image=tk_img, tags=("chateau",))
 
 
     def dessiner_creeps(self):
@@ -276,7 +288,13 @@ class Vue:
         creep_hauteur = Creep.largeur * self.ratio_y
 
         for creep in self.modele.partie.liste_creeps:
-            img = Image.open(creep.img_src)
+            if creep.est_empoisone:
+                img = Image.open("./img/creep_poison.png")
+            elif creep.est_electrocute:
+                img = Image.open("./img/creep_elect.png")
+            else:
+                img = Image.open(creep.img_src)
+                
             img = img.resize((int(creep_largeur), int(creep_hauteur)), Image.Resampling.NEAREST)
             tk_img = ImageTk.PhotoImage(img)
             
@@ -426,12 +444,13 @@ class Vue:
                 fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
 
     def dessiner_jeu(self):
-        # print(len(self.canvas.find_all()))
         self.images = {}
         self.dessiner_creeps()
         self.dessiner_obus()
         self.dessiner_tours()
         self.update_info_partie()
+        self.dessiner_chateau()
+
 
     # Caller dans le controleur a chaque tick de boucle
     # Update les valeurs dynamique du InterfacePannel    
