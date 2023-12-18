@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from flask import Flask, request, json, jsonify
 from werkzeug.wrappers import Response
 import random
@@ -20,7 +19,6 @@ class Dbman():
     def setpartiecourante(self, chose):
         self.vidertable("partiecourante")
         self.curs.execute("Insert into partiecourante (etat) VALUES(?);", (chose,))
-        #print("DATABASE",chose)
         self.conn.commit()
 
     def setinitaleatoire(self, chose):
@@ -104,7 +102,6 @@ def set_tableau():
     tableau_choisi = data.get("tableau")
     return jsonify({"message": "Tableau choisi set successfully"})
 
-
 @app.route("/creer_partie", methods=["GET", "POST"])
 def creer_partie():
     db = Dbman()
@@ -162,7 +159,6 @@ def lancer_partie():
 def activer_partie():
     db = Dbman()
     db.setpartiecourante("activer")
-    #info = ["activer"]
 
     db.fermerdb()
     return jsonify("batman")

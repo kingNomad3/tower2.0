@@ -31,6 +31,8 @@ class Vue:
         self.creer_cadres(self.nom_joueur_local)
         self.menu_tour = None
         self.tag_bouton_choisi = None
+        self.tour_choisi = None
+        self.btn_upgrade = None
         
     def afficher_cadre(self,cadre_demande):
         if self.cadre_courant:
@@ -328,8 +330,7 @@ class Vue:
             if self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
                 self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
-            # self.reset_border()
-    
+
 
     def dessiner_tours(self):
         # dessines les tours du modèle
@@ -376,64 +377,35 @@ class Vue:
                                y + tour_radius_y,
                                 dash= (3,5), fill="", width= radius_largeur, tags=('tour_radius', 'dynamique'), outline="lightblue")
     
-        self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
+        self.canvas.tag_bind('tour', "<Button>", self.selectionne_tour)
 
         self.canvas.tag_lower('tour_radius')
         self.canvas.tag_lower('chemin')
         self.canvas.tag_lower('chemin_outline')
+        
 
-    def get_info_tour(self, event):
-        self.canvas.tag_unbind('TO', '<Button>', self.activation_to)
-        self.canvas.tag_unbind('TE', '<Button>', self.activation_te)
-        self.canvas.tag_unbind('TP', '<Button>', self.activation_tp)
-        target = self.canvas.gettags("current")[1]
+    def upgrade_tour(self):
+        self.tour_choisi.ameliorer_tour()
 
-        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
-            if tour.id == target:
-                self.afficher_info_tour(tour)
-
-
-    def afficher_info_tour(self,tour):
-        # self.reset_border()
-        self.canvas.tag_unbind('tour', '<Button>', self.information)
+    def selectionne_tour(self, tour):
         self.tour_choisi = tour
-
-        self.canvas.delete('choix_tour')
-        self.canvas.create_text(330 * self.ratio_x, 585 * self.ratio_y, text="Amélioration sur tour selectionnée", font=self.font_2,
-                                tags=("info_tour", "choix_tour",))
-        self.canvas.create_text(250 * self.ratio_x, 620 * self.ratio_y, text="Cout", font=self.font_2,
-                                tags=("info_tour",), fill="WHITE")
-        self.canvas.create_text(250 * self.ratio_x, 640 * self.ratio_y, text="+Force", font=self.font_2,
-                                tags=("info_tour",), fill="WHITE")
-        self.canvas.create_text(250 * self.ratio_x, 660 * self.ratio_y, text="+Etendu", font=self.font_2,
-                                tags=("info_tour",), fill="WHITE")
-        self.canvas.create_text(450 * self.ratio_x, 620 * self.ratio_y, text="Tour", font=self.font_2,
-                                tags=("info_tour",), fill="WHITE")
-        self.canvas.create_text(450 * self.ratio_x, 640 * self.ratio_y, text="Lvl" + str(tour.niveau_amelioration), font=self.font_2,
-                                tags=("info_tour", 'tour_lvl'), fill="WHITE")
-        self.canvas.create_text(450 * self.ratio_x, 660 * self.ratio_y, text="Rayon" + str(tour.champ_action), font=self.font_2,
-                                tags=("info_tour",), fill="WHITE")
-
-        # bouton_x
-        self.canvas.create_rectangle(510 - 7, 585 - 7, 510 + 7, 585 + 7, fill="gray75", tags=('btn_x', ))
-        self.canvas.create_text(510, 585, text='X', font=self.font_2, tags=("info_tour", 'btn_x', ))
-        self.btn_x = self.canvas.tag_bind('btn_x', '<Button>', self.fermer_info_tour)
-
-        #bouton upgrade
-        self.canvas.create_text(350 * self.ratio_x, 640 * self.ratio_y, text="Up", font=self.font_2,
-                                tags=("info_tour", 'UP'), fill="WHITE")
-        self.upgrade = self.canvas.tag_bind('UP', '<Button>', self.upgrade_tour)
-
-    def upgrade_tour(self, evt):
-        self.tour_choisi.update()
-        self.canvas.itemconfig('tour_lvl', text="Lvl" + str(self.tour_choisi.niveau_amelioration))
-
-
-    def fermer_info_tour(self, evt):
-        self.canvas.tag_unbind('UP', '<Button>', self.upgrade)
-        self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
-
-
+        self.btn_upgrade = PacManButton(int(20 * self.ratio_x), int(2 * self.ratio_y), "Upgrade", self.upgrade_tour)
+        self.btn_upgrade.place(x=self.largeur-27 * self.ratio_x, y=450, anchor="ne")
+        
+        self.upgade = self.canvas.bind("<Button>", self.cancel_upgrade)
+        
+        if self.tour_choisi.cout_amelioration <= self.modele.partie.argent_courant:
+            self.btn_upgrade.button.config(state = NORMAL)
+        else:
+            self.btn_upgrade.button.config(state = DISABLED)
+            
+            
+    def cancel_upgrade(self):
+        self.btn_upgrade.destroy()
+        self.canvas.unbind("<Button>", self.upgade)
+        
+        
+        
     def dessiner_projectiles(self):
         self.canvas.delete("projectile")
         projectile_largeur = Projectile.largeur * self.ratio_x
@@ -468,20 +440,30 @@ class Vue:
                         projectile.pos_y * self.ratio_y + (projectile_hauteur + 5),
                         fill="limegreen", outline="limegreen",stipple="gray50", tags=("projectile", projectile.id))
                     elif isinstance(projectile, Obus):
-                        pass
+                        self.canvas.create_oval(
+                        projectile.pos_x * self.ratio_x - (projectile_largeur + 3),
+                        projectile.pos_y * self.ratio_y - (projectile_hauteur + 8),
+                        projectile.pos_x * self.ratio_x + (projectile_largeur + 3),
+                        projectile.pos_y * self.ratio_y + (projectile_hauteur + 8),
+                        fill="grey", outline="grey",stipple="gray50", tags=("projectile", projectile.id))
                     elif isinstance(projectile, Grenade):
-                        pass
+                        self.canvas.create_oval(
+                        projectile.pos_x * self.ratio_x - (projectile_largeur + 4),
+                        projectile.pos_y * self.ratio_y - (projectile_hauteur + 4),
+                        projectile.pos_x * self.ratio_x + (projectile_largeur + 4),
+                        projectile.pos_y * self.ratio_y + (projectile_hauteur + 4),
+                        fill="red", outline="red",stipple="gray50", tags=("projectile", projectile.id))
                     else:
                         img = Image.open(projectile.img_src)
                 
-                        img = img.resize((int(projectile_hauteur), int(projectile_largeur)), Image.Resampling.NEAREST)
+                        img = img.resize((int(projectile_hauteur + 20), int(projectile_largeur + 20)), Image.Resampling.NEAREST)
                         tk_img = ImageTk.PhotoImage(img)
                         
                         # Store the image reference to prevent garbage collection
                         self.images[projectile.id] = tk_img
                         
-                        self.canvas.create_image((projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("projectile", projectile.id,))              
-                    
+                        self.canvas.create_image((projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("projectile", "mine", projectile.id,))              
+                        self.canvas.tag_lower('mine')
 
     def dessiner_jeu(self):
         self.images = {}
@@ -578,9 +560,7 @@ class Vue:
                 break
 
 
-
 class InterfacePannel(Frame):
-    
     def __init__(self, width, height):
         super().__init__()
         self['bg'] = 'black'
