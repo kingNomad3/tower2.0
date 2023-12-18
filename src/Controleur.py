@@ -1,6 +1,5 @@
 from Vue import *
 from Modele import *
-from Tour import *
 import random
 import requests
 import json
@@ -45,6 +44,10 @@ class Controleur:
     def creer_tour(self, type_tour, x, y):
         action_demande = [self.nom_joueur_local,"creer_tour",[type_tour,x,y]]
         self.actions_requises.append(action_demande)
+    
+    def ameliorer_tour(self, tag):
+        action_demande = [self.nom_joueur_local,"ameliorer_tour",[tag]]
+        self.actions_requises.append(action_demande)
         
     def generer_pseudo_nom(self):
         nom_joueur_local = "robert" + str(random.randrange(100, 1000))
@@ -70,7 +73,6 @@ class Controleur:
                 
         info_etat_joueur = self.appeler_serveur(url, params, "POST")
         # si l'etat est courant, c'est que la partie vient d'etre lancer
-        #print(info_etat_joueur)
         
         if "courante" in info_etat_joueur:
             self.initialiser_partie(info_etat_joueur)        
@@ -127,7 +129,7 @@ class Controleur:
         self.vue.creer_cadre_jeu()
         # on change le cadre la fenetre pour passer dans l'interface de jeu
         self.vue.afficher_cadre("cadre_jeu")
-        #self.boucler_en_attente()
+
     
     def reset_partie(self):
         le_url = self.url_serveur + "/reset_jeu"
@@ -200,8 +202,7 @@ class Controleur:
                 'nom': self.nom_joueur_local  # Make sure to include this parameter
             }
             reptext = self.appeler_serveur(url, data, "POST")
-        #self.pause = 1
-        #self.boucler_en_attente()
+
         
     def boucler_sur_jeu(self):
         self.iteration_boucle_jeu += 1
@@ -247,7 +248,6 @@ class Controleur:
             self.on_joue = 1
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
         self.modele.partie.chrono = self.delai_de_boucle_de_jeu
-        print(self.modele.partie.liste_creeps[0].vie)
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
         
        # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE

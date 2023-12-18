@@ -15,8 +15,3 @@ class Chemin():
         for i in pivots[1:]:
             self.segments.append([self.temp, i])
             self.temp = i
-
-
-if __name__ == '__main__':
-    chemin = Chemin()
-    print("FIN")
