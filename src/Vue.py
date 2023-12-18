@@ -16,7 +16,6 @@ class Vue:
         self.cadres = {}    # dictionnaire des Frame pour changer la fen root d'etat
         self.cadre_courant = None
         self.images = {}
-        self.creer_cadres(self.nom_joueur_local)
         self.tableau_choisi = None
 
         self.largeur = 1200
@@ -29,6 +28,7 @@ class Vue:
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(10 * ((self.ratio_y + self.ratio_x) / 2)))
         
+        self.creer_cadres(self.nom_joueur_local)
         self.menu_tour = None
         self.tag_bouton_choisi = None
         
@@ -44,20 +44,22 @@ class Vue:
     def creer_cadre_splash(self, nom_joueur_local):
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_splash = Frame(self.root)
-        self.canevas_splash = Canvas(cadre_splash,width=800,
-                              height=800,bg="pink")
+        self.canevas_splash = Canvas(cadre_splash,width=self.largeur,
+                              height=self.hauteur,bg="black")
         # section Titre
-        etiquette_entree = Etiquette(self.canevas_splash,text="Tours du CVM")
-        self.canevas_splash.create_window(500,50,anchor="center",window=etiquette_entree)
+        # Logo https://text.imageonline.co/ ////////////////////////////////////////////////////// Effacer
+        self.img= ImageTk.PhotoImage(Image.open("img/logo.png"))
+        self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img)
         self.canevas_splash.pack()
+        
         # section Identification
-        self.canevas_splash.create_text(480,150,anchor="e",text="Identification",font=("Arial",18))
+        self.canevas_splash.create_text(self.largeur/6,170,anchor="n",text="Identification",font=("Arial",18), fill='yellow')
         values = []
         values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
-                                     values = values)
+                                     values = values, font=("Arial", 14))
         self.drop_nom.set(nom_joueur_local)
-        self.canevas_splash.create_window(520,150,anchor="w",window=self.drop_nom)
+        self.canevas_splash.create_window(self.largeur/6*2,170,anchor="n",window=self.drop_nom)
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
@@ -84,11 +86,15 @@ class Vue:
         self.canevas_splash.create_window(220, 500, window=self.btnreset, width=200, height=30)
 
         # section pour partie locale
-        self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
+        # self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
         self.btn_ouvrir_bonus=Button(cadre_splash,text="Ouvrir magasin de Bonus",command=self.ouvrir_bonus)
 
-        self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
+        # self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
         self.canevas_splash.create_window(680,500,anchor="center",window=self.btn_ouvrir_bonus)
+        
+        self.btn_ouvrir_lobby_local = PacManButton(20, 1, "Creer partie locale", command=self.ouvrir_lobby_local)
+        self.btn_ouvrir_lobby_local.place(x=500, y=500, anchor="n")
+        
         return cadre_splash
 
     def creer_cadre_lobby_reseau(self):
@@ -324,14 +330,22 @@ class Vue:
         img = Image.open(tour.img_src)
         img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
         
+        bg_img = Image.open(tour.background_src)
+        bg_img = bg_img.resize((int(tour_largeur + 30), int(tour_hauteur + 30)), Image.Resampling.NEAREST)
+
+
         if tour.cible:
             angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * - 1
             img = img.rotate(angle)
             
         tk_img = ImageTk.PhotoImage(img)
+        tk_bg = ImageTk.PhotoImage(bg_img)
         
         # Store the image reference to prevent garbage collection
-        self.images[tour.id] = tk_img
+        self.images[tour.id] = [tk_img, tk_bg]
+        
+        self.canvas.create_image((x, y), anchor='center',
+                                    image=tk_bg, tags=('tour','dynamique',tour.id, ))
 
         self.canvas.create_image((x, y), anchor='center',
                                     image=tk_img, tags=('tour','dynamique',tour.id, ))
@@ -478,7 +492,6 @@ class Vue:
         self.canvas.itemconfig("tour_radius", width=1 * (self.ratio_y + self.ratio_x) / 2)
         self.canvas.tag_lower('chemin_outline')
 
-        
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
 
@@ -561,14 +574,14 @@ class PacManButton(Frame):
         self['width'] = width
         self['height'] = height
         self['highlightthickness'] = 2
-        self['highlightbackground'] = 'goldenrod3'
+        self['highlightbackground'] = '#F1D92A'
         
-        button = Button(self, bg='black', fg='goldenrod3', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
+        button = Button(self, bg='black', fg='#F1D92A', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
         button.pack()
     
 class Etiquette(Label):
     def __init__(self,master,*args, **kwargs):
         Label.__init__(self,master,*args, **kwargs)
         self.config(font=("arial",48,"bold"))
-        self.config(fg="goldenrod3")
+        self.config(fg="#F1D92A")
     
