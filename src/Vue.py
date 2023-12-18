@@ -321,8 +321,9 @@ class Vue:
             x = event.x / self.ratio_x
             y = event.y / self.ratio_y
             self.controleur.creer_tour(self.tag_bouton_choisi, x, y)
-                        
-            self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
+
+            if self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
+                self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
             # self.reset_border()
     

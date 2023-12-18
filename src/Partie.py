@@ -200,11 +200,15 @@ class Partie:
             #     self.creeps_apparaissent()
 
         if self.est_game_over():
-            pass;
+            pass
             self.modele.controleur.traiter_gameover()
 
         for creep in self.__liste_creeps:
             creep.bouger()
+            creep.maj_vie()
+            if creep.vie <= 0:
+                creep.vivant = False
+                self.__argent_courant += creep.valeur_argent
 
         for nom_joueur in self.joueurs: # Les tours d'attaque sont des fonctions récursives 
             for tour in self.joueurs[nom_joueur].tours:
