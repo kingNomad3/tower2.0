@@ -61,6 +61,10 @@ class Tour:
     @property
     def niveau_amelioration(self):
         return self.__niveau_amelioration
+    
+    @niveau_amelioration.setter
+    def niveau_amelioration(self, niveau_amelioration):
+        self.__niveau_amelioration = niveau_amelioration
 
     @property
     def cout(self):
