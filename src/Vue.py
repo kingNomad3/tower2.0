@@ -118,7 +118,7 @@ class Vue:
         self.canevas_lobby.pack()
         
         #Logo lobby
-        if local_ou_reseau == 'local':
+        if local_ou_reseau == 'reseau':
             self.logo_lobby= ImageTk.PhotoImage(Image.open("img/lobby_logo.png"))
         else:
             self.logo_lobby= ImageTk.PhotoImage(Image.open("img/lobby_logo_reseau.png"))
