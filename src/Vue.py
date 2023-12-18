@@ -29,6 +29,7 @@ class Vue:
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(10 * ((self.ratio_y + self.ratio_x) / 2)))
         
+        self.menu_tour = None
         self.tag_bouton_choisi = None
         
     def afficher_cadre(self,cadre_demande):
@@ -164,7 +165,6 @@ class Vue:
         self.dessiner_interface_tour()
         # self.dessiner_menu()
         self.dessiner_chateau()
-        self.dessiner_information()
         # on place ce cadre parmi l'ensemble des cadres
         self.cadres["cadre_jeu"]= cadre_jeu
         
@@ -301,7 +301,7 @@ class Vue:
             self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
             # self.reset_border()
-
+    
 
     def dessiner_tours(self):
         # dessines les tours du modèle
@@ -337,7 +337,7 @@ class Vue:
 
         self.canvas.create_oval(x - tour_radius_x, y - tour_radius_y, x + tour_radius_x,
                                y + tour_radius_y,
-                                dash= (3,5), fill="", width= radius_largeur, tags=('tour_radius',), outline="lightblue")
+                                dash= (3,5), fill="", width= radius_largeur, tags=('tour_radius', 'dynamique'), outline="lightblue")
     
         self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
 
@@ -395,7 +395,6 @@ class Vue:
     def fermer_info_tour(self, evt):
         self.canvas.tag_unbind('UP', '<Button>', self.upgrade)
         self.information = self.canvas.tag_bind('tour', "<Button>", self.get_info_tour)
-        self.dessiner_information()
 
 
     def dessiner_obus(self):
@@ -442,7 +441,22 @@ class Vue:
         self.interface_panel = InterfacePannel(250 * self.ratio_x, 50 * self.ratio_y)
         self.interface_panel.place(anchor="ne", x=self.largeur-10, y=10)
 
+    def dessiner_interface_tour(self):
+        if self.menu_tour:
+            self.destroy_menu_tour()
+        
+        self.menu_tour =  InterfaceTour(self.largeur, 250 * self.ratio_x, 500 * self.ratio_y, self.ratio_x, self.ratio_y, self.bind_canvas)
+        self.menu_tour.place(anchor="ne", x=self.largeur-10, y=70)
 
+    def destroy_menu_tour(self):
+        self.menu_tour.activation_to.destroy()
+        self.menu_tour.activation_tp.destroy()
+        self.menu_tour.activation_te.destroy()
+        self.menu_tour.activation_tm.destroy()
+        self.menu_tour.activation_tg.destroy()
+        self.menu_tour.activation_tc.destroy()
+        self.menu_tour.destroy()
+        
     def resize(self, evt):
         w = evt.width / self.largeur
         h = evt.height / self.hauteur
@@ -469,30 +483,8 @@ class Vue:
         self.canvas.itemconfig("info", font=self.font)
         self.canvas.itemconfig("info_tour", font=self.font_2)
 
-
-    def dessiner_information(self):
-        self.canvas.delete('info_tour', 'btn_x')
-
-        self.canvas.create_text(90 * self.ratio_x, 585 * self.ratio_y, text="Chrono", font=self.font, tags=("info",))
-        self.canvas.create_text(90 * self.ratio_x, 645 * self.ratio_y, text="Vague", font=self.font, tags=("info", ))
-        self.canvas.create_text(90 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.vague, tags=("info",'vague', ), font=self.font)
-        self.canvas.create_text(260 * self.ratio_x, 585 * self.ratio_y, text="Choix de tours", font=self.font, tags=("info", "choix_tour", ))
-        self.canvas.create_text(250 * self.ratio_x, 640 * self.ratio_y, text="TO", font=self.font, tags=("info",'TourMitrailleuse', ), fill="WHITE")
-        self.canvas.create_text(350 * self.ratio_x, 640 * self.ratio_y, text="TE", font=self.font, tags=("info", 'TourEclair',), fill="WHITE")
-        self.canvas.create_text(450 * self.ratio_x, 640 * self.ratio_y, text="TP", font=self.font, tags=("info", 'TourPoison',), fill="WHITE")
-        self.canvas.create_text(760 * self.ratio_x, 585 * self.ratio_y, text="Vies", font=self.font, tags=("info", ))
-        self.canvas.create_text(760 * self.ratio_x, 615 * self.ratio_y, text=self.modele.partie.vie, tags=("info",'vie', ), font=self.font, fill="RED")
-        self.canvas.create_text(760 * self.ratio_x, 645 * self.ratio_y, text="Argent", font=self.font, tags=("info", ))
-        self.canvas.create_text(760 * self.ratio_x, 675 * self.ratio_y, text=self.modele.partie.argent_courant, tags=("info",'argent', ), font=self.font)
-
-        # self.activation_to = self.canvas.tag_bind('TourMitrailleuse', '<Button>', self.bind_canvas)
-        # self.activation_te = self.canvas.tag_bind('TourEclair', '<Button>', self.bind_canvas)
-        # self.activation_tp = self.canvas.tag_bind('TourPoisonP', '<Button>', self.bind_canvas)
-
     def bind_canvas(self, button):
-        print("bind_canvas", button)
         self.tag_bouton_choisi = button
-        # print(self.tag_bouton_choisi)
         self.creation = self.canvas.bind("<Button>", self.creer_tour)  
 
     def dessiner_segments(self):
@@ -512,10 +504,7 @@ class Vue:
                 
             except IndexError:
                 break
-      
-    def dessiner_interface_tour(self):
-        self.menu_tour =  InterfaceTour(self.largeur, 250 * self.ratio_x, 500 * self.ratio_y, self.ratio_x, self.ratio_y, self.bind_canvas)
-        self.menu_tour.place(anchor="ne", x=self.largeur-10, y=70)
+
 
 
 class InterfacePannel(Frame):
@@ -554,15 +543,13 @@ class InterfaceTour(Frame):
         self.activation_tg = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Grenade", command=lambda: command("TourGrenade"))
         self.activation_tm = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Mine", command=lambda: command("TourMine"))
         self.activation_tc = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Canon", command=lambda: command("TourCanon"))
-        
-        # Calculate the center coordinates of self.menu_tour
-        
-        self.activation_to.place(x=largeur-27, y=90, anchor="ne")
-        self.activation_te.place(x=largeur-27, y=130, anchor="ne")
-        self.activation_tp.place(x=largeur-27, y=170, anchor="ne")
-        self.activation_tg.place(x=largeur-27, y=210, anchor="ne")
-        self.activation_tm.place(x=largeur-27, y=250, anchor="ne")
-        self.activation_tc.place(x=largeur-27, y=290, anchor="ne")
+                
+        self.activation_to.place(x=largeur-27 * ratio_x, y=90, anchor="ne")
+        self.activation_te.place(x=largeur-27 * ratio_x, y=130, anchor="ne")
+        self.activation_tp.place(x=largeur-27 * ratio_x, y=170, anchor="ne")
+        self.activation_tg.place(x=largeur-27 * ratio_x, y=210, anchor="ne")
+        self.activation_tm.place(x=largeur-27 * ratio_x, y=250, anchor="ne")
+        self.activation_tc.place(x=largeur-27 * ratio_x, y=290, anchor="ne")
         
         
 class PacManButton(Frame):

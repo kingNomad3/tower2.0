@@ -151,6 +151,7 @@ class TourAttaque(Tour):
     def __init__(self, parent, rayon, pos_x, pos_y, niveau_amelioration, cout):
         super().__init__(parent, rayon, pos_x, pos_y, niveau_amelioration, cout)
         self.__liste_projectiles = []
+
         self.__temps_recharge = 1/self.niveau_amelioration * 250 #TODO reviser car toutes les tours ont le meme temps de recharge
         self.__canon = 6 #TODO a verifier avec la VUE
         self.__longueur_canon = 5 #TODO a verifier avec la VUE
@@ -213,6 +214,7 @@ class TourMitrailleuse(TourAttaque):
         # p1 : parent, p2 : rayon (le même pour toutes les tours de ce type), p3 et p4 : positions, p5 : niveau 1 en partant (amélioration générale possible??)
         # p6 : coût (amélioration générale possible??), éventuel p7 : vie (si on fait perdre de la vie à nos tours)
         super().__init__(parent, 35, pos_x, pos_y, 1, 300) #TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_mitrailleuse.png"
 
     def attaquer(self):
         self.definir_cible()
@@ -224,11 +226,15 @@ class TourMitrailleuse(TourAttaque):
 
 class TourEclair(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
+
        super().__init__(parent, 40, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
+       self.background_src = "./img/tour_eclaire.png"
+
 
     def attaquer(self):
         self.definir_cible()
         if self.cible:
+
             eclair = Eclair(self, self.pos_x, self.pos_y, self.cible,self.niveau_amelioration)#TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(eclair)
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
@@ -236,11 +242,15 @@ class TourEclair(TourAttaque):
 
 class TourPoison(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
+
         super().__init__(parent, 45, pos_x, pos_y, 1, 80)#TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_poison.png"
+
 
     def attaquer(self):
         self.definir_cible()
         if self.cible:
+
             poison = Poison(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(poison)
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
@@ -248,10 +258,13 @@ class TourPoison(TourAttaque):
 class TourGrenade(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 30, pos_x, pos_y, 1, 160) #TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_grenade.png"
+
 
     def attaquer(self):
         self.definir_cible()
         if self.cible:
+
             grenade = Grenade(self,  self.pos_x,self.pos_y, self.cible, self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(grenade)
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
@@ -260,24 +273,32 @@ class TourGrenade(TourAttaque):
 class TourMine(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 42, pos_x, pos_y, 1, 100)#TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_mine.png"
+
 
     def attaquer(self):
         self.definir_cible()
         if self.cible:
+
             mine = Mine(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(mine)
+
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
 
 class TourCanon(TourAttaque):
     def __init__(self, parent, pos_x, pos_y):
+ 
         super().__init__(parent, 25, pos_x, pos_y, 1, 150) #TODO a confirmer le rayon et le cout
+        self.background_src = "./img/tour_canon.png"
 
     def attaquer(self):
         self.definir_cible()
         if self.cible:
+
             obus = Obus(self, self.pos_x,self.pos_y,self.cible,self.niveau_amelioration)  # TODO verifier si les bonnes variables sont passes
             self.liste_projectiles.append(obus)
+
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
 
@@ -299,7 +320,3 @@ class TourBoost(Tour):
 class TourRepoussante(Tour):
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 35, pos_x, pos_y, 1, 160)  # TODO a confirmer le rayon et le cout
-        
-        
-        
-        
