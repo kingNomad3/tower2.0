@@ -42,6 +42,9 @@ class Vue:
         self.cadres["cadre_splash"] = self.creer_cadre_splash(nom_joueur_local)
         
     def creer_cadre_splash(self, nom_joueur_local):
+        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        fontStyle = ("Gill Sans Ultra Bold", 10)
+        
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_splash = Frame(self.root)
         self.canevas_splash = Canvas(cadre_splash,width=self.largeur,
@@ -53,47 +56,47 @@ class Vue:
         self.canevas_splash.pack()
         
         # section Identification
-        self.canevas_splash.create_text(self.largeur/6,170,anchor="n",text="Identification",font=("Arial",18), fill='yellow')
+        self.canevas_splash.create_text(self.largeur/6*2+20,170,anchor="n",text="Identification",font=fontStyleTitle, fill='yellow')
         values = []
         values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
-                                     values = values, font=("Arial", 14))
+                                     values = values, font=fontStyleTitle, justify='center')
         self.drop_nom.set(nom_joueur_local)
-        self.canevas_splash.create_window(self.largeur/6*2,170,anchor="n",window=self.drop_nom)
+        self.canevas_splash.create_window(self.largeur/6*3.5,170,anchor="n",window=self.drop_nom)
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
-        self.etat_du_jeu = Label(text="Non connecter", font=("Arial", 16), borderwidth=2, relief=RIDGE)
-        self.url_initial = Entry(font=("Arial", 14))
+        self.etat_du_jeu = Label(text="Non connecté", font=fontStyle, borderwidth=2, relief=RIDGE)
+        self.url_initial = Entry(font=fontStyle, justify='center')
 
         #self.url_initial.insert(0, "http://jmdeschamps.pythonanywhere.com")
-        self.url_initial.insert(0, "http://127.0.0.1:8000") #"http://jmdeschamps.pythonanywhere.com"
-        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12), command=self.initialiser_splash_post_connection)
+        self.url_initial.insert(0, "http://127.0.0.1:8000") #"http://jmdeschamps.pythonanywhere.com"     
+        self.btnurlconnect = PacManButton(20, 1, "Connecter", command=self.initialiser_splash_post_connection)
+        
         # on les place sur le canevas_splash
-        self.canevas_splash.create_window(220, 250, window=self.url_initial, width=200, height=30)
-        self.canevas_splash.create_window(220, 300, window=self.btnurlconnect, width=100, height=30)
-        self.canevas_splash.create_window(220, 350, window=self.etat_du_jeu, width=300, height=30)
+        self.canevas_splash.create_window(200, 250, window=self.url_initial, width=270, height=30)
+        self.btnurlconnect.place(x=206, y=300,anchor="n")
+        self.canevas_splash.create_window(206, 360, window=self.etat_du_jeu, width=170, height=30)
 
         # section pour partie reseau
-        self.btncreerpartie = Button(text="Creer partie reseau", font=("Arial", 12), state=DISABLED, command=self.creer_partie)
-        self.btninscrirejoueur = Button(text="Inscrire a partie reseau", font=("Arial", 12), state=DISABLED,
-                                        command=self.inscrire_joueur)
-        self.btnreset = Button(text="Reinitialiser partie", font=("Arial", 9), state=DISABLED,
-                               command=self.reset_partie)
-        # on place les boutons
-        self.canevas_splash.create_window(220, 400, window=self.btncreerpartie, width=200, height=30)
-        self.canevas_splash.create_window(220, 450, window=self.btninscrirejoueur, width=200, height=30)
-        self.canevas_splash.create_window(220, 500, window=self.btnreset, width=200, height=30)
-
-        # section pour partie locale
-        # self.btn_ouvrir_lobby_local=Button(cadre_splash,text="Creer partie locale",command=self.ouvrir_lobby_local)
-        self.btn_ouvrir_bonus=Button(cadre_splash,text="Ouvrir magasin de Bonus",command=self.ouvrir_bonus)
-
-        # self.canevas_splash.create_window(680,450,anchor="center",window=self.btn_ouvrir_lobby_local)
-        self.canevas_splash.create_window(680,500,anchor="center",window=self.btn_ouvrir_bonus)
+        self.btncreerpartie = PacManButton(20, 1, "Creer partie reseau", command=self.creer_partie)
+        self.btncreerpartie.button.config(state=DISABLED)
+        self.btncreerpartie.place(x=206, y=400, anchor="n")
         
+        self.btninscrirejoueur = PacManButton(20, 1, "Inscrire a partie reseau", command=self.inscrire_joueur)
+        self.btninscrirejoueur.button.config(state=DISABLED)
+        self.btninscrirejoueur.place(x=206, y=440, anchor="n")
+        
+        self.btnreset = PacManButton(20, 1, "Reinitialiser partie", command=self.inscrire_joueur)
+        self.btnreset.button.config(state=DISABLED)
+        self.btnreset.place(x=206, y=480, anchor="n")
+
+        # section pour partie locale        
         self.btn_ouvrir_lobby_local = PacManButton(20, 1, "Creer partie locale", command=self.ouvrir_lobby_local)
-        self.btn_ouvrir_lobby_local.place(x=500, y=500, anchor="n")
+        self.btn_ouvrir_lobby_local.place(x=1000, y=230, anchor="n")
+        
+        self.btn_ouvrir_bonus = PacManButton(20, 1, "Ouvrir magasin de Bonus", command=self.ouvrir_bonus)
+        self.btn_ouvrir_bonus.place(x=1000, y=280,anchor="n")
         
         return cadre_splash
 
@@ -447,10 +450,16 @@ class Vue:
                         projectile.pos_y * self.ratio_y + projectile_hauteur,
                         fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
                     elif isinstance(projectile, Eclair):
-                        self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2)
-                        # self.canvas.create_line()
-                        # self.canvas.create_line()
-                        # self.canvas.create_line()
+                        self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2, tags=("projectile", projectile.id))
+                        for i in range(3):
+                            end_x = projectile.pos_x * self.ratio_x + random.randint(-5, 5)  # Adjust the range as needed
+                            end_y = projectile.pos_y * self.ratio_y + random.randint(-5, 5)  # Adjust the range as needed
+                            width = random.randint(1, 3)  # Adjust the range as needed
+                            
+                            color = ["#01065A", "#3393FF", "#F5FAFF"]
+                            self.canvas.create_line(tour.pos_x + random.randint(-5, 5) * self.ratio_x, tour.pos_y + random.randint(-5, 5)* self.ratio_y, 
+                                                    end_x, end_y, 
+                                                    fill=color[random.randint(0,2)], width=width, tags=("projectile", projectile.id))
                     elif isinstance(projectile, Poison):
                         self.canvas.create_oval(
                         projectile.pos_x * self.ratio_x - (projectile_largeur + 5),
@@ -463,7 +472,15 @@ class Vue:
                     elif isinstance(projectile, Grenade):
                         pass
                     else:
-                        pass
+                        img = Image.open(projectile.img_src)
+                
+                        img = img.resize((int(projectile_hauteur), int(projectile_largeur)), Image.Resampling.NEAREST)
+                        tk_img = ImageTk.PhotoImage(img)
+                        
+                        # Store the image reference to prevent garbage collection
+                        self.images[projectile.id] = tk_img
+                        
+                        self.canvas.create_image((projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("projectile", projectile.id,))              
                     
 
     def dessiner_jeu(self):
@@ -616,8 +633,8 @@ class PacManButton(Frame):
         self['highlightthickness'] = 2
         self['highlightbackground'] = '#F1D92A'
         
-        button = Button(self, bg='black', fg='#F1D92A', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
-        button.pack()
+        self.button = Button(self, bg='black', fg='#F1D92A', font=("Gill Sans Ultra Bold", 10), width=width, height=height, text=text, command=command)
+        self.button.pack()
     
 class Etiquette(Label):
     def __init__(self,master,*args, **kwargs):

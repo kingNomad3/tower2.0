@@ -140,6 +140,11 @@ class Mine(Projectile):
         #self.vitesse = 6
         self.dommage = 8
         self.champ_action = 10
+        self.img_src = "./img/cerise.png"        
+        
+ 
+
+
 
 #if __name__ == "__main__":
 
