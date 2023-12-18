@@ -95,7 +95,7 @@ class Obus(Projectile):
 
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 5
+        self.vitesse = 6
         self.dommage = 4 * niveau_tour
 
 
@@ -128,7 +128,7 @@ class Grenade(Projectile):
 class Mine(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
-        self.vitesse = 5 
+        self.vitesse = 6
         self.dommage = 8
         
         

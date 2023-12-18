@@ -330,8 +330,9 @@ class Vue:
     def dessiner_tours(self):
         # dessines les tours du modèle
         self.canvas.delete('dynamique')
-        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
-            self.dessiner_icone_tour(tour)
+        for joueur in self.modele.partie.joueurs:
+            for tour in self.modele.partie.joueurs[joueur].tours:
+                self.dessiner_icone_tour(tour)
 
     def dessiner_icone_tour(self, tour):
         size = 50
@@ -433,15 +434,16 @@ class Vue:
         self.canvas.delete("projectile")
         projectile_largeur = Projectile.largeur * self.ratio_x
         projectile_hauteur = Projectile.largeur * self.ratio_y
-
-        for tour in self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours:
-            for projectile in tour.liste_projectiles:
-                self.canvas.create_rectangle(
-                projectile.pos_x * self.ratio_x - projectile_largeur,
-                projectile.pos_y * self.ratio_y - projectile_hauteur,
-                projectile.pos_x * self.ratio_x + projectile_largeur,
-                projectile.pos_y * self.ratio_y + projectile_hauteur,
-                fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
+        
+        for joueur in self.modele.partie.joueurs:
+            for tour in self.modele.partie.joueurs[joueur].tours:
+                for projectile in tour.liste_projectiles:
+                    self.canvas.create_rectangle(
+                    projectile.pos_x * self.ratio_x - projectile_largeur,
+                    projectile.pos_y * self.ratio_y - projectile_hauteur,
+                    projectile.pos_x * self.ratio_x + projectile_largeur,
+                    projectile.pos_y * self.ratio_y + projectile_hauteur,
+                    fill="yellow", outline="yellow",stipple="gray50", tags=("projectile", projectile.id))
 
     def dessiner_jeu(self):
         self.images = {}
