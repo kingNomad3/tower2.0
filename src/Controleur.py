@@ -45,6 +45,10 @@ class Controleur:
     def creer_tour(self, type_tour, x, y):
         action_demande = [self.nom_joueur_local,"creer_tour",[type_tour,x,y]]
         self.actions_requises.append(action_demande)
+    
+    def ameliorer_tour(self, tag):
+        action_demande = [self.nom_joueur_local,"ameliorer_tour",[tag]]
+        self.actions_requises.append(action_demande)
         
     def generer_pseudo_nom(self):
         nom_joueur_local = "robert" + str(random.randrange(100, 1000))
