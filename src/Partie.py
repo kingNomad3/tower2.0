@@ -225,7 +225,7 @@ class Partie:
         self.remove_creep()
         # self.remove_obus()
         
-        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and self.__liste_creeps == 0:
+        if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and not self.__liste_creeps:
             self.temps_derniere_vague = maintenant
             self.prochaine_vague()
 
@@ -260,11 +260,15 @@ class Joueur():
     
     def peut_acheter_tour(self, tour) -> bool:
         return self.partie.argent_courant >= tour.cout 
-
+    
+    def peut_acheter_amelioration(self, tour) -> bool:
+        return self.partie.argent_courant >= tour.cout_amelioration
     
     def ameliorer_tour(self, parametres):
         tag = parametres
         for tour in self.tours:
             if tour.id == tag:
-                self.niveau_amelioration += 1
+                if self.peut_acheter_amelioration(tour):
+                    self.niveau_amelioration += 1
+                    self.partie.argent_courant = self.partie.argent_courant - tour.cout_amelioration
         
