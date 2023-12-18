@@ -323,14 +323,22 @@ class Vue:
         img = Image.open(tour.img_src)
         img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
         
+        bg_img = Image.open(tour.background_src)
+        bg_img = bg_img.resize((int(tour_largeur + 30), int(tour_hauteur + 30)), Image.Resampling.NEAREST)
+
+
         if tour.cible:
             angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * - 1
             img = img.rotate(angle)
             
         tk_img = ImageTk.PhotoImage(img)
+        tk_bg = ImageTk.PhotoImage(bg_img)
         
         # Store the image reference to prevent garbage collection
-        self.images[tour.id] = tk_img
+        self.images[tour.id] = [tk_img, tk_bg]
+        
+        self.canvas.create_image((x, y), anchor='center',
+                                    image=tk_bg, tags=('tour','dynamique',tour.id, ))
 
         self.canvas.create_image((x, y), anchor='center',
                                     image=tk_img, tags=('tour','dynamique',tour.id, ))
@@ -476,7 +484,6 @@ class Vue:
         self.canvas.itemconfig("tour_radius", width=1 * (self.ratio_y + self.ratio_x) / 2)
         self.canvas.tag_lower('chemin_outline')
 
-        
         self.font = "Arial " + str(int(15 * ((self.ratio_y + self.ratio_x) / 2)))
         self.font_2 = "Arial " + str(int(11 * ((self.ratio_y + self.ratio_x) / 2)))
 

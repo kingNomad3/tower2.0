@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
+./src/base_TD.py
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
