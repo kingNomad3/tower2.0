@@ -117,8 +117,6 @@ class Partie:
             self.creeps_tue_vague = 0
             print(self.score)
 
-
-
     def est_game_over(self) -> bool:
         # met le bool à jour et le retourne
         self.__fin_partie = self.vie < 1
