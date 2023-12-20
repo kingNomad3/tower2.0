@@ -252,7 +252,10 @@ class Controleur:
             self.on_joue = 1
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
         self.modele.partie.chrono = self.delai_de_boucle_de_jeu
-        self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+        if not self.partie.est_game_over():
+            self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+        else:
+            self.vue.game_over()
         
        # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE
     def requerir_info(self, table, colonnes):
