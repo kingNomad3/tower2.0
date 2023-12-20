@@ -4,7 +4,6 @@ from effetVisuel import *
 
 class Creep:
     largeur = 45
-    
     def __init__(self, parent, pos_x, pos_y, niveau):
         self.__id = hp.Helper.creer_id()
         self.__cible = None
@@ -30,6 +29,7 @@ class Creep:
         self.definir_attribut()
         self.nouvelle_cible()
         self.__explosion = None
+        self.compteur_creep_defi = 0
         
         
     def definir_attribut(self):
@@ -50,7 +50,6 @@ class Creep:
             # arrive au chateau
             elif self.__segment_actuel == len(self.__partie.chemin.segments):
                 self.__partie.perte_vie()
-
                 self.__vivant = False
                 
     def recoit_coup(self, dommage):
@@ -59,6 +58,13 @@ class Creep:
             self.__vivant = False
             self.__partie.argent_courant += self.valeur_argent
             self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
+            self.defi_tuer_creep()
+    
+    
+    def defi_tuer_creep(self):
+     self.compteur_creep_defi += 1
+     print("creep remove",self.compteur_creep_defi)  
+     
 
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
