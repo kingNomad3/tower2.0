@@ -45,6 +45,7 @@ class Vue:
         self.cadres["cadre_splash"] = self.creer_cadre_splash(nom_joueur_local)
         
     def creer_cadre_splash(self, nom_joueur_local):
+        self.root.resizable(False,False)
         fontStyleTitle = ("Gill Sans Ultra Bold", 14)
         fontStyle = ("Gill Sans Ultra Bold", 10)
         
@@ -107,11 +108,15 @@ class Vue:
         self.btn_ouvrir_bonus.place(x=1000, y=280,anchor="n")
         
         return cadre_splash
+    
+    def creer_cadre_defis(self):
+        self.frame = Frame(height=self.hauteur/2, width=self.largeur/2)
 
     def creer_cadre_lobby_reseau(self):
         pass
 
     def creer_cadre_lobby(self, local_ou_reseau, joueurs):
+        self.root.resizable(False,False)
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_lobby = Frame(self.root)
         self.canevas_lobby = Canvas(cadre_lobby,width=self.largeur,
@@ -175,6 +180,7 @@ class Vue:
         self.cadres["cadre_lobby"] = cadre_lobby
         
     def creer_cadre_jeu(self):
+        self.root.resizable(True,True)
         self.interface_panel = None
         self.toggle_menu_tour = None
         cadre_jeu = Frame(self.root)
