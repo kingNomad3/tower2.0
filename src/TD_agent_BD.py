@@ -38,7 +38,7 @@ class Agent_BD():
     def voir_defis(self, nom):
         cursor = self.conn.cursor()
         cursor.execute("SELECT * FROM joueurs_defis WHERE nom = (?)", (nom))
-        valeurs = cursor.fetchall()
+        valeurs = cursor.fetchall()[1]
         cursor.close()
         return valeurs
 

@@ -284,8 +284,6 @@ class Vue:
             self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
         self.controleur.creer_partie_locale(nom_joueur_courant)
 
-    # def ouvrir_bonus(self):
-    #     print("HELLOOOOOOO") 
     
     def activer_partie(self):
         self.controleur.activer_partie()
@@ -307,7 +305,6 @@ class Vue:
         print(event.keysym)
         
     def game_over(self):
-<<<<<<< HEAD
         fontStyleTitle = ("Gill Sans Ultra Bold", 14)
 
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
@@ -328,7 +325,6 @@ class Vue:
         label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
 
         self.frame_game_over.place(relx=0.5, rely=0.5, anchor="center")
-=======
         fontStyleTitle = ("Gill Sans Ultra Bold", 11)
         
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
@@ -349,7 +345,6 @@ class Vue:
         label_niveau_max.place(relx=0.5, rely=0.7, anchor="center")
         
         self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
->>>>>>> 1238767d8d91753a43bf156bb89583465d6066e1
         self.desactiver_btn()
 
     def dessiner_chateau(self):
@@ -391,6 +386,20 @@ class Vue:
             
             self.canvas.create_image((creep.pos_x * self.ratio_x, creep.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("creep", creep.id,))
 
+    def dessiner_explosions(self):
+        for i in self.modele.partie.explosions:
+            for j in i.nuages:
+                img = Image.open(j.img_src)
+                
+                img = img.resize((int(j.largemax), int(j.largemax)), Image.Resampling.NEAREST)
+                tk_img = ImageTk.PhotoImage(img)
+                
+                # Store the image reference to prevent garbage collection
+                self.images[j.id] = tk_img
+                
+                self.canvas.create_image((j.x1 * self.ratio_x, j.y1 * self.ratio_y), anchor='center', image=tk_img, tags=("dynamique","explosion",))
+                
+    
     def creer_tour(self, event):
         # on clic : créé un tour dans le modèle
         tour_largeur = Tour.largeur * self.ratio_x
@@ -415,7 +424,6 @@ class Vue:
 
     def dessiner_tours(self):
         # dessines les tours du modèle
-        self.canvas.delete('dynamique')
         for joueur in self.modele.partie.joueurs:
             for tour in self.modele.partie.joueurs[joueur].tours:
                 self.dessiner_icone_tour(tour)
@@ -590,11 +598,13 @@ class Vue:
 
     def dessiner_jeu(self):
         self.images = {}
+        self.canvas.delete('dynamique')
+        self.dessiner_explosions()
         self.dessiner_creeps()
         self.dessiner_projectiles()
+        self.dessiner_chateau()
         self.dessiner_tours()
         self.update_info_partie()
-        self.dessiner_chateau()
         self.desactiver_btn_tour()
 
     # Caller dans le controleur a chaque tick de boucle

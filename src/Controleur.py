@@ -20,6 +20,7 @@ class Controleur:
         self.on_joue = 1 # devient 0 si le serveur envoie un probleme de synchro
         self.actions_requises = [] # arrive via l'interface graphique
         self.tableau_choisi = None
+        
         #info reseau
         self.session = None
         self.modulo_appeler_serveur = 2     # on appelle le serveur mois souvent que la buocle de jeu

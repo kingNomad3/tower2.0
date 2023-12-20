@@ -40,9 +40,9 @@ class Partie:
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
         # self.vie = 100 - ((difficulte - 1) * 25)
-        self.vie = 1
-        # self.vie = 100 - ((difficulte - 1) * 25)
-        self.vie = 0
+        # self.vie = 1
+        self.vie = 100 - ((difficulte - 1) * 25)
+        # self.vie = 0
         self.delta_time = time.time()
         self.temps_derniere_vague = time.time()
         self.prochaine_vague()
