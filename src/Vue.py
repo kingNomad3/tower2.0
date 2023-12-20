@@ -95,7 +95,7 @@ class Vue:
         self.btninscrirejoueur.button.config(state=DISABLED)
         self.btninscrirejoueur.place(x=206, y=440, anchor="n")
         
-        self.btnreset = PacManButton(20, 1, "Reinitialiser partie", command=self.inscrire_joueur)
+        self.btnreset = PacManButton(20, 1, "Reinitialiser partie", command=self.reset_partie)
         self.btnreset.button.config(state=DISABLED)
         self.btnreset.place(x=206, y=480, anchor="n")
 
@@ -227,7 +227,7 @@ class Vue:
         if len(joueurs) == 2:
             self.label_joueur_coop.config(text=joueurs[1][0])
             if self.controleur.egoserveur == True:
-                self.btn_lancer_partie.config(state=NORMAL)
+                self.btn_lancer_partie.button.config(state=NORMAL)
 
     def creer_partie(self):
         nom = self.drop_nom.get()
