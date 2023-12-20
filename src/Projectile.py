@@ -111,14 +111,14 @@ class Eclair(Projectile):
     def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 15
-        self.dommage = 2 * niveau_tour
+        self.dommage = 0.25 * niveau_tour
         # niveau 3 a determiner
             
 class Poison(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):
         super().__init__(parent, pos_x, pos_y, cible, niveau_tour)
         self.vitesse = 8  
-        self.dommage = 0.5 * niveau_tour
+        self.dommage = 0.05 * niveau_tour
         
 class Balle(Projectile):
  def __init__(self, parent, pos_x, pos_y, cible, niveau_tour ):

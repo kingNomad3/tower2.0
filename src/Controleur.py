@@ -30,6 +30,7 @@ class Controleur:
         self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
 
+
     # pour du visuel et le modèle (en cas de besoin)
     def incrementer_timer(self):
         self.timer += 0.5 
@@ -47,7 +48,7 @@ class Controleur:
         self.actions_requises.append(action_demande)
     
     def ameliorer_tour(self, tag):
-        action_demande = [self.nom_joueur_local,"ameliorer_tour",[tag]]
+        action_demande = [self.nom_joueur_local, "ameliorer_tour", [tag]]
         self.actions_requises.append(action_demande)
         
     def generer_pseudo_nom(self):
@@ -251,7 +252,10 @@ class Controleur:
             self.on_joue = 1
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
         self.modele.partie.chrono = self.delai_de_boucle_de_jeu
-        self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+        if not self.partie.est_game_over():
+            self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+        else:
+            self.vue.game_over()
         
        # ACTION RECLAMEE À LA BASE DE DONNEE LOCALE
     def requerir_info(self, table, colonnes):

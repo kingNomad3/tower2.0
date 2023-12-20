@@ -2,6 +2,7 @@ from Tour import *
 from Creep import *
 import time
 from Chemin import *
+
 import json
 
 
@@ -21,7 +22,7 @@ class Partie:
         self.__tour_selectionne = None
         self.__vague = 0
         self.__fin_partie = False
-        self.__chrono = 0
+        self.__chrono = None
         self.__creeps_en_attente = []
         self.__liste_creeps = []
         self.actions_a_faire = {}        
@@ -29,10 +30,12 @@ class Partie:
         self.__creeps_tues = 0
         self.nuages = []
         self.joueurs = {}
+        self.creeps_tue_vague = 0
         for i in joueurs:
             self.joueurs[i] = Joueur(self,i)
         self.explosions = []
         #Appartient au modele ou classe Tableau
+
 
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
@@ -106,8 +109,13 @@ class Partie:
     def prochaine_vague(self):
         # pour chaque nouvelle vague
         self.__vague += 1
-       
+        self.__chrono = 0
         self.creer_creeps()
+        if self.__vague > 1:
+            a = self.__modele.controleur.nom_joueur_local
+            self.__modele.controleur.agent_bd.ajouter_aux_defis(a,  self.creeps_tue_vague)
+            self.creeps_tue_vague = 0
+
 
     def est_game_over(self) -> bool:
         # met le bool à jour et le retourne
@@ -117,6 +125,8 @@ class Partie:
     def remove_creep(self):
         for creep in self.__liste_creeps:
             if not creep.vivant:
+                if creep.vie <= 0:
+                    self.creeps_tue_vague += 1
                 self.__liste_creeps.remove(creep)
     
      #############################################################################

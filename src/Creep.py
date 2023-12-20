@@ -4,7 +4,6 @@ from effetVisuel import *
 
 class Creep:
     largeur = 45
-    
     def __init__(self, parent, pos_x, pos_y, niveau):
         self.__id = hp.Helper.creer_id()
         self.__cible = None
@@ -16,7 +15,7 @@ class Creep:
         self.__compteur_electrocute = 0
         self.__compteur_poison = 0
         self.__dmg_poison = 0.001
-        self.__dmg_electrocute = 0.05
+        self.__dmg_electrocute = 0.001
         self.__vivant = True
         self.__modele = parent
         self.__vie = 10 * niveau
@@ -30,11 +29,12 @@ class Creep:
         self.definir_attribut()
         self.nouvelle_cible()
         self.__explosion = None
+        self.compteur_creep_defi = 0
         
         
     def definir_attribut(self):
         attributs = ("poison", "relentissement", "electrocution")
-        self.__attribut = attributs[random.randint(0,len(attributs)-1)] if random.random() < 0.05 else None
+        self.__attribut = attributs[random.randint(0, len(attributs)-1)] if random.random() < 0.05 else None
 
     def bouger(self):
         self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle_target, self.__vitesse, self.__pos_x, self.__pos_y)
@@ -50,7 +50,6 @@ class Creep:
             # arrive au chateau
             elif self.__segment_actuel == len(self.__partie.chemin.segments):
                 self.__partie.perte_vie()
-
                 self.__vivant = False
                 
     def recoit_coup(self, dommage):
@@ -59,6 +58,12 @@ class Creep:
             self.__vivant = False
             self.__partie.argent_courant += self.valeur_argent
             self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
+
+    
+    
+    def defi_tuer_creep(self):
+        self.__partie.creeps_tue_vague += 1
+     
 
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
@@ -80,7 +85,7 @@ class Creep:
                 self.__compteur_electrocute += 1
             self.__vie -= self.__dmg_electrocute
 
-        if self.__compteur_electrocute == 3:
+        if self.__compteur_electrocute % 50 == 0:
             self.__compteur_electrocute == 0
             self.est_electrocute = False
 

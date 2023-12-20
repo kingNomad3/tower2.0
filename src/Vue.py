@@ -535,10 +535,10 @@ class Vue:
     # Caller dans le controleur a chaque tick de boucle
     # Update les valeurs dynamique du InterfacePannel    
     def update_info_partie(self):
-        self.interface_panel.chrono_info['text'] = str(round(self.modele.partie.chrono))
-        self.interface_panel.vague_info['text'] = str(self.modele.partie.vague)
-        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie)
-        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant)
+        self.interface_panel.chrono_info['text'] = str(round(self.modele.partie.chrono)) + "s"
+        self.interface_panel.vague_info['text'] = "lvl" + str(self.modele.partie.vague)
+        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie) + "HP"
+        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant) + "$"
         
     # Dessine InterfacePannel et le Bouton ChoixTour
     def dessiner_interface_info(self):        

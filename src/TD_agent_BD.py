@@ -12,9 +12,29 @@ class Agent_BD():
             CREATE TABLE IF NOT EXISTS joueurs_locaux (
                 id INTEGER PRIMARY KEY,
                 nom TEXT,
-                date DATE
-            )
+                date DATE                
+            )           
         ''')
+        self.cursor.execute('''
+               CREATE TABLE IF NOT EXISTS joueurs_defis (
+                   nom TEXT PRIMARY KEY,                    
+                   creeps_tue INTEGER                
+               )           
+           ''')
+
+    def ajouter_aux_defis(self, nom, creeps_tue):
+        cursor = self.conn.cursor()
+        # Execute une requete qui insere le nom du joueur et la date courante d'inscription
+        cursor.execute("INSERT INTO joueurs_defis (nom, creeps_tue) VALUES (?, ?) ON CONFLICT (nom) DO UPDATE SET creeps_tue = EXCLUDED.creeps_tue + joueurs_defis.creeps_tue ", (nom, creeps_tue))
+        self.conn.commit()
+        cursor.close()
+
+    def voir_defis(self, nom):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM joueurs_defis WHERE nom = (?)", (nom))
+        nb_creeps_tues = cursor.fetchall()
+        cursor.close()
+        return nb_creeps_tues
 
     def chercher_usagers(self):
         cursor = self.conn.cursor()
