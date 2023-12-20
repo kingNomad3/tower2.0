@@ -39,7 +39,7 @@ class Partie:
 
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
-        self.vie = 20
+        self.vie = 1
         self.delta_time = time.time()
         self.temps_derniere_vague = time.time()
         self.prochaine_vague()

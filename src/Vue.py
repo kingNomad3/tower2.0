@@ -294,10 +294,18 @@ class Vue:
         fontStyleTitle = ("Gill Sans Ultra Bold", 14)
         
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
+        
+        img = Image.open("./img/game_over.png")
+        img = ImageTk.PhotoImage(img)
+        label_img = Label(self.frame_game_over, image=img)
+        label_img.place(relx=0.5, rely=0.2, anchor="center")
+        
         label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_partie_termine.place(relx=0.5, rely=0.4, anchor="center")
-        label_score = Label(self.frame_game_over, text=f'score : 0', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        
+        label_score = Label(self.frame_game_over, text=f'score : {self.modele.partie.score}', bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_score.place(relx=0.5, rely=0.5, anchor="center")
+        
         label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
         
