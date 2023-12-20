@@ -86,7 +86,7 @@ class Vue:
         # on les place sur le canevas_splash
         self.canevas_splash.create_window(200, 250, window=self.url_initial, width=270, height=30)
         self.btnurlconnect.place(x=206, y=300,anchor="n")
-        self.canevas_splash.create_window(206, 360, window=self.etat_du_jeu, width=170, height=30)
+        self.canevas_splash.create_window(206, 360, window=self.etat_du_jeu, width=310, height=30)
 
         # section pour partie reseau
         self.btncreerpartie = PacManButton(20, 1, "Creer partie reseau", command=self.creer_partie)
@@ -158,6 +158,8 @@ class Vue:
         self.quitter_defis.destroy()
 
     def creer_cadre_lobby(self, local_ou_reseau, joueurs):
+        fontStyleTitle = ("Gill Sans Ultra Bold", 11)
+        
         self.root.resizable(False,False)
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_lobby = Frame(self.root)
@@ -181,29 +183,28 @@ class Vue:
         self.btn_lancer_partie.place(x=600, y=400, anchor="center")    
         #                               command=self.lancer_partie,)
         self.canevas_lobby.create_window(600,400,anchor="center", window=self.btn_lancer_partie)
-        # NE FONCTIONNE PAS SI BUTTON TO PACMANBUTTON
         
 
         if local_ou_reseau == "reseau":
             if len(joueurs)== 1:
-                self.canevas_lobby.create_text(200,200,text="Createur de la partie")
+                self.canevas_lobby.create_text(200,490,text="Createur de la partie", font=fontStyleTitle, fill='yellow')
                 joueur_createur = joueurs[0][0]
-                self.label_joueur_createur = Label(self.canevas_lobby,text = joueur_createur)
-                self.canevas_lobby.create_window(200,250,window=self.label_joueur_createur)
+                self.label_joueur_createur = Label(self.canevas_lobby,text = joueur_createur, font=fontStyleTitle, fg='black')
+                self.canevas_lobby.create_window(200,520,window=self.label_joueur_createur)
             #
-                self.canevas_lobby.create_text(500, 200, text="Joueur Coop de la partie")
-                self.label_joueur_coop = Label(self.canevas_lobby, text="Inconnu")
-                self.canevas_lobby.create_window(500, 250, window=self.label_joueur_coop)
+                self.canevas_lobby.create_text(1050, 490, text="Joueur Coop de la partie", font=fontStyleTitle, fill='yellow')
+                self.label_joueur_coop = Label(self.canevas_lobby, text="Inconnu", font=fontStyleTitle, fg='black')
+                self.canevas_lobby.create_window(1050, 520, window=self.label_joueur_coop)
             else:
-                self.canevas_lobby.create_text(200,200,text="Createur de la partie")
+                self.canevas_lobby.create_text(200,490,text="Createur de la partie", font=fontStyleTitle)
                 joueur_createur = joueurs[0][0]
                 self.label_joueur_createur = Label(self.canevas_lobby,text = joueur_createur)
-                self.canevas_lobby.create_window(200,250,window=self.label_joueur_createur)
+                self.canevas_lobby.create_window(200,520,window=self.label_joueur_createur)
             #
-                self.canevas_lobby.create_text(500, 200, text="Joueur Coop de la partie")
+                self.canevas_lobby.create_text(1050, 490, text="Joueur Coop de la partie", font=fontStyleTitle)
                 joueur_coop = joueurs[1][0]
                 self.label_joueur_coop = Label(self.canevas_lobby, text=joueur_coop)
-                self.canevas_lobby.create_window(500, 250, window=self.label_joueur_coop)
+                self.canevas_lobby.create_window(1050, 520, window=self.label_joueur_coop)
                 self.btn_lancer_partie.button.config(state="disabled")
         else:
             self.btn_lancer_partie.button.config(command=self.lancer_partie_locale)
