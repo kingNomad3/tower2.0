@@ -24,7 +24,7 @@ class Agent_BD():
                    credits INTEGER DEFAULT 0                
                )           
            ''')
-        # self.populate_defis()
+        self.populate_defis()
         
     def populate_defis(self):
         cursor = self.conn.cursor()
@@ -36,7 +36,6 @@ class Agent_BD():
         cursor = self.conn.cursor()
         # Execute une requete qui insere le nom du joueur et la date courante d'inscription
         try:
-            # Execute a query to update the "creeps_tue" column
             cursor.execute("UPDATE joueurs_defis SET creeps_tue = creeps_tue + ? WHERE nom = ?", (creeps_tue, nom))
             self.conn.commit()
         except sqlite3.Error as e:
@@ -52,6 +51,7 @@ class Agent_BD():
         cursor = self.conn.cursor()
         cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom,))
         valeurs = cursor.fetchall()[0][0]
+        print(valeurs)
         cursor.close()
         return valeurs
 

@@ -132,13 +132,15 @@ class Partie:
         for i in actionsrecues:
             iteration_cle = i[0]
             if (iteration - 1) > int(iteration_cle):
-                action = json.loads(i[1])
+                print("PEUX PASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+            action = json.loads(i[1])
             if action:
                 if iteration_cle not in self.actions_a_faire.keys():
                     self.actions_a_faire[iteration_cle] = action
                 else:
                     for j in action:
                         self.actions_a_faire[iteration_cle].append(j)
+
     ##############################################################################
 
     def jouer_coup(self, iteration):
