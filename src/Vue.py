@@ -285,7 +285,18 @@ class Vue:
         print(event.keysym)
         
     def game_over(self):
-        pass
+        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        
+        self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
+        label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_partie_termine.place(relx=0.5, rely=0.4, anchor="center")
+        label_score = Label(self.frame_game_over, text=f'score : 0', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_score.place(relx=0.5, rely=0.5, anchor="center")
+        label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
+        
+        self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
+        self.desactiver_btn()
 
     def dessiner_chateau(self):
         self.canvas.delete("chateau")
@@ -535,10 +546,10 @@ class Vue:
     # Caller dans le controleur a chaque tick de boucle
     # Update les valeurs dynamique du InterfacePannel    
     def update_info_partie(self):
-        self.interface_panel.chrono_info['text'] = str(round(self.modele.partie.chrono)) + "s"
-        self.interface_panel.vague_info['text'] = "lvl" + str(self.modele.partie.vague)
-        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie) + "HP"
-        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant) + "$"
+        self.interface_panel.chrono_info['text'] = str(round(self.modele.partie.chrono)) + " s"
+        self.interface_panel.vague_info['text'] = "lvl " + str(self.modele.partie.vague)
+        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie) + " HP"
+        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant) + " $"
         
     # Dessine InterfacePannel et le Bouton ChoixTour
     def dessiner_interface_info(self):        
@@ -564,6 +575,15 @@ class Vue:
         self.toggle_radius = PacManButton(int(20*self.ratio_x), int(1*self.ratio_y), "Afficher champ d'action", command=self.toggle_champ_action)
         self.toggle_radius.place(x=self.largeur-27 * self.ratio_x, y=self.hauteur - 20 * self.ratio_y, anchor="se")
         
+    def desactiver_btn(self):
+        self.menu_tour.activation_to.button.config(state = DISABLED)
+        self.menu_tour.activation_te.button.config(state = DISABLED)
+        self.menu_tour.activation_tg.button.config(state = DISABLED)
+        self.menu_tour.activation_tp.button.config(state = DISABLED)
+        self.menu_tour.activation_tm.button.config(state = DISABLED) 
+        self.menu_tour.activation_tc.button.config(state = DISABLED)
+        self.toggle_radius.button.config(state = DISABLED)
+
         
     def desactiver_btn_tour(self):
         if TourMitrailleuse.COUT <= self.modele.partie.argent_courant:
