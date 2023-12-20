@@ -110,9 +110,25 @@ class Vue:
         self.btn_ouvrir_bonus.place(x=1000, y=280,anchor="n")
         
         return cadre_splash
+        
+    def ouvrir_bonus(self):
+        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        
+        self.frame_game_over = Frame(self.root, width=self.largeur, height=self.hauteur, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
+        self.canevas_splash = Canvas(self.frame_game_over,width=self.largeur,
+                              height=self.hauteur,bg="black")
+        self.img_defis= ImageTk.PhotoImage(Image.open("img/defis.png"))
+        self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img_defis)
+        self.canevas_splash.pack()
+        
+        self.quitter_defis = PacManButton(20, 1, "Quitter", command=self.effacer_fenetre_defis)
+        self.quitter_defis.place(relx=0.5, rely=0.9,anchor="n")
+        
+        self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
     
-    def creer_cadre_defis(self):
-        self.frame = Frame(height=self.hauteur/2, width=self.largeur/2)
+    def effacer_fenetre_defis(self):
+        self.frame_game_over.destroy()
+        self.quitter_defis.destroy()
 
     def creer_cadre_lobby(self, local_ou_reseau, joueurs):
         self.root.resizable(False,False)
@@ -268,8 +284,8 @@ class Vue:
             self.controleur.agent_bd.ajouter_aux_usagers_locaux(nom_joueur_courant)
         self.controleur.creer_partie_locale(nom_joueur_courant)
 
-    def ouvrir_bonus(self):
-        pass #self.afficher_cadre("cadre_jeu")   
+    # def ouvrir_bonus(self):
+    #     print("HELLOOOOOOO") 
     
     def activer_partie(self):
         self.controleur.activer_partie()

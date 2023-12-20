@@ -31,8 +31,8 @@ class Agent_BD():
         
         cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom,))
         nb_creeps_tues = cursor.fetchall()
-        if nb_creeps_tues > 1000000:
-            cursor.execute("INSERT INTO joueurs_defis (credits) VALUES (500)")
+        if nb_creeps_tues[0][0] > 1000000:
+            cursor.execute("INSERT INTO joueurs_defis (credits) VALUES (500) WHERE nom = (?)", (nom, ))
         cursor.close()
 
     def voir_defis(self, nom):

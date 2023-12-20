@@ -113,7 +113,7 @@ class Partie:
         if self.__vague > 1:
             nom = self.__modele.controleur.nom_joueur_local
             self.__modele.controleur.agent_bd.ajouter_aux_defis(nom,  self.creeps_tue_vague)
-            self.score = self.__vague * self.creeps_tue_vague + 50
+            self.score += self.__vague * self.creeps_tue_vague + 50
             self.creeps_tue_vague = 0
             print(self.score)
 
