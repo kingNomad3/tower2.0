@@ -56,7 +56,6 @@ class Vue:
         self.canevas_splash = Canvas(cadre_splash,width=self.largeur,
                               height=self.hauteur,bg="black")
         # section Titre
-        # Logo https://text.imageonline.co/ ////////////////////////////////////////////////////// Effacer
         self.img= ImageTk.PhotoImage(Image.open("img/logo.png"))
         self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img)
         self.canevas_splash.pack()
@@ -112,22 +111,51 @@ class Vue:
         return cadre_splash
         
     def ouvrir_bonus(self):
-        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        fontStyleTitle = ("Gill Sans Ultra Bold", 11)
         
-        self.frame_game_over = Frame(self.root, width=self.largeur, height=self.hauteur, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
-        self.canevas_splash = Canvas(self.frame_game_over,width=self.largeur,
+        self.frame_defis = Frame(self.root, width=self.largeur, height=self.hauteur, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
+        self.canevas_splash = Canvas(self.frame_defis,width=self.largeur,
                               height=self.hauteur,bg="black")
         self.img_defis= ImageTk.PhotoImage(Image.open("img/defis.png"))
         self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img_defis)
         self.canevas_splash.pack()
-                
+        
+        
+        # Carrées
+        self.canevas_splash.create_rectangle(100,150,600,330, outline='orange', width=1)
+        self.canevas_splash.create_rectangle(120,170,580,310, outline='orange', width=4)
+        
+        self.canevas_splash.create_rectangle(100,370,600,550, outline='yellow2', width=1)
+        self.canevas_splash.create_rectangle(120,390,580,530, outline='yellow2', width=4)
+        
+        self.canevas_splash.create_rectangle(650,150,1150,330, outline='DeepSkyBlue1', width=1)
+        self.canevas_splash.create_rectangle(670,170,1130,310, outline='DeepSkyBlue1', width=4)
+        
+        self.canevas_splash.create_rectangle(650,370,1150,550, outline='hot pink', width=1)
+        self.canevas_splash.create_rectangle(670,390,1130,530, outline='hot pink', width=4)
+        
+        # Texte
+        
+        # f'Tuer 1 million de creep : {progress} / 1 000 000'
+        # f'Pas encore débloqué'
+        
+        self.canevas_splash.create_text(350, 225, text=f'Tuer 1 million de creep : progress / 1 000 000', fill='white', font=fontStyleTitle)
+        self.canevas_splash.create_text(350, 250, text=f'Récompense : 500 crédits', fill='orange', font=fontStyleTitle)
+        
+        self.canevas_splash.create_text(350, 450, text=f'Pas encore débloqué', fill='yellow2', font=fontStyleTitle)
+        
+        self.canevas_splash.create_text(900, 250, text=f'Pas encore débloqué', fill='DeepSkyBlue1', font=fontStyleTitle)
+        
+        self.canevas_splash.create_text(900, 450, text=f'Pas encore débloqué', fill='hot pink', font=fontStyleTitle)
+
+        # Quitter
         self.quitter_defis = PacManButton(20, 1, "Quitter", command=self.effacer_fenetre_defis)
         self.quitter_defis.place(relx=0.5, rely=0.9,anchor="n")
         
-        self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
+        self.frame_defis.place(relx = 0.5, rely=0.5, anchor="center")
     
     def effacer_fenetre_defis(self):
-        self.frame_game_over.destroy()
+        self.frame_defis.destroy()
         self.quitter_defis.destroy()
 
     def creer_cadre_lobby(self, local_ou_reseau, joueurs):
@@ -321,13 +349,22 @@ class Vue:
         
         label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_partie_termine.place(relx=0.5, rely=0.6, anchor="center")
-        label_score = Label(self.frame_game_over, text=f'score : 0', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_score = Label(self.frame_game_over, text=f'Score : 0', bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_score.place(relx=0.5, rely=0.7, anchor="center")
-        label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_niveau_max.place(relx=0.5, rely=0.7, anchor="center")
+        label_niveau_max = Label(self.frame_game_over, text=f'Niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_niveau_max.place(relx=0.5, rely=0.8, anchor="center")
+        
+        self.quitter_jeu = PacManButton(20, 1, "Quitter", command=self.quitter_jeu_over)
+        self.quitter_jeu.place(relx=0.5, rely=0.73,anchor="n")
         
         self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
         self.desactiver_btn()
+
+    def quitter_jeu_over(self):
+        self.destroy_menu_tour()
+        self.frame_game_over.destroy()
+        self.quitter_jeu.destroy()
+        self.afficher_cadre("cadre_splash")
 
     def dessiner_chateau(self):
         self.canvas.delete("chateau")
