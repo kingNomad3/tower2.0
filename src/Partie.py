@@ -30,6 +30,7 @@ class Partie:
         self.__creeps_tues = 0
         self.nuages = []
         self.joueurs = {}
+        self.creeps_tue_vague = 0
         for i in joueurs:
             self.joueurs[i] = Joueur(self,i)
         self.explosions = []
@@ -110,6 +111,11 @@ class Partie:
         self.__vague += 1
         self.__chrono = 0
         self.creer_creeps()
+        if self.__vague > 1:
+            a = self.__modele.controleur.nom_joueur_local
+            self.__modele.controleur.agent_bd.ajouter_aux_defis(a,  self.creeps_tue_vague)
+            self.creeps_tue_vague = 0
+
 
     def est_game_over(self) -> bool:
         # met le bool à jour et le retourne
@@ -119,6 +125,8 @@ class Partie:
     def remove_creep(self):
         for creep in self.__liste_creeps:
             if not creep.vivant:
+                if creep.vie <= 0:
+                    self.creeps_tue_vague += 1
                 self.__liste_creeps.remove(creep)
     
      #############################################################################

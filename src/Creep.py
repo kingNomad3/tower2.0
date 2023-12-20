@@ -34,7 +34,7 @@ class Creep:
         
     def definir_attribut(self):
         attributs = ("poison", "relentissement", "electrocution")
-        self.__attribut = attributs[random.randint(0,len(attributs)-1)] if random.random() < 0.05 else None
+        self.__attribut = attributs[random.randint(0, len(attributs)-1)] if random.random() < 0.05 else None
 
     def bouger(self):
         self.__pos_x, self.__pos_y = hp.Helper.getAngledPoint(self.__angle_target, self.__vitesse, self.__pos_x, self.__pos_y)
@@ -58,12 +58,11 @@ class Creep:
             self.__vivant = False
             self.__partie.argent_courant += self.valeur_argent
             self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
-            self.defi_tuer_creep()
+
     
     
     def defi_tuer_creep(self):
-     self.compteur_creep_defi += 1
-     print("creep remove",self.compteur_creep_defi)  
+        self.__partie.creeps_tue_vague += 1
      
 
     def nouvelle_cible(self):
