@@ -1,8 +1,9 @@
 import random
+import helper as hp
+
 
 def rgb_to_hex( r, g, b):
     return '#{:02x}{:02x}{:02x}'.format(r, g, b)
-
 
 class Explosion():
     def __init__(self,parent,x,y):
@@ -30,14 +31,15 @@ class Explosion():
 
 class Nuage():
     def __init__(self,parent,x,y):
+        self.id = hp.Helper.creer_id()
         self.parent = parent
         self.vitesse = random.randrange(3)+1
         nl = 20
         nl2 = int(nl / 2)
         self.x = x+random.randrange(nl)-nl2
         self.y = y+random.randrange(nl)-nl2
-        self.largemax = random.randrange(10,30)
-        self.couleur = rgb_to_hex(random.randrange(220,240), random.randrange(5,220), 3)
+        self.largemax = random.randrange(10,45)
+        self.img_src = f'./img/polygone_{random.randint(1,3)}.png'
         self.large = 2
         self.x1 = self.x - self.large
         self.x2 = self.x + self.large

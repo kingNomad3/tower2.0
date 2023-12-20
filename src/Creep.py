@@ -56,7 +56,7 @@ class Creep:
         if self.__vie <= 0:
             self.__vivant = False
             self.__partie.argent_courant += self.valeur_argent
-            self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
+            self.__partie.explosions.append(Explosion(self.__partie, self.__pos_x,self.__pos_y))
 
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]

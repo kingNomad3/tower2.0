@@ -8,7 +8,8 @@ from TD_agent_BD import *
 
 class Controleur:
     def __init__(self):
-        self.nom_joueur_local = ""
+        self.agent_bd = Agent_BD(self)
+        self.nom_joueur_local = self.agent_bd.chercher_usagers()[1]
         self.modele = Modele(self) # fonction au bas de la page, devrait être envoyée par la vue
         self.partie = None
         self.timer = 0
@@ -19,16 +20,18 @@ class Controleur:
         self.on_joue = 1 # devient 0 si le serveur envoie un probleme de synchro
         self.actions_requises = [] # arrive via l'interface graphique
         self.tableau_choisi = None
+        
         #info reseau
         self.session = None
         self.modulo_appeler_serveur = 2     # on appelle le serveur mois souvent que la buocle de jeu
         self.delai_de_boucle_de_jeu = 20    # millisecondes avant que la boucle_de_jeu se rappelle      
         self.url_serveur = None
-        self.agent_bd = Agent_BD(self)
+        
         #vue
         self.vue = Vue(self, self.nom_joueur_local)
         self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
+
 
     # pour du visuel et le modèle (en cas de besoin)
     def incrementer_timer(self):

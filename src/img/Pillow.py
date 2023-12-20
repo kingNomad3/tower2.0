@@ -5,15 +5,15 @@ taille = 70
 #################################### PACMAN ############################################
 
 # ---- PIL.Image.new(mode, size, color)
-## im = Image.new('RGB', (400, 400), (250, 0, 0))
+# im = Image.new('RGB', (400, 400), (250, 0, 0))
 # img = Image.new('RGBA', (taille, taille), (255, 0, 0, 0))
 
 # draw = ImageDraw.Draw(img)
 # draw.ellipse((0, 0, taille-1, taille-1), fill=(0, 0, 255))
-# draw.pieslice((0, 0, taille-1, taille-1), start=25, end=325, fill=(255, 255, 0), outline=(0, 0, 0))
+# draw.pieslice((0, 0, taille-1, taille-1), start=25, end=325, fill=(255, 69, 0), outline=(0, 0, 0), width=2)
 
 # img.save('test.gif', 'GIF', transparency=0)
-# img.save('pacman.png', 'PNG')
+# img.save('./img/pacman_up2.png', 'PNG')
 
 
 ################################### FANTOME ############################################
