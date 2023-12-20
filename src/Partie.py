@@ -21,13 +21,14 @@ class Partie:
         self.__modele = parent
         self.__tour_selectionne = None
         self.__vague = 0
+        self.max__vague = 50 + ((difficulte - 1) * 25)
+        self.score = 0
         self.__fin_partie = False
         self.__chrono = None
         self.__creeps_en_attente = []
         self.__liste_creeps = []
         self.actions_a_faire = {}        
         self.__pause = False
-        self.__creeps_tues = 0
         self.nuages = []
         self.joueurs = {}
         self.creeps_tue_vague = 0
@@ -39,7 +40,7 @@ class Partie:
 
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
-        self.vie = 1
+        self.vie = 100 - ((difficulte - 1) * 25)
         self.delta_time = time.time()
         self.temps_derniere_vague = time.time()
         self.prochaine_vague()
@@ -90,11 +91,9 @@ class Partie:
     @tableau.setter
     def tableau(self, value):
         self.__tableau = value
-        
-
 
     def creer_creeps(self):
-        self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[self.__tableau][0][0], self.__chemin.pivots[self.__tableau][0][1],self.__vague) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
+        self.__creeps_en_attente = [Creep(self, self.__chemin.pivots[self.__tableau][0][0], self.__chemin.pivots[self.__tableau][0][1], self.__vague, self.__difficulte) for i in range(Partie.NOMBRE_CREEPS_VAGUE)]
 
     def creeps_apparaissent(self):
         if self.__creeps_en_attente:
@@ -104,7 +103,6 @@ class Partie:
     def perte_vie(self):
         # châtelains...
         self.vie -= 1
-        # print(self.vie)
 
     def prochaine_vague(self):
         # pour chaque nouvelle vague
@@ -112,9 +110,12 @@ class Partie:
         self.__chrono = 0
         self.creer_creeps()
         if self.__vague > 1:
-            a = self.__modele.controleur.nom_joueur_local
-            self.__modele.controleur.agent_bd.ajouter_aux_defis(a,  self.creeps_tue_vague)
+            nom = self.__modele.controleur.nom_joueur_local
+            self.__modele.controleur.agent_bd.ajouter_aux_defis(nom,  self.creeps_tue_vague)
+            self.score = self.__vague * self.creeps_tue_vague + 50
             self.creeps_tue_vague = 0
+            print(self.score)
+
 
 
     def est_game_over(self) -> bool:
@@ -161,11 +162,6 @@ class Partie:
                 self.creeps_apparaissent() #TODO a comprendre
                 self.delta_time = time.time()
 
-
-        if self.est_game_over():
-            pass
-            self.modele.controleur.traiter_gameover()
-
         for creep in self.__liste_creeps:
             creep.bouger()
             creep.maj_vie()
@@ -186,7 +182,8 @@ class Partie:
         
         if (maintenant := time.time()) - self.temps_derniere_vague >= Partie.DUREE_VAGUE and not self.__liste_creeps:
             self.temps_derniere_vague = maintenant
-            self.prochaine_vague()
+            if not self.est_game_over():
+                self.prochaine_vague()
 
     def supprimer_explosion(self, explosion):
         if explosion in self.explosions:

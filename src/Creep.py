@@ -4,7 +4,7 @@ from effetVisuel import *
 
 class Creep:
     largeur = 45
-    def __init__(self, parent, pos_x, pos_y, niveau):
+    def __init__(self, parent, pos_x, pos_y, niveau, difficulte):
         self.__id = hp.Helper.creer_id()
         self.__cible = None
         self.__angle_target = None
@@ -18,7 +18,7 @@ class Creep:
         self.__dmg_electrocute = 0.001
         self.__vivant = True
         self.__modele = parent
-        self.__vie = 10 * niveau
+        self.__vie = 10 * (niveau * difficulte) / 2
         self.valeur_gold = 20 * niveau
         self.__pos_x = pos_x
         self.__pos_y = pos_y
