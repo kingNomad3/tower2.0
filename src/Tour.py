@@ -17,7 +17,7 @@ class Tour:
         self.__cout_amelioration = self.__cout * self.__niveau_amelioration 
         self.__cible = None # Contient un Creep, a chaque fois qu'on attaque, on verifie si la cible existe encore/est encore dans le range, sinon on trouve une nouvelle cible. Permet de passer la cible aux projectiles.
         self.__combine = None
-        self.__img_src = "./img/pacman.png"
+        self.__img_src = f'./img/pacman_{self.__niveau_amelioration}.png'
 
     @property
     def id(self):
@@ -62,6 +62,7 @@ class Tour:
     @niveau_amelioration.setter
     def niveau_amelioration(self, niveau_amelioration):
         self.__niveau_amelioration = niveau_amelioration
+        self.__img_src = f'./img/pacman_{self.__niveau_amelioration}.png'
 
     @property
     def cout(self):
@@ -107,9 +108,6 @@ class Tour:
     def colonne(self,valeur):
         self.__colonne = valeur
 
-    def ameliorer_tour(self):
-        if self.verifcation_cout_amelioration():
-            self.__niveau_amelioration += 1
 
     def verifcation_cout_amelioration(self):
         return self.__joueur.partie.argent_courant - self.__cout_amelioration >= 0
@@ -183,6 +181,7 @@ class TourAttaque(Tour):
 
 
 class TourMitrailleuse(TourAttaque):
+    COUT = 600
     def __init__(self, parent, pos_x, pos_y):
         # p1 : parent, p2 : rayon (le même pour toutes les tours de ce type), p3 et p4 : positions, p5 : niveau 1 en partant (amélioration générale possible??)
         # p6 : coût (amélioration générale possible??), éventuel p7 : vie (si on fait perdre de la vie à nos tours)
@@ -198,6 +197,7 @@ class TourMitrailleuse(TourAttaque):
 
 
 class TourEclair(TourAttaque):
+    COUT = 1000
     def __init__(self, parent, pos_x, pos_y):
        super().__init__(parent, 40, pos_x, pos_y, 7, 1, 1000)
        self.background_src = "./img/tour_eclair.png"
@@ -211,6 +211,7 @@ class TourEclair(TourAttaque):
 
 
 class TourPoison(TourAttaque):
+    COUT = 800
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 50, pos_x, pos_y, 5, 1, 800)
         self.background_src = "./img/tour_poison.png"
@@ -224,6 +225,7 @@ class TourPoison(TourAttaque):
 
 
 class TourGrenade(TourAttaque):
+    COUT = 2000
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 50, pos_x, pos_y, 10, 1, 2000) 
         self.background_src = "./img/tour_grenade.png"
@@ -237,6 +239,7 @@ class TourGrenade(TourAttaque):
 
 
 class TourMine(TourAttaque):
+    COUT = 1800
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 40, pos_x, pos_y, 12, 1, 1800)
         self.background_src = "./img/tour_mine.png"
@@ -253,6 +256,7 @@ class TourMine(TourAttaque):
 
 
 class TourCanon(TourAttaque):
+    COUT = 3000
     def __init__(self, parent, pos_x, pos_y):
         super().__init__(parent, 60, pos_x, pos_y, 15, 1, 3000) 
         self.background_src = "./img/tour_canon.png"

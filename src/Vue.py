@@ -34,6 +34,8 @@ class Vue:
         self.tag_bouton_choisi = None
         self.tour_choisi = None
         self.btn_upgrade = None
+        self.champ_action_toggled = False
+        self.toggle_radius = None
         
     def afficher_cadre(self,cadre_demande):
         if self.cadre_courant:
@@ -45,6 +47,7 @@ class Vue:
         self.cadres["cadre_splash"] = self.creer_cadre_splash(nom_joueur_local)
         
     def creer_cadre_splash(self, nom_joueur_local):
+        self.root.resizable(False,False)
         fontStyleTitle = ("Gill Sans Ultra Bold", 14)
         fontStyle = ("Gill Sans Ultra Bold", 10)
         
@@ -107,11 +110,12 @@ class Vue:
         self.btn_ouvrir_bonus.place(x=1000, y=280,anchor="n")
         
         return cadre_splash
-
-    def creer_cadre_lobby_reseau(self):
-        pass
+    
+    def creer_cadre_defis(self):
+        self.frame = Frame(height=self.hauteur/2, width=self.largeur/2)
 
     def creer_cadre_lobby(self, local_ou_reseau, joueurs):
+        self.root.resizable(False,False)
         # cadre pour toute la fenetre, contient 2 aires distinctes
         cadre_lobby = Frame(self.root)
         self.canevas_lobby = Canvas(cadre_lobby,width=self.largeur,
@@ -169,12 +173,13 @@ class Vue:
             x = x + 120
             no_tablo = rang
             self.btn_tablo = PacManButton(8, 1, f"Tableau {no_tablo}", command="")
-            self.btn_tablo.button.bind("<Button>",self.choisir_tablo)
+            self.btn_tablo.button.bind("<Button>", self.choisir_tablo)
             self.btn_tablo.place(x=x-50, y=y, anchor="center")
         ##
         self.cadres["cadre_lobby"] = cadre_lobby
         
     def creer_cadre_jeu(self):
+        self.root.resizable(True,True)
         self.interface_panel = None
         self.toggle_menu_tour = None
         cadre_jeu = Frame(self.root)
@@ -284,6 +289,20 @@ class Vue:
 
     def skip(self, event):
         print(event.keysym)
+        
+    def game_over(self):
+        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        
+        self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
+        label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_partie_termine.place(relx=0.5, rely=0.4, anchor="center")
+        label_score = Label(self.frame_game_over, text=f'score : 0', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_score.place(relx=0.5, rely=0.5, anchor="center")
+        label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
+        label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
+        
+        self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
+        self.desactiver_btn()
 
     def dessiner_chateau(self):
         self.canvas.delete("chateau")
@@ -346,7 +365,6 @@ class Vue:
                 self.dessiner_icone_tour(self.modele.partie.joueurs[self.controleur.nom_joueur_local].tours[-1])  # dessine la dernière tour mise
             self.canvas.unbind("<Button>", self.creation) #unbin apres avoir poser une tour
 
-
     def dessiner_tours(self):
         # dessines les tours du modèle
         self.canvas.delete('dynamique')
@@ -361,9 +379,6 @@ class Vue:
         y = tour.pos_y * self.ratio_y
         tour_largeur = size * self.ratio_x
         tour_hauteur = size * self.ratio_y
-        tour_radius_x = tour.champ_action * self.ratio_x
-        tour_radius_y = tour.champ_action * self.ratio_y
-        radius_largeur = 1 * (self.ratio_y + self.ratio_x) / 2
         
         img = Image.open(tour.img_src)
         img = img.resize((int(tour_largeur), int(tour_hauteur)), Image.Resampling.NEAREST)
@@ -387,22 +402,51 @@ class Vue:
 
         self.canvas.create_image((x, y), anchor='center',
                                     image=tk_img, tags=('tour','dynamique',tour.id, ))
-
-        self.canvas.create_oval(x - tour_radius_x, y - tour_radius_y, x + tour_radius_x,
-                               y + tour_radius_y,
-                                dash= (3,5), fill="", width= radius_largeur, tags=('tour_radius', 'dynamique'), outline="lightblue")
     
         self.canvas.tag_bind('tour', "<Button>", self.selectionne_tour)
 
-        self.canvas.tag_lower('tour_radius')
         self.canvas.tag_lower('chemin')
-        self.canvas.tag_lower('chemin_outline')      
+        self.canvas.tag_lower('chemin_outline')  
+        
+    # Permet d'afficher le champ d'action des tours.  
+    
+    def toggle_champ_action(self):
+        if not self.champ_action_toggled:
+            for joueur in self.modele.partie.joueurs:
+                for tour in self.modele.partie.joueurs[joueur].tours:
+                    self.dessiner_champ_action(tour)
+                    self.champ_action_toggled = True
+        else:
+            self.canvas.delete('tour_radius')
+            self.champ_action_toggled = False      
+    
+    def dessiner_champ_action(self, tour, select = False):
+        x = tour.pos_x * self.ratio_x
+        y = tour.pos_y * self.ratio_y
+        
+        tour_radius_x = tour.champ_action * self.ratio_x
+        tour_radius_y = tour.champ_action * self.ratio_y
+        radius_largeur = 1 * (self.ratio_y + self.ratio_x) / 2  
+        
+        if not select:
+            self.canvas.create_oval(x - tour_radius_x, y - tour_radius_y, x + tour_radius_x,
+                                y + tour_radius_y,
+                                dash= (3,5), fill="", width= radius_largeur, tags=('tour_radius'), outline="lightblue")
+        else:
+            self.canvas.create_oval(x - tour_radius_x, y - tour_radius_y, x + tour_radius_x,
+                                y + tour_radius_y,
+                                dash= (3,5), fill="", width= radius_largeur + 2, tags=('tour_radius_select'), outline="limegreen")
+            
+        
+        self.canvas.tag_lower('tour_radius')
+        self.canvas.tag_lower('tour_radius_select')
 
-    def upgrade_tour(self):
-        self.controleur.ameliorer_tour(self.tour_choisi.id)
-        #self.tour_choisi.ameliorer_tour()
-
+    # Sélectionne une tour pour pouvoir l'upgrader. 
+    
     def selectionne_tour(self, event):
+        if self.tour_choisi is not None:
+            return
+        
         id_tour = self.canvas.itemcget(event.widget.find_withtag("current")[0], "tags").split(" ")[2]
         
         for joueur in self.modele.partie.joueurs:
@@ -414,17 +458,27 @@ class Vue:
         self.btn_upgrade = PacManButton(int(20 * self.ratio_x), int(2 * self.ratio_y), "Upgrade", self.upgrade_tour)
         self.btn_upgrade.place(x=self.largeur-27 * self.ratio_x, y=450, anchor="ne")
         
+        self.dessiner_champ_action(self.tour_choisi, True)
         self.upgrade = self.canvas.bind("<Button-1>", self.cancel_upgrade)
         
         if self.tour_choisi.cout_amelioration <= self.modele.partie.argent_courant:
             self.btn_upgrade.button.config(state = NORMAL)
         else:
-            self.btn_upgrade.button.config(state = DISABLED)            
+            self.btn_upgrade.button.config(state = DISABLED) 
+            
+    def upgrade_tour(self):
+        self.controleur.ameliorer_tour(self.tour_choisi.id)
+        self.tour_choisi = None
+        self.canvas.unbind("<Button-1>", self.upgrade)       
+        self.canvas.delete('tour_radius_select')
+        self.btn_upgrade.destroy()           
             
     def cancel_upgrade(self, event):
         if event.x < self.largeur - 27 * self.ratio_x and event.y < 450:
             return
+        self.tour_choisi = None
         self.canvas.unbind("<Button-1>", self.upgrade)       
+        self.canvas.delete('tour_radius_select')
         self.btn_upgrade.destroy()
         
     def dessiner_projectiles(self):
@@ -493,15 +547,15 @@ class Vue:
         self.dessiner_tours()
         self.update_info_partie()
         self.dessiner_chateau()
-
+        self.desactiver_btn_tour()
 
     # Caller dans le controleur a chaque tick de boucle
     # Update les valeurs dynamique du InterfacePannel    
     def update_info_partie(self):
-        self.interface_panel.chrono_info['text'] = str(round(self.modele.partie.chrono)) + "s"
-        self.interface_panel.vague_info['text'] = "lvl" + str(self.modele.partie.vague)
-        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie) + "HP"
-        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant) + "$"
+        self.interface_panel.chrono_info['text'] = str(round(self.modele.partie.chrono)) + " s"
+        self.interface_panel.vague_info['text'] = "lvl " + str(self.modele.partie.vague)
+        self.interface_panel.vie_info['text'] = str(self.modele.partie.vie) + " HP"
+        self.interface_panel.argent_info['text'] = str(self.modele.partie.argent_courant) + " $"
         
     # Dessine InterfacePannel et le Bouton ChoixTour
     def dessiner_interface_info(self):        
@@ -521,8 +575,52 @@ class Vue:
         if self.menu_tour:
             self.destroy_menu_tour()
         
-        self.menu_tour =  InterfaceTour(self.largeur, 250 * self.ratio_x, 500 * self.ratio_y, self.ratio_x, self.ratio_y, self.bind_canvas)
+        self.menu_tour = InterfaceTour(self.largeur, 250 * self.ratio_x, 500 * self.ratio_y, self.ratio_x, self.ratio_y, self.bind_canvas)
         self.menu_tour.place(anchor="ne", x=self.largeur-10, y=70)
+        
+        self.toggle_radius = PacManButton(int(20*self.ratio_x), int(1*self.ratio_y), "Afficher champ d'action", command=self.toggle_champ_action)
+        self.toggle_radius.place(x=self.largeur-27 * self.ratio_x, y=self.hauteur - 20 * self.ratio_y, anchor="se")
+        
+    def desactiver_btn(self):
+        self.menu_tour.activation_to.button.config(state = DISABLED)
+        self.menu_tour.activation_te.button.config(state = DISABLED)
+        self.menu_tour.activation_tg.button.config(state = DISABLED)
+        self.menu_tour.activation_tp.button.config(state = DISABLED)
+        self.menu_tour.activation_tm.button.config(state = DISABLED) 
+        self.menu_tour.activation_tc.button.config(state = DISABLED)
+        self.toggle_radius.button.config(state = DISABLED)
+
+        
+    def desactiver_btn_tour(self):
+        if TourMitrailleuse.COUT <= self.modele.partie.argent_courant:
+            self.menu_tour.activation_to.button.config(state = NORMAL)
+        else:
+            self.menu_tour.activation_to.button.config(state = DISABLED)
+        
+        if TourEclair.COUT <= self.modele.partie.argent_courant:
+            self.menu_tour.activation_te.button.config(state = NORMAL)
+        else:
+            self.menu_tour.activation_te.button.config(state = DISABLED)
+        
+        if TourGrenade.COUT <= self.modele.partie.argent_courant:
+            self.menu_tour.activation_tg.button.config(state = NORMAL)
+        else:
+            self.menu_tour.activation_tg.button.config(state = DISABLED)
+        
+        if TourPoison.COUT <= self.modele.partie.argent_courant:
+            self.menu_tour.activation_tp.button.config(state = NORMAL)
+        else:
+            self.menu_tour.activation_tp.button.config(state = DISABLED)
+        
+        if TourMine.COUT <= self.modele.partie.argent_courant:
+            self.menu_tour.activation_tm.button.config(state = NORMAL)
+        else:
+            self.menu_tour.activation_tm.button.config(state = DISABLED) 
+            
+        if TourCanon.COUT <= self.modele.partie.argent_courant:
+            self.menu_tour.activation_tc.button.config(state = NORMAL)
+        else:
+            self.menu_tour.activation_tc.button.config(state = DISABLED)
 
     def destroy_menu_tour(self):
         self.menu_tour.activation_to.destroy()
@@ -531,6 +629,7 @@ class Vue:
         self.menu_tour.activation_tm.destroy()
         self.menu_tour.activation_tg.destroy()
         self.menu_tour.activation_tc.destroy()
+        self.toggle_radius.destroy()
         self.menu_tour.destroy()
         
     def resize(self, evt):

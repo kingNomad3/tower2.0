@@ -8,7 +8,7 @@ from TD_agent_BD import *
 
 class Controleur:
     def __init__(self):
-        self.nom_joueur_local = self.generer_pseudo_nom()
+        self.nom_joueur_local = ""
         self.modele = Modele(self) # fonction au bas de la page, devrait être envoyée par la vue
         self.partie = None
         self.timer = 0
