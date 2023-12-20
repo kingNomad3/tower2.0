@@ -68,10 +68,10 @@ class Vue:
         # section Identification
         self.canevas_splash.create_text(self.largeur/6*2+20,170,anchor="n",text="Identification",font=fontStyleTitle, fill='yellow')
         values = self.controleur.agent_bd.chercher_usagers()
-        values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
                                      values = values, font=fontStyleTitle, justify='center')
-        self.drop_nom.set(values[1])
+        self.drop_nom.set(values[0])
+        self.drop_nom.bind("<<ComboboxSelected>>", self.on_combobox_select)
         self.canevas_splash.create_window(self.largeur/6*3.5,170,anchor="n",window=self.drop_nom)
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
@@ -105,11 +105,14 @@ class Vue:
         self.btn_ouvrir_lobby_local = PacManButton(20, 1, "Creer partie locale", command=self.ouvrir_lobby_local)
         self.btn_ouvrir_lobby_local.place(x=1000, y=230, anchor="n")
         
-        self.btn_ouvrir_bonus = PacManButton(20, 1, "Ouvrir magasin de Bonus", command=self.ouvrir_bonus)
+        self.btn_ouvrir_bonus = PacManButton(25, 1, "Ouvrir le panneau des défis", command=self.ouvrir_bonus)
         self.btn_ouvrir_bonus.place(x=1000, y=280,anchor="n")
         
         return cadre_splash
         
+    def on_combobox_select(self, evt):
+        self.nom_joueur_local = self.drop_nom.get()
+    
     def ouvrir_bonus(self):
         fontStyleTitle = ("Gill Sans Ultra Bold", 11)
         
@@ -119,8 +122,7 @@ class Vue:
         self.img_defis= ImageTk.PhotoImage(Image.open("img/defis.png"))
         self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img_defis)
         self.canevas_splash.pack()
-        
-        
+                
         # Carrées
         self.canevas_splash.create_rectangle(100,150,600,330, outline='orange', width=1)
         self.canevas_splash.create_rectangle(120,170,580,310, outline='orange', width=4)
@@ -136,10 +138,7 @@ class Vue:
         
         # Texte
         
-        # f'Tuer 1 million de creep : {progress} / 1 000 000'
-        # f'Pas encore débloqué'
-        
-        self.canevas_splash.create_text(350, 225, text=f'Tuer 1 million de creep : progress / 1 000 000', fill='white', font=fontStyleTitle)
+        self.canevas_splash.create_text(350, 225, text=f'Tuer 1 million de creep : {self.controleur.agent_bd.voir_defis(self.nom_joueur_local)} / 1 000 000', fill='white', font=fontStyleTitle)
         self.canevas_splash.create_text(350, 250, text=f'Récompense : 500 crédits', fill='orange', font=fontStyleTitle)
         
         self.canevas_splash.create_text(350, 450, text=f'Pas encore débloqué', fill='yellow2', font=fontStyleTitle)
@@ -336,24 +335,6 @@ class Vue:
         fontStyleTitle = ("Gill Sans Ultra Bold", 14)
 
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
-
-        img = Image.open("./img/game_over.png")
-        img = ImageTk.PhotoImage(img)
-        label_img = Label(self.frame_game_over, image=img)
-        label_img.image = img  # This line keeps a reference to the image to prevent it from being garbage collected
-        label_img.place(relx=0.5, rely=0.2, anchor="center")
-
-        label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_partie_termine.place(relx=0.5, rely=0.4, anchor="center")
-
-        label_score = Label(self.frame_game_over, text=f'score : {self.modele.partie.score}', bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_score.place(relx=0.5, rely=0.5, anchor="center")
-
-        label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
-
-        self.frame_game_over.place(relx=0.5, rely=0.5, anchor="center")
-        fontStyleTitle = ("Gill Sans Ultra Bold", 11)
         
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
         
@@ -381,8 +362,10 @@ class Vue:
     def quitter_jeu_over(self):
         self.destroy_menu_tour()
         self.frame_game_over.destroy()
+        self.interface_panel.destroy()
         self.quitter_jeu.destroy()
-        self.afficher_cadre("cadre_splash")
+        self.partie_active = False
+        self.ouvrir_lobby_local()
 
     def dessiner_chateau(self):
         self.canvas.delete("chateau")

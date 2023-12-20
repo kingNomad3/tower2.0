@@ -15,19 +15,32 @@ class Agent_BD():
                 date DATE                
             )           
         ''')
+        # self.cursor.execute("DROP TABLE joueurs_defis")
         self.cursor.execute('''
                CREATE TABLE IF NOT EXISTS joueurs_defis (
-                   nom TEXT PRIMARY KEY,                    
-                   creeps_tue INTEGER,
-                   credits INTEGER                
+                   id INTEGER PRIMARY KEY, 
+                   nom TEXT UNIQUE,                    
+                   creeps_tue INTEGER DEFAULT 0,
+                   credits INTEGER DEFAULT 0                
                )           
            ''')
+        # self.populate_defis()
+        
+    def populate_defis(self):
+        cursor = self.conn.cursor()
+        for nom in self.chercher_usagers():
+            cursor.execute("INSERT OR IGNORE INTO joueurs_defis (nom) VALUES (?)", (nom, ))
+            self.conn.commit()
 
     def ajouter_aux_defis(self, nom, creeps_tue):
         cursor = self.conn.cursor()
         # Execute une requete qui insere le nom du joueur et la date courante d'inscription
-        cursor.execute("INSERT INTO joueurs_defis (nom, creeps_tue) VALUES (?, ?) ON CONFLICT (nom) DO UPDATE SET creeps_tue = EXCLUDED.creeps_tue + joueurs_defis.creeps_tue ", (nom, creeps_tue))
-        self.conn.commit()
+        try:
+            # Execute a query to update the "creeps_tue" column
+            cursor.execute("UPDATE joueurs_defis SET creeps_tue = creeps_tue + ? WHERE nom = ?", (creeps_tue, nom))
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error:", e)
         
         cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom,))
         nb_creeps_tues = cursor.fetchall()
@@ -37,8 +50,8 @@ class Agent_BD():
 
     def voir_defis(self, nom):
         cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM joueurs_defis WHERE nom = (?)", (nom))
-        valeurs = cursor.fetchall()[1]
+        cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom,))
+        valeurs = cursor.fetchall()[0][0]
         cursor.close()
         return valeurs
 

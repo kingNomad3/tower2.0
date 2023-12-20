@@ -9,7 +9,7 @@ from TD_agent_BD import *
 class Controleur:
     def __init__(self):
         self.agent_bd = Agent_BD(self)
-        self.nom_joueur_local = self.agent_bd.chercher_usagers()[1]
+        self.nom_joueur_local = self.agent_bd.chercher_usagers()[0]
         self.modele = Modele(self) # fonction au bas de la page, devrait être envoyée par la vue
         self.partie = None
         self.timer = 0

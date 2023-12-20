@@ -39,10 +39,7 @@ class Partie:
 
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
-        # self.vie = 100 - ((difficulte - 1) * 25)
-        # self.vie = 1
         self.vie = 100 - ((difficulte - 1) * 25)
-        # self.vie = 0
         self.delta_time = time.time()
         self.temps_derniere_vague = time.time()
         self.prochaine_vague()
@@ -135,7 +132,6 @@ class Partie:
         for i in actionsrecues:
             iteration_cle = i[0]
             if (iteration - 1) > int(iteration_cle):
-                print("PEUX PAS")
             action = json.loads(i[1])
             if action:
                 if iteration_cle not in self.actions_a_faire.keys():
