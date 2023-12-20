@@ -28,15 +28,16 @@ class Agent_BD():
         # Execute une requete qui insere le nom du joueur et la date courante d'inscription
         cursor.execute("INSERT INTO joueurs_defis (nom, creeps_tue) VALUES (?, ?) ON CONFLICT (nom) DO UPDATE SET creeps_tue = EXCLUDED.creeps_tue + joueurs_defis.creeps_tue ", (nom, creeps_tue))
         self.conn.commit()
-        cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom))
+        cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom, ))
         nb_creeps_tues = cursor.fetchall()
-        if nb_creeps_tues > 1000000:
-            cursor.execute("INSERT INTO joueurs_defis (credits) VALUES (500)")
+        print(nb_creeps_tues)
+        if nb_creeps_tues[0][0] > 1000000:
+            cursor.execute("INSERT INTO joueurs_defis (credits) VALUES (500) WHERE nom = (?)", (nom, ))
         cursor.close()
 
     def voir_defis(self, nom):
         cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM joueurs_defis WHERE nom = (?)", (nom))
+        cursor.execute("SELECT * FROM joueurs_defis WHERE nom = (?)", (nom, ))
         valeurs = cursor.fetchall()
         cursor.close()
         return valeurs
