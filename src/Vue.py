@@ -120,7 +120,7 @@ class Vue:
         self.img_defis= ImageTk.PhotoImage(Image.open("img/defis.png"))
         self.canevas_splash.create_image(self.largeur/2,0, anchor="n",image=self.img_defis)
         self.canevas_splash.pack()
-        
+                
         self.quitter_defis = PacManButton(20, 1, "Quitter", command=self.effacer_fenetre_defis)
         self.quitter_defis.place(relx=0.5, rely=0.9,anchor="n")
         
@@ -307,15 +307,24 @@ class Vue:
         print(event.keysym)
         
     def game_over(self):
-        fontStyleTitle = ("Gill Sans Ultra Bold", 14)
+        fontStyleTitle = ("Gill Sans Ultra Bold", 11)
         
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
+        
+        self.canevas_splash = Canvas(self.frame_game_over,width=self.largeur/2,
+                              height=self.hauteur/2,bg="black")
+        image_originale = Image.open("img/game_over.png")
+        image_modifiee = image_originale.resize((350, 175), Image.ANTIALIAS)
+        self.img_defis = ImageTk.PhotoImage(image_modifiee)
+        self.canevas_splash.create_image(330, 100, anchor="center", image=self.img_defis)
+        self.canevas_splash.pack()
+        
         label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_partie_termine.place(relx=0.5, rely=0.4, anchor="center")
+        label_partie_termine.place(relx=0.5, rely=0.6, anchor="center")
         label_score = Label(self.frame_game_over, text=f'score : 0', bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_score.place(relx=0.5, rely=0.5, anchor="center")
+        label_score.place(relx=0.5, rely=0.7, anchor="center")
         label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
-        label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
+        label_niveau_max.place(relx=0.5, rely=0.7, anchor="center")
         
         self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
         self.desactiver_btn()
