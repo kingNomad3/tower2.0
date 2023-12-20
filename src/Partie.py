@@ -37,7 +37,6 @@ class Partie:
         self.explosions = []
         #Appartient au modele ou classe Tableau
 
-
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
         self.vie = 100 - ((difficulte - 1) * 25)
@@ -114,9 +113,6 @@ class Partie:
             self.__modele.controleur.agent_bd.ajouter_aux_defis(nom,  self.creeps_tue_vague)
             self.score += self.__vague * self.creeps_tue_vague + 50
             self.creeps_tue_vague = 0
-            print(self.score)
-
-
 
     def est_game_over(self) -> bool:
         # met le bool à jour et le retourne
@@ -145,8 +141,7 @@ class Partie:
                     for j in action:
                         self.actions_a_faire[iteration_cle].append(j)
     ##############################################################################
-    
-    
+
     def jouer_coup(self, iteration):
         ##################################################################
         # faire nouvelle action recu du serveur si on est au bon cadrecourant
@@ -194,8 +189,7 @@ class Partie:
             self.nuages.remove(nuage)
             if self.nuages ==  []:
                 self.parent.supprimer_explosion(self)
-       
-            
+
 class Joueur():
     def __init__(self,parent,nom):
         self.partie = parent
