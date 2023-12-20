@@ -214,10 +214,11 @@ class Joueur():
         return self.partie.argent_courant >= tour.cout_amelioration
     
     def ameliorer_tour(self, parametres):
-        tag = parametres
+        tag = parametres[0]
         for tour in self.tours:
             if tour.id == tag:
                 if self.peut_acheter_amelioration(tour):
-                    self.niveau_amelioration += 1
-                    self.partie.argent_courant = self.partie.argent_courant - tour.cout_amelioration
+                    if tour.niveau_amelioration < 3:
+                        tour.niveau_amelioration += 1
+                        self.partie.argent_courant = self.partie.argent_courant - tour.cout_amelioration
         

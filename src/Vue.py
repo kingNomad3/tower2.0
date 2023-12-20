@@ -399,7 +399,8 @@ class Vue:
         self.canvas.tag_lower('chemin_outline')      
 
     def upgrade_tour(self):
-        self.tour_choisi.ameliorer_tour()
+        self.controleur.ameliorer_tour(self.tour_choisi.id)
+        #self.tour_choisi.ameliorer_tour()
 
     def selectionne_tour(self, event):
         id_tour = self.canvas.itemcget(event.widget.find_withtag("current")[0], "tags").split(" ")[2]
