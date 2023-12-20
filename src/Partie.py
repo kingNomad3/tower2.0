@@ -2,6 +2,7 @@ from Tour import *
 from Creep import *
 import time
 from Chemin import *
+
 import json
 
 
@@ -21,7 +22,7 @@ class Partie:
         self.__tour_selectionne = None
         self.__vague = 0
         self.__fin_partie = False
-        self.__chrono = 0
+        self.__chrono = None
         self.__creeps_en_attente = []
         self.__liste_creeps = []
         self.actions_a_faire = {}        
@@ -33,6 +34,7 @@ class Partie:
             self.joueurs[i] = Joueur(self,i)
         self.explosions = []
         #Appartient au modele ou classe Tableau
+
 
         self.__chemin = Chemin(self, self.__tableau)# TODO 0 pour teableau 1 et 1 pour tebleau 2
 
@@ -106,7 +108,7 @@ class Partie:
     def prochaine_vague(self):
         # pour chaque nouvelle vague
         self.__vague += 1
-       
+        self.__chrono = 0
         self.creer_creeps()
 
     def est_game_over(self) -> bool:

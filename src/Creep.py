@@ -16,7 +16,7 @@ class Creep:
         self.__compteur_electrocute = 0
         self.__compteur_poison = 0
         self.__dmg_poison = 0.001
-        self.__dmg_electrocute = 0.05
+        self.__dmg_electrocute = 0.001
         self.__vivant = True
         self.__modele = parent
         self.__vie = 10 * niveau
@@ -80,7 +80,7 @@ class Creep:
                 self.__compteur_electrocute += 1
             self.__vie -= self.__dmg_electrocute
 
-        if self.__compteur_electrocute == 3:
+        if self.__compteur_electrocute % 50 == 0:
             self.__compteur_electrocute == 0
             self.est_electrocute = False
 

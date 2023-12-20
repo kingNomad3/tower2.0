@@ -29,6 +29,7 @@ class Controleur:
         self.vue = Vue(self, self.nom_joueur_local)
         self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
+        self.agent_bd.voir_defis()
 
     # pour du visuel et le modèle (en cas de besoin)
     def incrementer_timer(self):
