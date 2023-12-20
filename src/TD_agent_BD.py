@@ -4,7 +4,7 @@ import datetime
 class Agent_BD():
     def __init__(self, parent):
         self.parent = parent
-        self.conn = sqlite3.connect("base_TD.db")
+        self.conn = sqlite3.connect("./base_TD.db")
         #  2: Cree l'objet cursor qui executera les requetes SQL
         self.cursor = self.conn.cursor()
         #  3: Cree table avec joueurs_locaux et date
@@ -51,7 +51,6 @@ class Agent_BD():
         cursor = self.conn.cursor()
         cursor.execute("SELECT creeps_tue FROM joueurs_defis WHERE nom = (?)", (nom,))
         valeurs = cursor.fetchall()[0][0]
-        print(valeurs)
         cursor.close()
         return valeurs
 
