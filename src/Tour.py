@@ -247,10 +247,25 @@ class TourMine(TourAttaque):
     def attaquer(self):
         pos_x = random.randint(self.pos_x - self.champ_action, self.pos_x + self.champ_action)
         pos_y = random.randint(self.pos_y - self.champ_action, self.pos_y + self.champ_action)
-        while not self.joueur.partie.modele.controleur.vue.canvas.find_overlapping(pos_x - Projectile.largeur, pos_y - Projectile.largeur, pos_x + Projectile.largeur, pos_y + Projectile.largeur):
+        canvas = self.joueur.partie.modele.controleur.vue.canvas
+        largeur = Projectile.largeur - 10
+
+        temp = canvas.find_overlapping(pos_x - largeur,
+                                            pos_y - largeur,
+                                            pos_x + largeur,
+                                            pos_y + largeur)
+
+        chemins = canvas.find_withtag("chemin")
+
+
+        while not any(i in temp for i in chemins):
             pos_x = random.randint(self.pos_x - self.champ_action, self.pos_x + self.champ_action)
-            pos_y = random.randint(self.pos_y - self.champ_action, self.pos_y + self.champ_action)       
-        mine = Mine(self, pos_x, pos_y, self.cible, self.niveau_amelioration)  
+            pos_y = random.randint(self.pos_y - self.champ_action, self.pos_y + self.champ_action)
+
+            temp = canvas.find_overlapping(pos_x - Projectile.largeur, pos_y - Projectile.largeur, pos_x + Projectile.largeur,
+                                    pos_y + Projectile.largeur)
+
+        mine = Mine(self, pos_x, pos_y, self.cible, self.niveau_amelioration)
         self.liste_projectiles.append(mine)
         self.joueur.partie.modele.controleur.vue.root.after(int(self.temps_recharge), self.attaquer)
 
