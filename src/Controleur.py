@@ -31,6 +31,7 @@ class Controleur:
         self.vue.afficher_cadre("cadre_splash")
         self.vue.root.mainloop()
 
+
     # pour du visuel et le modèle (en cas de besoin)
     def incrementer_timer(self):
         self.timer += 0.5 
