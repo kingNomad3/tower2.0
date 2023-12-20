@@ -68,11 +68,11 @@ class Vue:
         
         # section Identification
         self.canevas_splash.create_text(self.largeur/6*2+20,170,anchor="n",text="Identification",font=fontStyleTitle, fill='yellow')
-        values = []
+        values = self.controleur.agent_bd.chercher_usagers()
         values.insert(0,nom_joueur_local)
         self.drop_nom = ttk.Combobox(self.canevas_splash,state="normal",
                                      values = values, font=fontStyleTitle, justify='center')
-        self.drop_nom.set(nom_joueur_local)
+        self.drop_nom.set(values[1])
         self.canevas_splash.create_window(self.largeur/6*3.5,170,anchor="n",window=self.drop_nom)
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
@@ -292,24 +292,25 @@ class Vue:
         
     def game_over(self):
         fontStyleTitle = ("Gill Sans Ultra Bold", 14)
-        
+
         self.frame_game_over = Frame(self.root, width=self.largeur/2, height=self.hauteur/2, highlightbackground='#F1D92A', highlightthickness=4, bg='black')
-        
+
         img = Image.open("./img/game_over.png")
         img = ImageTk.PhotoImage(img)
         label_img = Label(self.frame_game_over, image=img)
+        label_img.image = img  # This line keeps a reference to the image to prevent it from being garbage collected
         label_img.place(relx=0.5, rely=0.2, anchor="center")
-        
+
         label_partie_termine = Label(self.frame_game_over, text="La partie est terminée!", bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_partie_termine.place(relx=0.5, rely=0.4, anchor="center")
-        
+
         label_score = Label(self.frame_game_over, text=f'score : {self.modele.partie.score}', bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_score.place(relx=0.5, rely=0.5, anchor="center")
-        
+
         label_niveau_max = Label(self.frame_game_over, text=f'niveau maximal atteint : {self.modele.partie.vague}', bg="black", fg='#F1D92A', font=fontStyleTitle)
         label_niveau_max.place(relx=0.5, rely=0.6, anchor="center")
-        
-        self.frame_game_over.place(relx = 0.5, rely=0.5, anchor="center")
+
+        self.frame_game_over.place(relx=0.5, rely=0.5, anchor="center")
         self.desactiver_btn()
 
     def dessiner_chateau(self):
