@@ -35,8 +35,6 @@ class Projectile:
                     self.__cible.est_empoisone = True
                 self.__cible.recoit_coup(self.__dommage)
                 self.__tour.liste_projectiles.remove(self)
-
-
             
     def attaque_special(self):
         #niveau_tour affectera les effets

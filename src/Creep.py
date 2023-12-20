@@ -9,7 +9,7 @@ class Creep:
         self.__cible = None
         self.__angle_target = None
         self.__partie = parent
-        self.__valeur_argent = 20
+        self.__valeur_argent = int(50 * niveau / difficulte)
         self.__est_empoisone = False
         self.__est_electrocute = False
         self.__compteur_electrocute = 0
@@ -19,7 +19,6 @@ class Creep:
         self.__vivant = True
         self.__modele = parent
         self.__vie = 10 * (niveau * difficulte) / 2
-        self.valeur_gold = 20 * niveau
         self.__pos_x = pos_x
         self.__pos_y = pos_y
         self.__vitesse = 5
@@ -58,12 +57,6 @@ class Creep:
             self.__vivant = False
             self.__partie.argent_courant += self.valeur_argent
             self.__explosion = Explosion(self, self.__pos_x,self.__pos_y)
-
-    
-    
-    def defi_tuer_creep(self):
-        self.__partie.creeps_tue_vague += 1
-     
 
     def nouvelle_cible(self):
         x = self.__partie.chemin.segments[self.segment_actuel][1][0]
@@ -207,10 +200,6 @@ class Creep:
     @dmg_electrocute.setter
     def dmg_electrocute(self, dmg_electrocute):
         self.__dmg_electrocute = dmg_electrocute  # Pour les améliorations qui réduisent le coût des tours.
-
-    @est_empoisone.setter
-    def est_empoisone(self, est_empoisone):
-        self.__est_empoisone = est_empoisone  # Pour les améliorations qui réduisent le coût des tours.
 
     @dmg_poison.setter
     def dmg_poison(self, dmg_poison):
