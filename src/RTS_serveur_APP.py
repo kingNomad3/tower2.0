@@ -92,7 +92,6 @@ def reset_jeu():
     db = Dbman()
     db.resetdb()
     info = db.getinfo("partiecourante")
-    #print("RESET",info)
     return jsonify(info)
 
 @app.route("/set_tableau", methods=["POST"])
@@ -106,7 +105,6 @@ def set_tableau():
 def creer_partie():
     db = Dbman()
     info = db.getinfo("partiecourante")
-    #print("CREER PARTIE ",info)
     if "dispo" in info[0]:
         data = request.get_json()
         db.ajouterjoueur(data['nom'])
@@ -119,7 +117,6 @@ def creer_partie():
 def inscrire_joueur():
     db = Dbman()
     info = db.getinfo("partiecourante")
-    #print("INSCRIRE JOUEUR",info)
     if "attente" in info[0]:
         data = request.get_json()
         db.ajouterjoueur(data['nom'])

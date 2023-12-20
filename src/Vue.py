@@ -1,6 +1,7 @@
 from tkinter import *
 from Modele import *
 from tkinter import ttk
+import math
 
 from PIL import Image, ImageTk
 
@@ -18,7 +19,7 @@ class Vue:
         self.images = {}
         self.tableau_choisi = None
 
-        self.largeur = 1200
+        self.largeur = 1260
         self.hauteur = 648
         self.largeur_chemin = 55
 
@@ -118,7 +119,7 @@ class Vue:
         self.canevas_lobby.pack()
         
         #Logo lobby
-        if local_ou_reseau == 'reseau':
+        if local_ou_reseau == 'local':
             self.logo_lobby= ImageTk.PhotoImage(Image.open("img/lobby_logo.png"))
         else:
             self.logo_lobby= ImageTk.PhotoImage(Image.open("img/lobby_logo_reseau.png"))
@@ -128,14 +129,14 @@ class Vue:
         self.img= ImageTk.PhotoImage(Image.open("img/bg_lobby.jpg"))
         self.canevas_lobby.create_image(self.largeur/2, self.hauteur-300, anchor="n",image=self.img)
 
-        self.btn_lancer_partie=Button(self.canevas_lobby,text="Debuter la partie",
-                                      command=self.lancer_partie,)
-        self.canevas_lobby.create_window(600,400,anchor="center",window=self.btn_lancer_partie)
+        # self.btn_lancer_partie=Button(self.canevas_lobby,text="Debuter la partie",
+        self.btn_lancer_partie = PacManButton(15, 1, "Debuter la partie", self.lancer_partie)
+        self.btn_lancer_partie.place(x=600, y=400, anchor="center")    
+        #                               command=self.lancer_partie,)
+        self.canevas_lobby.create_window(600,400,anchor="center", window=self.btn_lancer_partie)
         # NE FONCTIONNE PAS SI BUTTON TO PACMANBUTTON
-        # self.btn_lancer_partie = PacManButton(10, 1, "Debuter la partie", command=self.lancer_partie)
-        # self.btn_lancer_partie.place(x=600, y=400, anchor="center")
-            
-        #
+        
+
         if local_ou_reseau == "reseau":
             if len(joueurs)== 1:
                 self.canevas_lobby.create_text(200,200,text="Createur de la partie")
@@ -156,9 +157,9 @@ class Vue:
                 joueur_coop = joueurs[1][0]
                 self.label_joueur_coop = Label(self.canevas_lobby, text=joueur_coop)
                 self.canevas_lobby.create_window(500, 250, window=self.label_joueur_coop)
-                self.btn_lancer_partie.config(state="disabled")
+                self.btn_lancer_partie.button.config(state="disabled")
         else:
-            self.btn_lancer_partie.config(command=self.lancer_partie_locale)
+            self.btn_lancer_partie.button.config(command=self.lancer_partie_locale)
 
         ##
         # Create a matrix of buttons for board selection on the canvas
@@ -281,7 +282,6 @@ class Vue:
                                      640 + 40,
                                      fill="white",tags=('TP', 'TP_carre',) )
 
-
     def skip(self, event):
         print(event.keysym)
 
@@ -303,7 +303,6 @@ class Vue:
         self.images[-1] = tk_img
         self.canvas.create_image((x * self.ratio_x, y * self.ratio_y), anchor='w', image=tk_img, tags=("chateau",))
 
-
     def dessiner_creeps(self):
         self.canvas.delete("creep")
         creep_largeur = Creep.largeur * self.ratio_x
@@ -324,7 +323,6 @@ class Vue:
             self.images[creep.id] = tk_img
             
             self.canvas.create_image((creep.pos_x * self.ratio_x, creep.pos_y * self.ratio_y), anchor='center', image=tk_img, tags=("creep", creep.id,))
-
 
     def creer_tour(self, event):
         # on clic : créé un tour dans le modèle
@@ -373,10 +371,10 @@ class Vue:
         bg_img = Image.open(tour.background_src)
         bg_img = bg_img.resize((int(tour_largeur + 30), int(tour_hauteur + 30)), Image.Resampling.NEAREST)
 
-
         if tour.cible:
-            angle = (hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y) * 180) % 360 * - 1
-            img = img.rotate(angle)
+            angle_radians = hp.Helper.calcAngle(tour.pos_x, tour.pos_y, tour.cible.pos_x, tour.cible.pos_y)
+            angle_degrees = math.degrees(angle_radians)
+            img = img.rotate(-angle_degrees)
             
         tk_img = ImageTk.PhotoImage(img)
         tk_bg = ImageTk.PhotoImage(bg_img)
@@ -398,30 +396,35 @@ class Vue:
 
         self.canvas.tag_lower('tour_radius')
         self.canvas.tag_lower('chemin')
-        self.canvas.tag_lower('chemin_outline')
-        
+        self.canvas.tag_lower('chemin_outline')      
 
     def upgrade_tour(self):
         self.tour_choisi.ameliorer_tour()
 
-    def selectionne_tour(self, tour):
-        self.tour_choisi = tour
+    def selectionne_tour(self, event):
+        id_tour = self.canvas.itemcget(event.widget.find_withtag("current")[0], "tags").split(" ")[2]
+        
+        for joueur in self.modele.partie.joueurs:
+            for tour in self.modele.partie.joueurs[joueur].tours:
+                if tour.id == id_tour:
+                    self.tour_choisi = tour
+                    break
+
         self.btn_upgrade = PacManButton(int(20 * self.ratio_x), int(2 * self.ratio_y), "Upgrade", self.upgrade_tour)
         self.btn_upgrade.place(x=self.largeur-27 * self.ratio_x, y=450, anchor="ne")
         
-        self.upgade = self.canvas.bind("<Button>", self.cancel_upgrade)
+        self.upgrade = self.canvas.bind("<Button-1>", self.cancel_upgrade)
         
         if self.tour_choisi.cout_amelioration <= self.modele.partie.argent_courant:
             self.btn_upgrade.button.config(state = NORMAL)
         else:
-            self.btn_upgrade.button.config(state = DISABLED)
+            self.btn_upgrade.button.config(state = DISABLED)            
             
-            
-    def cancel_upgrade(self):
+    def cancel_upgrade(self, event):
+        if event.x < self.largeur - 27 * self.ratio_x and event.y < 450:
+            return
+        self.canvas.unbind("<Button-1>", self.upgrade)       
         self.btn_upgrade.destroy()
-        self.canvas.unbind("<Button>", self.upgade)
-        
-        
         
     def dessiner_projectiles(self):
         self.canvas.delete("projectile")
@@ -441,9 +444,9 @@ class Vue:
                     elif isinstance(projectile, Eclair):
                         self.canvas.create_line(tour.pos_x * self.ratio_x, tour.pos_y * self.ratio_y, projectile.pos_x * self.ratio_x, projectile.pos_y * self.ratio_y,fill="light blue", width=2, tags=("projectile", projectile.id))
                         for i in range(3):
-                            end_x = projectile.pos_x * self.ratio_x + random.randint(-5, 5)  # Adjust the range as needed
-                            end_y = projectile.pos_y * self.ratio_y + random.randint(-5, 5)  # Adjust the range as needed
-                            width = random.randint(1, 3)  # Adjust the range as needed
+                            end_x = projectile.pos_x * self.ratio_x + random.randint(-5, 5)
+                            end_y = projectile.pos_y * self.ratio_y + random.randint(-5, 5)  
+                            width = random.randint(1, 3)  
                             
                             color = ["#01065A", "#3393FF", "#F5FAFF"]
                             self.canvas.create_line(tour.pos_x + random.randint(-5, 5) * self.ratio_x, tour.pos_y + random.randint(-5, 5)* self.ratio_y, 
@@ -475,7 +478,7 @@ class Vue:
                 
                         img = img.resize((int(projectile_hauteur + 20), int(projectile_largeur + 20)), Image.Resampling.NEAREST)
                         tk_img = ImageTk.PhotoImage(img)
-                        
+            
                         # Store the image reference to prevent garbage collection
                         self.images[projectile.id] = tk_img
                         
@@ -571,8 +574,7 @@ class Vue:
                 self.canvas.create_line(x0, y0, x1, y1,
                                         tags=("chemin_outline",), joinstyle=MITER, fill='blue')
                 self.canvas.create_line(x0, y0, x1, y1,
-                                        tags=("chemin",), joinstyle=MITER)
-                
+                                        tags=("chemin",), joinstyle=MITER)  
             except IndexError:
                 break
 
@@ -605,6 +607,10 @@ class InterfaceTour(Frame):
         self['height'] = height
         self['highlightthickness'] = 3
         self['highlightbackground'] = 'blue'
+
+        # On utilise un lambda pour passer des arguments a la fonction
+        # command = lambda: command("TypeDeTour")
+        # L'argument command est une fonction qui est passé en parametre a InterfaceTour
         
         self.activation_to = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Mitrailleuse", command=lambda: command("TourMitrailleuse"))
         self.activation_te = PacManButton(int(20*ratio_x), int(1*ratio_y), "Tour Eclair" , command=lambda: command("TourEclair"))
